@@ -43,6 +43,7 @@ import org.junit.Test;
 import org.wisdom.api.http.Result;
 import org.wisdom.api.http.Status;
 import org.wisdom.api.templates.Template;
+import org.wisdom.test.parents.WisdomUnitTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -50,7 +51,7 @@ import static org.mockito.Mockito.mock;
 /**
  * A couple of unit tests.
  */
-public class UnitTest {
+public class UnitTest extends WisdomUnitTest {
 
     /**
      * Checks that your controller is returning OK.
@@ -61,7 +62,10 @@ public class UnitTest {
         // Use a mock to simulate the template.
         // You can do this for every service and template your controller is using.
         controller.index = mock(Template.class);
-        Result result = controller.index();
+        String service = "";
+        String version = "";
+        String request = "";
+        Result result = controller.index(service, version, request);
         assertThat(result.getStatusCode()).isEqualTo(Status.OK);
     }
 }

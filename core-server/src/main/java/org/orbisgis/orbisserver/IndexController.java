@@ -48,6 +48,7 @@ import org.orbiswps.server.WpsServer;
 import org.orbiswps.server.model.JaxbContainer;
 import org.wisdom.api.DefaultController;
 import org.wisdom.api.annotations.Controller;
+import org.wisdom.api.annotations.Parameter;
 import org.wisdom.api.annotations.Route;
 import org.wisdom.api.annotations.View;
 import org.wisdom.api.http.HttpMethod;
@@ -63,6 +64,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.InputStream;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Very light instance of DefaultController containing a WpsServer.
@@ -77,6 +79,8 @@ public class IndexController extends DefaultController {
      */
     private WpsServer wpsServer = WpsServerManager.getWpsServer();
 
+    private ArrayList<String> test = new ArrayList<String>();
+    private List<ProcessSummaryType> liste = null;
     /**
      * Injects a template named 'index'.
      */
@@ -89,11 +93,42 @@ public class IndexController extends DefaultController {
      *
      * @return the index page
      */
+    @Route(method = HttpMethod.GET, uri = "/orbisserver/ows")
+    public Result index(@Parameter("service") String service, @Parameter("version") String version, @Parameter("request") String request) {
+        //Simple example of getting information from the WpsServer
+        if(service != null && !service.isEmpty()){
+          if(service.equals("WPS")){
+            if(version != null && !version.isEmpty()){
+              if(version.equals("2.0.0")){
+                if(request!= null && !request.isEmpty()){
+                  if(request.equals("GetCapabilities")){
+                    try { simpleWpsRequest();  } catch (JAXBException ignored) {}
+                    return ok(liste);
+                  }else{
+                    return ok("Error1");
+                  }
+                }else{
+                  return ok("Error2");
+                }
+              }else{
+                return ok("Error3");
+              }
+            }else{
+              return ok("Error4");
+            }
+          }else{
+            return ok("Error5");
+          }
+        }else{
+          return ok("Error6");
+        }
+    }
+
     @Route(method = HttpMethod.GET, uri = "/")
     public Result index() {
         //Simple example of getting information from the WpsServer
-        try { simpleWpsRequest(); } catch (JAXBException ignored) {}
-        return ok(render(index, "index", "Welcome"));
+        try { simpleWpsRequest();  } catch (JAXBException ignored) {}
+        return ok(render(index, "welcome", "Welcome to OrbisServer"));
     }
 
     /**
@@ -101,6 +136,7 @@ public class IndexController extends DefaultController {
      * @throws JAXBException JAXB Exception.
      */
     private void simpleWpsRequest() throws JAXBException {
+        this.test.clear();
         Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
         ObjectFactory factory = new ObjectFactory();
@@ -129,8 +165,10 @@ public class IndexController extends DefaultController {
         WPSCapabilitiesType wpsCapabilitiesType = (WPSCapabilitiesType)((JAXBElement)resultObject).getValue();
         List<ProcessSummaryType> list = wpsCapabilitiesType.getContents().getProcessSummary();
         for(ProcessSummaryType processSummaryType : list){
-            System.out.println(processSummaryType.getTitle().get(0).getValue());
+          //  System.out.println(processSummaryType.getTitle().get(0).getValue());
+            this.test.add(processSummaryType.getTitle().get(0).getValue());
         }
+        this.liste = list;
     }
 
 }
