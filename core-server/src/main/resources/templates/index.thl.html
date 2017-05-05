@@ -50,7 +50,6 @@
 </head>
 <body>
 
-<h1 th:text="${welcome}">Welcome!</h1>
 
 <div class="container">
     <div class="header">
@@ -64,6 +63,10 @@
     </div>
 
 </div>
+
+<pre th:text="${liste}">Welcome!</pre>
+
+<li><a type="text/html"  href="orbisserver/ows?service=WPS&amp;version=2.0.0&amp;request=GetCapabilities" th:text="GetCapabilities">GetCapabilities</a></li>
 
 <!-- Scripts -->
 <script src="/libs/jquery.min.js"></script>

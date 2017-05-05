@@ -54,6 +54,8 @@ import org.wisdom.api.annotations.View;
 import org.wisdom.api.http.HttpMethod;
 import org.wisdom.api.http.Result;
 import org.wisdom.api.templates.Template;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -79,8 +81,10 @@ public class IndexController extends DefaultController {
      */
     private WpsServer wpsServer = WpsServerManager.getWpsServer();
 
-    private ArrayList<String> test = new ArrayList<String>();
+    private String test = "";
     private List<ProcessSummaryType> liste = null;
+    private WPSCapabilitiesType wpsCapabilitiesType = null;
+
     /**
      * Injects a template named 'index'.
      */
@@ -88,8 +92,12 @@ public class IndexController extends DefaultController {
     Template index;
 
     /**
-     * The action method returning the index page. It handles
-     * HTTP GET request on the "/" URL.
+     * The action method returning the xml file corresponding to the GetCapabilities method. It handles
+     * HTTP GET request on the "/orbisserv/ows" URL.
+     *
+     * @Parameter the service
+     * @Parameter the version
+     * @Parameter the request GetCpabilities
      *
      * @return the index page
      */
@@ -103,40 +111,41 @@ public class IndexController extends DefaultController {
                 if(request!= null && !request.isEmpty()){
                   if(request.equals("GetCapabilities")){
                     try { simpleWpsRequest();  } catch (JAXBException ignored) {}
-                    return ok(liste);
+                    return ok(wpsCapabilitiesType);
                   }else{
-                    return ok("Error1");
+                    return badRequest("The request was not properly written");
                   }
                 }else{
-                  return ok("Error2");
+                  return badRequest("You need to enter the request to get the corresponding xml file");
                 }
               }else{
-                return ok("Error3");
+                return badRequest("Please enter a good version of WPS, it should be 2.0.0");
               }
             }else{
-              return ok("Error4");
+              return badRequest("You need to enter the version of WPS to get the corresponding xml file");
             }
           }else{
-            return ok("Error5");
+            return badRequest("The service was not properly written, it should be WPS here");
           }
         }else{
-          return ok("Error6");
+          return ok("You need to enter a service to do queries, it should be WPS here");
         }
     }
+
 
     @Route(method = HttpMethod.GET, uri = "/")
     public Result index() {
         //Simple example of getting information from the WpsServer
         try { simpleWpsRequest();  } catch (JAXBException ignored) {}
-        return ok(render(index, "welcome", "Welcome to OrbisServer"));
+        return ok(render(index,"liste", test));
     }
 
-    /**
+  /**
      * Dirty method to display in the logger the list of the processes.
      * @throws JAXBException JAXB Exception.
      */
     private void simpleWpsRequest() throws JAXBException {
-        this.test.clear();
+        this.test = "";
         Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
         ObjectFactory factory = new ObjectFactory();
@@ -163,12 +172,16 @@ public class IndexController extends DefaultController {
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
         Object resultObject = unmarshaller.unmarshal(resultXml);
         WPSCapabilitiesType wpsCapabilitiesType = (WPSCapabilitiesType)((JAXBElement)resultObject).getValue();
+        this.wpsCapabilitiesType = wpsCapabilitiesType;
         List<ProcessSummaryType> list = wpsCapabilitiesType.getContents().getProcessSummary();
         for(ProcessSummaryType processSummaryType : list){
-          //  System.out.println(processSummaryType.getTitle().get(0).getValue());
-            this.test.add(processSummaryType.getTitle().get(0).getValue());
+            //System.out.println(processSummaryType.getTitle().get(0).getValue());
+            //System.out.println(processSummaryType.getIdentifier().getValue());
+            this.test = this.test + processSummaryType.getTitle().get(0).getValue() + "\n";
         }
         this.liste = list;
+        System.out.println(this.test);
+        System.out.println(wpsCapabilitiesType);
     }
 
 }
