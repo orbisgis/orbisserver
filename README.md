@@ -2,9 +2,9 @@
 OSGI web server plugin for OrbisGIS based on wisdom-framework
 
 
-## start the server
+## Start the server
 
-To start the OrbisServer execute 
+Clone the repository. Go to core-server and execute 
 
 
 ```
