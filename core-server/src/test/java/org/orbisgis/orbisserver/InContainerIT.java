@@ -50,7 +50,7 @@ public class InContainerIT extends WisdomTest {
         Action.ActionResult result = action(new Invocation() {
             @Override
             public Result invoke() throws Throwable {
-                return controller.index("WPS", "2.0.0", "GetCapabilities");
+                return controller.index();
             }
         }).header("foo", "bar").invoke();
 
