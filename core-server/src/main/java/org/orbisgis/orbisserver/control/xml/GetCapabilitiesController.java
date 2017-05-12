@@ -81,7 +81,7 @@ package org.orbisgis.orbisserver.control.xml;
 
    /**
     * The action method returning the xml file corresponding to the GetCapabilities method. It handles
-    * HTTP GET request on the "/orbisserv/ows" URL.
+    * HTTP GET request on the "/orbisserv/ows" URL. 
     * A good request should be http://localhost:9000/orbisserver/ows?service=WPS&version=2.0.0&request=GetCapabilities
     *
     * @Parameter the service
