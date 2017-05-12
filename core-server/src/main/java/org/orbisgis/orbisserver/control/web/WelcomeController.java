@@ -36,51 +36,39 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisserver;
+package org.orbisgis.orbisserver.control.web;
 
-import org.apache.felix.ipojo.annotations.Requires;
-import org.orbiswps.scripts.WpsScriptPlugin;
-import org.orbiswps.server.WpsServer;
-import org.orbiswps.server.WpsServerImpl;
-
-import javax.sql.DataSource;
+import org.wisdom.api.DefaultController;
+import org.wisdom.api.annotations.Controller;
+import org.wisdom.api.annotations.Route;
+import org.wisdom.api.annotations.View;
+import org.wisdom.api.http.HttpMethod;
+import org.wisdom.api.http.Result;
+import org.wisdom.api.templates.Template;
+import org.wisdom.api.security.Authenticated;
 
 /**
- * Class managing the WpsServer instances.
- *
- * @author Sylvain PALOMINOS
- */
-public class WpsServerManager {
+* Instance of DefaultController used to control the welcome's page
+*
+* @author Guillaume MANDE
+*/
+@Controller
+public class WelcomeController extends DefaultController {
 
-    /**
-     * Data source used by the WpsServer.
-     */
-    @Requires
-    private static DataSource ds;
 
-    /**
-     * Instance of the WpsServer.
-     */
-    private static WpsServer wpsServer;
+  /**
+  * Injects a template named 'welcome'.
+  */
+  @View("welcome")
+  public Template welcome;
 
-    /**
-     * Returns the instance of the WpsServer. If it was not already created, create it.
-     * @return The instance of the WpsServer
-     */
-    public static WpsServer getWpsServer(){
-        if(wpsServer == null){
-            createWpsServerInstance();
-        }
-        return wpsServer;
-    }
 
-    /**
-     * Creates an instance of the WpsServer.
-     */
-    private static void createWpsServerInstance(){
-        wpsServer = new WpsServerImpl(System.getProperty("java.io.tmpdir"), ds);
-        WpsScriptPlugin scriptPlugin = new WpsScriptPlugin();
-        scriptPlugin.setWpsServer(wpsServer);
-        scriptPlugin.activate();
-    }
+ /**
+  * The action method returning the html welcome page containing a link to the index page.
+  *
+  */
+  @Route(method = HttpMethod.GET, uri = "/")
+  public Result welcome() {
+     return ok(render(welcome));
+ }
 }

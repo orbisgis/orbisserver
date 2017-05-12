@@ -37,7 +37,8 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.orbisserver;
+package org.orbisgis.orbisserver.control.xml;
+
 
  import org.orbiswps.server.WpsServer;
  import org.orbiswps.server.model.JaxbContainer;
@@ -49,6 +50,11 @@ package org.orbisgis.orbisserver;
  import org.wisdom.api.http.HttpMethod;
  import org.wisdom.api.http.Result;
  import org.wisdom.api.templates.Template;
+ import org.slf4j.Logger;
+ import org.slf4j.LoggerFactory;
+ import org.xnap.commons.i18n.*;
+
+ import org.orbisgis.orbisserver.control.web.IndexController;
 
  import javax.xml.bind.JAXBElement;
  import javax.xml.bind.JAXBException;
@@ -68,9 +74,15 @@ package org.orbisgis.orbisserver;
     */
    private IndexController indexController = new IndexController();
 
+   /** Logger */
+   private static final Logger LOGGER = LoggerFactory.getLogger(GetCapabilitiesController.class);
+   /** I18N object */
+   private static final I18n I18N = I18nFactory.getI18n(IndexController.class);
+
    /**
     * The action method returning the xml file corresponding to the GetCapabilities method. It handles
     * HTTP GET request on the "/orbisserv/ows" URL.
+    * A good request should be http://localhost:9000/orbisserver/ows?service=WPS&version=2.0.0&request=GetCapabilities
     *
     * @Parameter the service
     * @Parameter the version
@@ -79,7 +91,7 @@ package org.orbisgis.orbisserver;
     * @return the xml file
     */
    @Route(method = HttpMethod.GET, uri = "/orbisserver/ows")
-   public Result test(@Parameter("service") String service, @Parameter("version") String version, @Parameter("request") String request) {
+   public Result displayXML(@Parameter("service") String service, @Parameter("version") String version, @Parameter("request") String request){
        //Simple example of getting information from the WpsServer
        if(service != null && !service.isEmpty()){
          if(service.equals("WPS")){
@@ -87,25 +99,29 @@ package org.orbisgis.orbisserver;
              if(version.equals("2.0.0")){
                if(request!= null && !request.isEmpty()){
                  if(request.equals("GetCapabilities")){
-                   try { indexController.simpleWpsRequest();  } catch (JAXBException ignored) {}
+                   try {
+                     indexController.GetXMLFromGetCapabilities();
+                   } catch (JAXBException ignored) {
+                     LOGGER.error(I18N.tr("Unable to parse the incoming xml. \nCause : {0}.", ignored.toString()));
+                   }
                    return ok(indexController.wpsCapabilitiesType);
                  }else{
-                   return badRequest("The request was not properly written");
+                   return badRequest(I18N.tr("The request was not properly written"));
                  }
                }else{
-                 return badRequest("You need to enter the request to get the corresponding xml file");
+                 return badRequest(I18N.tr("You need to enter the request to get the corresponding xml file"));
                }
              }else{
-               return badRequest("Please enter a good version of WPS, it should be 2.0.0");
+               return badRequest(I18N.tr("Please enter a good version of WPS, it should be 2.0.0"));
              }
            }else{
-             return badRequest("You need to enter the version of WPS to get the corresponding xml file");
+             return badRequest(I18N.tr("You need to enter the version of WPS to get the corresponding xml file"));
            }
          }else{
-           return badRequest("The service was not properly written, it should be WPS here");
+           return badRequest(I18N.tr("The service was not properly written, it should be WPS here"));
          }
        }else{
-         return ok("You need to enter a service to do queries, it should be WPS here");
+         return ok(I18N.tr("You need to enter a service to do queries, it should be WPS here"));
        }
    }
 }

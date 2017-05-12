@@ -36,7 +36,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisserver;
+package org.orbisgis.orbisserver.control.web;
 
 import net.opengis.ows._2.AcceptVersionsType;
 import net.opengis.ows._2.SectionsType;
@@ -58,6 +58,11 @@ import org.wisdom.api.annotations.View;
 import org.wisdom.api.http.HttpMethod;
 import org.wisdom.api.http.Result;
 import org.wisdom.api.templates.Template;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xnap.commons.i18n.*;
+
+import org.orbisgis.orbisserver.manager.WpsServerManager;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -83,25 +88,26 @@ public class IndexController extends DefaultController {
     /** Gets the instance of the WpsServer. */
     private WpsServer wpsServer = WpsServerManager.getWpsServer();
 
-    /** List all of the OrbisWPS processes into a String. */
-    private String test = "";
+    /** List all of the OrbisWPS processes into a String which be displayed on the index page. */
+    private String processesList = "";
 
     /**  Used to display the corresponding xml file to GetCapabilities method. */
     public WPSCapabilitiesType wpsCapabilitiesType = null;
 
     /** Used by methods like DescribeProcessRequest to get all the ProcessSummaryType */
-    public List<ProcessSummaryType> list = null;
+    public List<ProcessSummaryType> processSummaryTypeList = null;
 
     /** List of all identifier of all the processes */
     private List<CodeType> codeTypeList = null;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(IndexController.class);
+    private static final I18n I18N = I18nFactory.getI18n(IndexController.class);
 
     /**
      * Injects a template named 'index'.
      */
     @View("index")
-    Template index;
-
-
+    public Template index;
 
     /**
      * The action method returning the html index page containing a list of all the OrbisWPS processes
@@ -111,17 +117,21 @@ public class IndexController extends DefaultController {
     @Route(method = HttpMethod.GET, uri = "/index")
     public Result index() {
         //Simple example of getting information from the WpsServer
-        try { simpleWpsRequest();  } catch (JAXBException ignored) {}
-        return ok(render(index,"liste", test));
+        try {
+          GetXMLFromGetCapabilities();
+        } catch (JAXBException ignored) {
+          LOGGER.error(I18N.tr("Test error message {0}", ignored.toString()));
+        }
+        return ok(render(index,"liste", processesList));
     }
 
 
     /**
-     * Dirty method to display in the logger the list of the processes.
+     * Method to get the xml fille corresponding to the GetCapabilies request.
      * @throws JAXBException JAXB Exception.
      */
-    public void simpleWpsRequest() throws JAXBException {
-        this.test = "";
+    public void GetXMLFromGetCapabilities() throws JAXBException {
+        this.processesList = "";
         Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
         ObjectFactory factory = new ObjectFactory();
@@ -151,49 +161,8 @@ public class IndexController extends DefaultController {
         this.wpsCapabilitiesType = wpsCapabilitiesType;
         List<ProcessSummaryType> list = wpsCapabilitiesType.getContents().getProcessSummary();
         for(ProcessSummaryType processSummaryType : list){
-            //System.out.println(processSummaryType.getTitle().get(0).getValue());
-            //System.out.println(processSummaryType.getIdentifier().getValue());
-            this.test = this.test + processSummaryType.getTitle().get(0).getValue() + "\n";
-            //this.codeTypeList.add(processSummaryType.getIdentifier());
+            this.processesList = this.processesList + processSummaryType.getTitle().get(0).getValue() + "\n";
         }
-        this.list = list;
-        System.out.println(this.test);
+        this.processSummaryTypeList = list;
     }
-
-    /**
-     * Method to get the xml file corresponding to the DescribeProcess request. Not finished yet
-     * @throws JAXBException JAXB Exception.
-     */
-    public void DescribeProcessRequest() throws JAXBException{
-
-      simpleWpsRequest();
-
-      Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
-      Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
-      ObjectFactory factory = new ObjectFactory();
-      //Create the DescribeProcess object
-      //DescribeProcess describeProcess = new DescribeProcess();
-      //describeProcess.setLang("en");
-      //describeProcess.identifier = this.codeTypeList;
-
-      ProcessDescriptionType processDescriptionType = new ProcessDescriptionType();
-      processDescriptionType.setIdentifier(this.codeTypeList.get(0));
-      ProcessOffering processOffering = new ProcessOffering();
-      processOffering.setProcess(processDescriptionType);
-
-
-      //Marshall the DescribeProcess object into an OutputStream
-      marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-      ByteArrayOutputStream out = new ByteArrayOutputStream();
-      marshaller.marshal(factory.createDescribeProcess(), out);
-      //Write the OutputStream content into an Input stream before sending it to the wpsService
-      InputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
-      ByteArrayOutputStream xml = (ByteArrayOutputStream) wpsServer.callOperation(in);
-      //Get back the result of the DescribeProcess request as a BufferReader
-      InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
-      //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
-      Object resultObject = unmarshaller.unmarshal(resultXml);
-
-    }
-
 }
