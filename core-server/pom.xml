@@ -178,9 +178,9 @@
                 </executions>
                 <artifactId>gettext-maven-plugin</artifactId>
                 <configuration>
-                    <poDirectory>src/main/resources/org/orbisgis/orbisserver/translation</poDirectory>
+                    <poDirectory>src/main/resources/org/orbisgis/orbisserver/translation/</poDirectory>
                     <targetBundle>org.orbisgis.orbisserver.Messages</targetBundle>
-                    <keywords>-ktr</keywords>
+                    <keywords>-ktr -kmarktr</keywords>
                     <outputFormat>properties</outputFormat>
                 </configuration>
             </plugin>

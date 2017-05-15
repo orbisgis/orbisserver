@@ -87,20 +87,17 @@ public class IndexController extends DefaultController {
 
     /** Gets the instance of the WpsServer. */
     private WpsServer wpsServer = WpsServerManager.getWpsServer();
-
     /** List all of the OrbisWPS processes into a String which be displayed on the index page. */
     private String processesList = "";
-
     /**  Used to display the corresponding xml file to GetCapabilities method. */
     public WPSCapabilitiesType wpsCapabilitiesType = null;
-
     /** Used by methods like DescribeProcessRequest to get all the ProcessSummaryType */
     public List<ProcessSummaryType> processSummaryTypeList = null;
-
     /** List of all identifier of all the processes */
     private List<CodeType> codeTypeList = null;
-
+    /** Logger */
     private static final Logger LOGGER = LoggerFactory.getLogger(IndexController.class);
+    /** I18N object */
     private static final I18n I18N = I18nFactory.getI18n(IndexController.class);
 
     /**
@@ -119,8 +116,8 @@ public class IndexController extends DefaultController {
         //Simple example of getting information from the WpsServer
         try {
           GetXMLFromGetCapabilities();
-        } catch (JAXBException ignored) {
-          LOGGER.error(I18N.tr("Test error message {0}", ignored.toString()));
+        } catch (JAXBException e) {
+          LOGGER.error(I18N.tr("Test error message {0}", e.getMessage()));
         }
         return ok(render(index,"liste", processesList));
     }
