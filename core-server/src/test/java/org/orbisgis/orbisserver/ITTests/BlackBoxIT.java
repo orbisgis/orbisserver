@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package org.orbisgis.orbisserver;
+package org.orbisgis.orbisserver.ITTests;
 
 import org.jsoup.nodes.Document;
 import org.junit.Test;

@@ -39,7 +39,7 @@
 
 package org.orbisgis.orbisserver.control.xml;
 
-
+ import net.opengis.ows._2.*;
  import org.orbiswps.server.WpsServer;
  import org.orbiswps.server.model.JaxbContainer;
  import org.wisdom.api.DefaultController;
@@ -79,18 +79,20 @@ package org.orbisgis.orbisserver.control.xml;
    /** I18N object */
    private static final I18n I18N = I18nFactory.getI18n(IndexController.class);
 
+   private ExceptionType exceptionType = new ExceptionType();
+   private ExceptionReport exceptionReport = new ExceptionReport();
    /**
     * The action method returning the xml file corresponding to the GetCapabilities method. It handles
-    * HTTP GET request on the "/orbisserv/ows" URL. 
+    * HTTP GET request on the "/orbisserv/ows" URL.
     * A good request should be http://localhost:9000/orbisserver/ows?service=WPS&version=2.0.0&request=GetCapabilities
     *
-    * @Parameter the service
-    * @Parameter the version
-    * @Parameter the request GetCpabilities
+    * @Parameter service Name of the service you want to use. Should be WPS here.
+    * @Parameter version Version of the service. It must be an accepted version like 2.0.0.
+    * @Parameter request Request according to the service that you ask to the server. It could be GetCapabilities.
     *
     * @return the xml file
     */
-   @Route(method = HttpMethod.GET, uri = "/orbisserver/ows")
+   @Route(method = HttpMethod.GET, uri = "/orbisserver/wps")
    public Result displayXML(@Parameter("service") String service, @Parameter("version") String version, @Parameter("request") String request){
        //Simple example of getting information from the WpsServer
        if(service != null && !service.isEmpty()){
@@ -101,8 +103,8 @@ package org.orbisgis.orbisserver.control.xml;
                  if(request.equals("GetCapabilities")){
                    try {
                      indexController.GetXMLFromGetCapabilities();
-                   } catch (JAXBException ignored) {
-                     LOGGER.error(I18N.tr("Unable to parse the incoming xml. \nCause : {0}.", ignored.toString()));
+                   } catch (JAXBException e) {
+                     LOGGER.error(I18N.tr("Unable to parse the incoming xml. \nCause : {0}.", e.getMessage()));
                    }
                    return ok(indexController.wpsCapabilitiesType);
                  }else{

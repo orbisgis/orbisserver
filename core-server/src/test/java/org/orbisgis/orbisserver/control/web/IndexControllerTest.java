@@ -36,39 +36,38 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisserver.control.web;
 
-import org.wisdom.api.DefaultController;
-import org.wisdom.api.annotations.Controller;
-import org.wisdom.api.annotations.Route;
-import org.wisdom.api.annotations.View;
-import org.wisdom.api.http.HttpMethod;
-import org.wisdom.api.http.Result;
-import org.wisdom.api.templates.Template;
-import org.wisdom.api.security.Authenticated;
+ package org.orbisgis.orbisserver.control.web;
 
-/**
-* Instance of DefaultController used to control the welcome's page
-*
-* @author Guillaume MANDE
-*/
-@Controller
-public class WelcomeController extends DefaultController {
+ import org.junit.Test;
+ import org.wisdom.api.http.Result;
+ import org.wisdom.api.http.Status;
+ import org.wisdom.test.parents.Action;
+ import org.wisdom.api.templates.Template;
+ import org.wisdom.test.parents.WisdomUnitTest;
 
+ import static org.assertj.core.api.Assertions.assertThat;
+ import static org.mockito.Mockito.mock;
 
-  /**
-  * Injects a template named 'welcome'.
-  */
-  @View("welcome")
-  Template welcome;
-
+ import org.orbisgis.orbisserver.control.web.*;
+ import org.orbisgis.orbisserver.control.xml.*;
 
  /**
-  * The action method returning the html welcome page containing a link to the index page.
-  *
+  * A couple of unit tests.
   */
-  @Route(method = HttpMethod.GET, uri = "/")
-  public Result welcome() {
-     return ok(render(welcome));
- }
+public class IndexControllerTest extends WisdomUnitTest {
+
+  /**
+   * Checks that the Indexcontroller is returning OK.
+   */
+  @Test
+  public void testIndex() throws Exception {
+      IndexController controller = new IndexController();
+      // Use a mock to simulate the template.
+      // You can do this for every service and template your controller is using.
+      controller.index = mock(Template.class);
+      Result result = controller.index();
+
+      assertThat(result.getStatusCode()).isEqualTo(Status.OK);
+  }
 }

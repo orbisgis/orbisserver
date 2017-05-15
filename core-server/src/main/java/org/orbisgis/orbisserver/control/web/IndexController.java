@@ -107,7 +107,7 @@ public class IndexController extends DefaultController {
      * Injects a template named 'index'.
      */
     @View("index")
-    public Template index;
+    Template index;
 
     /**
      * The action method returning the html index page containing a list of all the OrbisWPS processes

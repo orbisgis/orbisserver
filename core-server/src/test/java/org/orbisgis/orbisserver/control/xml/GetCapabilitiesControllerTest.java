@@ -37,55 +37,21 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.orbisserver;
+ package org.orbisgis.orbisserver.control.xml;
 
-import org.junit.Test;
-import org.wisdom.api.http.Result;
-import org.wisdom.api.http.Status;
-import org.wisdom.test.parents.Action;
-import org.wisdom.test.parents.Invocation;
-import org.wisdom.api.templates.Template;
-import org.wisdom.test.parents.WisdomUnitTest;
+ import org.junit.Test;
+ import org.wisdom.api.http.Result;
+ import org.wisdom.api.http.Status;
+ import org.wisdom.test.parents.Action;
+ import org.wisdom.test.parents.Invocation;
+ import org.wisdom.test.parents.WisdomUnitTest;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.wisdom.test.parents.Action.action;
-import static org.mockito.Mockito.mock;
-
-import org.orbisgis.orbisserver.control.web.*;
-import org.orbisgis.orbisserver.control.xml.*;
-
-/**
- * A couple of unit tests.
- */
-public class UnitTest extends WisdomUnitTest {
-
-    /**
-     * Checks that the Indexcontroller is returning OK.
-     */
-    @Test
-    public void testIndex() throws Exception {
-        IndexController controller = new IndexController();
-        // Use a mock to simulate the template.
-        // You can do this for every service and template your controller is using.
-        controller.index = mock(Template.class);
-        Result result = controller.index();
-
-        assertThat(result.getStatusCode()).isEqualTo(Status.OK);
-    }
-
-    /**
-     * Checks that the WelcomeController is returning OK.
-     */
-    @Test
-    public void testWelcome() throws Exception {
-        WelcomeController controller = new WelcomeController();
-        // Use a mock to simulate the template.
-        // You can do this for every service and template your controller is using.
-        controller.welcome = mock(Template.class);
-        Result result = controller.welcome();
-
-        assertThat(result.getStatusCode()).isEqualTo(Status.OK);
-    }
+ import static org.assertj.core.api.Assertions.assertThat;
+ import static org.wisdom.test.parents.Action.action;
+ /**
+  * A couple of unit tests.
+  */
+  public class GetCapabilitiesControllerTest extends WisdomUnitTest {
 
     /**
      * Checks that the GetCpabilitiesController is returning OK, and returning a xml file corresponding to the GetCpabilities method.
