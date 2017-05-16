@@ -98,7 +98,7 @@ package org.orbisgis.orbisserver.control.xml;
      ExceptionReport exceptionReport = new ExceptionReport();
      isFailed = false;
 
-     //Simple example of getting informaaation from the WpsServer
+     //Simple example of getting information from the WpsServer
      if(service != null && !service.isEmpty()){
        if(service.equals("WPS")){
          if(version != null && !version.isEmpty()){
