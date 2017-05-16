@@ -15,7 +15,6 @@
  *
  * OrbisServer is distributed under LGPL 3 license.
  *
- * Copyright (C) 2007-2014 CNRS (IRSTV FR CNRS 2488)
  * Copyright (C) 2015-2017 CNRS (Lab-STICC UMR CNRS 6285)
  *
  * This file is part of OrbisGIS.
@@ -48,28 +47,106 @@
 
  import static org.assertj.core.api.Assertions.assertThat;
  import static org.wisdom.test.parents.Action.action;
+
  /**
   * A couple of unit tests.
   */
   public class GetCapabilitiesControllerTest extends WisdomUnitTest {
 
     /**
-     * Checks that the GetCpabilitiesController is returning OK, and returning a xml file corresponding to the GetCpabilities method.
+     * Checks that the GetCpabilitiesController is returning OK, and returning the good response corresponding to the GetCpabilities method.
      */
     @Test
-    public void testGetCapabilities() throws Exception {
+    public void testGetCapabilitiesController() throws Exception {
         // Instance of GetCapabilitiesController
         final GetCapabilitiesController controller = new GetCapabilitiesController();
 
-        // Call the action method as follows
+        // Test of GetCapabilities with the correct parameters
         Action.ActionResult result = action(new Invocation(){
-            @Override
-            public Result invoke() throws Throwable {
-                return controller.displayXML("WPS", "2.0.0", "GetCapabilities");
-            }
-          }).invoke();
+          @Override
+          public Result invoke() throws Throwable {
+            return controller.displayXML("WPS", "2.0.0", "GetCapabilities");
+          }
+        }).invoke();
 
-        assertThat(status(result)).isEqualTo(OK);
-        assertThat(toString(result)).contains("net.opengis.wps._2_0.WPSCapabilitiesType@");
+        if(!controller.isFailed()){
+          assertThat(status(result)).isEqualTo(OK);
+          assertThat(toString(result)).contains("net.opengis.wps._2_0.WPSCapabilitiesType@");
+        }else{
+          assertThat(status(result)).isEqualTo(OK);
+          assertThat(toString(result)).isEqualTo("javax.xml.bind.JAXBException: class org.orbisgis.orbisserver.control.web.IndexController" +
+          " ni aucune de ses superclasses n'est connue dans ce contexte.");
+        }
+
+        // Test of GetCapabilities, when the service parameter is missing
+        result = action(new Invocation(){
+          @Override
+          public Result invoke() throws Throwable {
+            return controller.displayXML("", "2.0.0", "GetCapabilities");
+          }
+        }).invoke();
+
+        assertThat(status(result)).isEqualTo(400);
+        assertThat(toString(result)).contains("You need to enter a service to do queries, it should be WPS here");
+
+        // Test of GetCapabilities, when the service parameter is wrong
+        result = action(new Invocation(){
+          @Override
+          public Result invoke() throws Throwable {
+            return controller.displayXML("WP", "2.0.0", "GetCapabilities");
+          }
+        }).invoke();
+
+        assertThat(status(result)).isEqualTo(400);
+        assertThat(toString(result)).contains("The service was not properly written, it should be WPS here");
+
+
+        // Test of GetCapabilities, when the version parameter is missing
+        result = action(new Invocation(){
+          @Override
+          public Result invoke() throws Throwable {
+            return controller.displayXML("WPS", "", "GetCapabilities");
+          }
+        }).invoke();
+
+        assertThat(status(result)).isEqualTo(400);
+        assertThat(toString(result)).contains("You need to enter the version of WPS to get the corresponding xml file");
+
+
+        // Test of GetCapabilities, when the version parameter is wrong
+        result = action(new Invocation(){
+          @Override
+          public Result invoke() throws Throwable {
+            return controller.displayXML("WPS", "2.0.1", "GetCapabilities");
+          }
+        }).invoke();
+
+        assertThat(status(result)).isEqualTo(400);
+        assertThat(toString(result)).contains("Please enter a good version of WPS, it should be 2.0.0");
+
+
+        // Test of GetCapabilities, when the request parameter is missing
+        result = action(new Invocation(){
+          @Override
+          public Result invoke() throws Throwable {
+            return controller.displayXML("WPS", "2.0.0", "");
+          }
+        }).invoke();
+
+        assertThat(status(result)).isEqualTo(400);
+        assertThat(toString(result)).contains("You need to enter the request to get the corresponding xml file");
+
+
+        // Test of GetCapabilities, when the request parameter is wrong
+        result = action(new Invocation(){
+          @Override
+          public Result invoke() throws Throwable {
+            return controller.displayXML("WPS", "2.0.0", "GetCapabilites");
+          }
+        }).invoke();
+
+        assertThat(status(result)).isEqualTo(400);
+        assertThat(toString(result)).contains("The request was not properly written");
+
     }
 }

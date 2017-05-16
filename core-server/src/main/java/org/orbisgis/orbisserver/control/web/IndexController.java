@@ -15,7 +15,6 @@
  *
  * OrbisServer is distributed under LGPL 3 license.
  *
- * Copyright (C) 2007-2014 CNRS (IRSTV FR CNRS 2488)
  * Copyright (C) 2015-2017 CNRS (Lab-STICC UMR CNRS 6285)
  *
  * This file is part of OrbisGIS.
@@ -77,7 +76,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Very light instance of DefaultController containing a WpsServer.
+ * Instance of DefaultController containing a WpsServer.
  *
  * @author Sylvain PALOMINOS
  * @author Guillaume MANDE
@@ -109,25 +108,26 @@ public class IndexController extends DefaultController {
     /**
      * The action method returning the html index page containing a list of all the OrbisWPS processes
      * readable by a human. It handles HTTP GET request on the "/index" URL.
-     *
+     * Display a message instead of the list if the method fails.
      */
     @Route(method = HttpMethod.GET, uri = "/index")
     public Result index() {
         //Simple example of getting information from the WpsServer
         try {
-          GetXMLFromGetCapabilities();
+          getXMLFromGetCapabilities();
         } catch (JAXBException e) {
-          LOGGER.error(I18N.tr("Test error message {0}", e.getMessage()));
+          LOGGER.error(I18N.tr("Unable to get the xml file corresponding to the GetCapabilities request. \nCause : {0}.", e.getMessage()));
+          this.processesList = "Unable to get the xml file";
         }
         return ok(render(index,"liste", processesList));
     }
 
 
     /**
-     * Method to get the xml fille corresponding to the GetCapabilies request.
+     * Method to get the xml file corresponding to the GetCapabilities request.
      * @throws JAXBException JAXB Exception.
      */
-    public void GetXMLFromGetCapabilities() throws JAXBException {
+    public void getXMLFromGetCapabilities() throws JAXBException {
         this.processesList = "";
         Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();

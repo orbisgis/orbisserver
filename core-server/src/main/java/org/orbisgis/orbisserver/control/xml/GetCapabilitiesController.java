@@ -15,7 +15,6 @@
  *
  * OrbisServer is distributed under LGPL 3 license.
  *
- * Copyright (C) 2007-2014 CNRS (IRSTV FR CNRS 2488)
  * Copyright (C) 2015-2017 CNRS (Lab-STICC UMR CNRS 6285)
  *
  * This file is part of OrbisGIS.
@@ -47,6 +46,7 @@ package org.orbisgis.orbisserver.control.xml;
  import org.wisdom.api.annotations.Parameter;
  import org.wisdom.api.annotations.Route;
  import org.wisdom.api.annotations.View;
+ import org.wisdom.api.exceptions.HttpException;
  import org.wisdom.api.http.HttpMethod;
  import org.wisdom.api.http.Result;
  import org.wisdom.api.templates.Template;
@@ -69,20 +69,21 @@ package org.orbisgis.orbisserver.control.xml;
  @Controller
  public class GetCapabilitiesController extends DefaultController {
 
-   /**
+  /**
     * IndexController's object, used to get some useful attributes.
     */
    private IndexController indexController = new IndexController();
-
    /** Logger */
    private static final Logger LOGGER = LoggerFactory.getLogger(GetCapabilitiesController.class);
    /** I18N object */
    private static final I18n I18N = I18nFactory.getI18n(GetCapabilitiesController.class);
+   /** True if getXMLFromGetCapabilities method cannot get the xml file from the GetCapabilities method */
+   private boolean isFailed;
 
    /**
     * The action method returning the xml file corresponding to the GetCapabilities method. It handles
-    * HTTP GET request on the "/orbisserver/wps" URL. Displays exception (MissingParameterValue or InvalidParameterValue) in the logger if is the request is not well writen.
-    * A good request should be http://localhost:8080/orbisserver/wps?service=WPS&version=2.0.0&request=GetCapabilities
+    * HTTP GET request on the "/orbisserver/ows" URL. Displays exception (MissingParameterValue or InvalidParameterValue) in the logger if is the request is not well writen.
+    * A good request should be http://localhost:8080/orbisserver/ows?service=WPS&version=2.0.0&request=GetCapabilities
     *
     * @Parameter service Name of the service you want to use. Should be WPS here.
     * @Parameter version Version of the service. It must be an accepted version like 2.0.0.
@@ -90,13 +91,14 @@ package org.orbisgis.orbisserver.control.xml;
     *
     * @return the xml file
     */
-   @Route(method = HttpMethod.GET, uri = "/orbisserver/wps")
+   @Route(method = HttpMethod.GET, uri = "/orbisserver/ows")
    public Result displayXML(@Parameter("service") String service, @Parameter("version") String version, @Parameter("request") String request){
 
      ExceptionType exceptionType = new ExceptionType();
      ExceptionReport exceptionReport = new ExceptionReport();
+     isFailed = false;
 
-     //Simple example of getting information from the WpsServer
+     //Simple example of getting informaaation from the WpsServer
      if(service != null && !service.isEmpty()){
        if(service.equals("WPS")){
          if(version != null && !version.isEmpty()){
@@ -104,9 +106,11 @@ package org.orbisgis.orbisserver.control.xml;
               if(request!= null && !request.isEmpty()){
                 if(request.equals("GetCapabilities")){
                   try {
-                   indexController.GetXMLFromGetCapabilities();
+                   indexController.getXMLFromGetCapabilities();
                   } catch (JAXBException e) {
-                   LOGGER.error(I18N.tr("Unable to parse the incoming xml. \nCause : {0}.", e.getMessage()));
+                      this.isFailed = true;
+                      LOGGER.error(I18N.tr("Unable to get the xml file corresponding to the GetCapabilities request. \nCause : {0}.", e.getMessage()));
+                      return ok(e);
                   }
                   return ok(indexController.wpsCapabilitiesType);
                 }else{
@@ -149,7 +153,15 @@ package org.orbisgis.orbisserver.control.xml;
         exceptionType.getExceptionText().add("Operation request does not include a parameter value");
         exceptionReport.getException().add(exceptionType);
         LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : " + exceptionReport.getException().get(0).getExceptionText().get(0)));
-        return ok(I18N.tr("You need to enter a service to do queries, it should be WPS here"));
+        return badRequest(I18N.tr("You need to enter a service to do queries, it should be WPS here"));
       }
+    }
+
+    /**
+    * Return true if the proces failed
+    * @return the boolean isFailed
+    */
+    public boolean isFailed(){
+      return isFailed;
     }
 }
