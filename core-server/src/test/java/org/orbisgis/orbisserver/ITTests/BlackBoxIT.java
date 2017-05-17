@@ -30,11 +30,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * A black box test checking that the html pages are correctly serve on the good path.
  */
 public class BlackBoxIT extends WisdomBlackBoxTest {
-
-
-  /**
-   * Checks that the Index page is correctly serve on "/index".
-   */
+    /**
+     * Checks that the Index page is correctly serve on "/index".
+     */
     @Test
     public void testThatTheIndexPageIsServed() throws Exception {
         HttpResponse<Document> page = get("/index").asHtml();

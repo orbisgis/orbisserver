@@ -37,7 +37,6 @@ import static org.wisdom.test.parents.Action.action;
  * An in-container test checking the application while it's executing.
  */
 public class InContainerIT extends WisdomTest {
-
     /**
      * The @Inject annotation is able to inject (in tests)
      * the bundle context, controllers, services and

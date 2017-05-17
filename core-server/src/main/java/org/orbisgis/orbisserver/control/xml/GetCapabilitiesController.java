@@ -1,5 +1,7 @@
 /**
- * OrbisServer is part of the platform OrbisGIS
+ * OrbisServer is an OSGI web application to expose OGC services.
+ *
+ * OrbisServer is part of the OrbisGIS platform
  *
  * OrbisGIS is a java GIS application dedicated to research in GIScience.
  * OrbisGIS is developed by the GIS group of the DECIDE team of the
@@ -15,9 +17,8 @@
  *
  * OrbisServer is distributed under LGPL 3 license.
  *
- * Copyright (C) 2015-2017 CNRS (Lab-STICC UMR CNRS 6285)
+ * Copyright (C) 2017 CNRS (Lab-STICC UMR CNRS 6285)
  *
- * This file is part of OrbisGIS.
  *
  * OrbisServer is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -26,7 +27,7 @@
  *
  * OrbisServer is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License along with
  * OrbisServer. If not, see <http://www.gnu.org/licenses/>.
@@ -38,47 +39,33 @@
 
 package org.orbisgis.orbisserver.control.xml;
 
- import net.opengis.ows._2.*;
- import org.orbiswps.server.WpsServer;
- import org.orbiswps.server.model.JaxbContainer;
- import org.wisdom.api.DefaultController;
- import org.wisdom.api.annotations.Controller;
- import org.wisdom.api.annotations.Parameter;
- import org.wisdom.api.annotations.Route;
- import org.wisdom.api.annotations.View;
- import org.wisdom.api.exceptions.HttpException;
- import org.wisdom.api.http.HttpMethod;
- import org.wisdom.api.http.Result;
- import org.wisdom.api.templates.Template;
- import org.slf4j.Logger;
- import org.slf4j.LoggerFactory;
- import org.xnap.commons.i18n.*;
+import net.opengis.ows._2.*;
+import org.orbisgis.orbisserver.manager.WpsServerManager;
+import org.wisdom.api.DefaultController;
+import org.wisdom.api.annotations.Controller;
+import org.wisdom.api.annotations.Parameter;
+import org.wisdom.api.annotations.Route;
+import org.wisdom.api.http.HttpMethod;
+import org.wisdom.api.http.Result;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xnap.commons.i18n.*;
 
- import org.orbisgis.orbisserver.control.web.IndexController;
+import javax.xml.bind.JAXBException;
 
- import javax.xml.bind.JAXBElement;
- import javax.xml.bind.JAXBException;
- import javax.xml.bind.Marshaller;
- import javax.xml.bind.Unmarshaller;
-
- /**
-  * Instance of DefaultController containing a WpsServer.
-  *
-  * @author Guillaume MANDE
-  */
- @Controller
- public class GetCapabilitiesController extends DefaultController {
-
-  /**
-    * IndexController's object, used to get some useful attributes.
-    */
-   private IndexController indexController = new IndexController();
-   /** Logger */
-   private static final Logger LOGGER = LoggerFactory.getLogger(GetCapabilitiesController.class);
-   /** I18N object */
-   private static final I18n I18N = I18nFactory.getI18n(GetCapabilitiesController.class);
-   /** True if getXMLFromGetCapabilities method cannot get the xml file from the GetCapabilities method */
-   private boolean isFailed;
+/**
+ * Instance of DefaultController containing a WpsServer.
+ *
+ * @author Guillaume MANDE
+ */
+@Controller
+public class GetCapabilitiesController extends DefaultController {
+    /** IndexController's object, used to get some useful attributes */
+    private WpsServerManager wpsServerManager = new WpsServerManager();
+    /** Logger */
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetCapabilitiesController.class);
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(GetCapabilitiesController.class);
 
    /**
     * The action method returning the xml file corresponding to the GetCapabilities method. It handles
@@ -94,74 +81,64 @@ package org.orbisgis.orbisserver.control.xml;
    @Route(method = HttpMethod.GET, uri = "/orbisserver/ows")
    public Result displayXML(@Parameter("service") String service, @Parameter("version") String version, @Parameter("request") String request){
 
-     ExceptionType exceptionType = new ExceptionType();
-     ExceptionReport exceptionReport = new ExceptionReport();
-     isFailed = false;
+       ExceptionType exceptionType = new ExceptionType();
+       ExceptionReport exceptionReport = new ExceptionReport();
 
-     //Simple example of getting information from the WpsServer
-     if(service != null && !service.isEmpty()){
-       if(service.equals("WPS")){
-         if(version != null && !version.isEmpty()){
-           if(version.equals("2.0.0")){
-              if(request!= null && !request.isEmpty()){
-                if(request.equals("GetCapabilities")){
-                  try {
-                   indexController.getXMLFromGetCapabilities();
-                  } catch (JAXBException e) {
-                      this.isFailed = true;
-                      LOGGER.error(I18N.tr("Unable to get the xml file corresponding to the GetCapabilities request. \nCause : {0}.", e.getMessage()));
-                      return ok(e);
-                  }
-                  return ok(indexController.wpsCapabilitiesType);
-                }else{
-                  exceptionType.setExceptionCode("InvalidParameterValue");
-                  exceptionType.getExceptionText().add("Operation request contains an invalid parameter value");
-                  exceptionReport.getException().add(exceptionType);
-                  LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : " + exceptionReport.getException().get(0).getExceptionText().get(0)));
-                  return badRequest(I18N.tr("The request was not properly written"));
-                }
-              }else{
-                exceptionType.setExceptionCode("MissingParameterValue");
-                exceptionType.getExceptionText().add("Operation request does not include a parameter value");
-                exceptionReport.getException().add(exceptionType);
-                LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : " + exceptionReport.getException().get(0).getExceptionText().get(0)));
-                return badRequest(I18N.tr("You need to enter the request to get the corresponding xml file"));
-              }
-            }else{
-              exceptionType.setExceptionCode("InvalidParameterValue");
-              exceptionType.getExceptionText().add("Operation request contains an invalid parameter value");
-              exceptionReport.getException().add(exceptionType);
-              LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : " + exceptionReport.getException().get(0).getExceptionText().get(0)));
-              return badRequest(I18N.tr("Please enter a good version of WPS, it should be 2.0.0"));
-            }
-          }else{
-            exceptionType.setExceptionCode("MissingParameterValue");
-            exceptionType.getExceptionText().add("Operation request does not include a parameter value");
-            exceptionReport.getException().add(exceptionType);
-            LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : " + exceptionReport.getException().get(0).getExceptionText().get(0)));
-            return badRequest(I18N.tr("You need to enter the version of WPS to get the corresponding xml file"));
-          }
-        }else{
-          exceptionType.setExceptionCode("InvalidParameterValue");
-          exceptionType.getExceptionText().add("Operation request contains an invalid parameter value");
-          exceptionReport.getException().add(exceptionType);
-          LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : " + exceptionReport.getException().get(0).getExceptionText().get(0)));
-          return badRequest(I18N.tr("The service was not properly written, it should be WPS here"));
-        }
-      }else{
-        exceptionType.setExceptionCode("MissingParameterValue");
-        exceptionType.getExceptionText().add("Operation request does not include a parameter value");
-        exceptionReport.getException().add(exceptionType);
-        LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : " + exceptionReport.getException().get(0).getExceptionText().get(0)));
-        return badRequest(I18N.tr("You need to enter a service to do queries, it should be WPS here"));
-      }
-    }
-
-    /**
-    * Return true if the proces failed
-    * @return the boolean isFailed
-    */
-    public boolean isFailed(){
-      return isFailed;
-    }
+       //Simple example of getting information from the WpsServer
+       if(service != null && !service.isEmpty()){
+           if(service.equals("WPS")){
+               if(version != null && !version.isEmpty()){
+                   if(version.equals("2.0.0")){
+                       if(request!= null && !request.isEmpty()){
+                           if(request.equals("GetCapabilities")){
+                               try {
+                                   wpsServerManager.getXMLFromGetCapabilities();
+                               } catch (JAXBException e) {
+                                   LOGGER.error(I18N.tr("Unable to get the xml file corresponding to the GetCapabilities request. \nCause : {0}.", e.getMessage()));
+                                   return ok(e);
+                               }
+                               return ok(wpsServerManager.getWPSCapabilitiesType());
+                           }else{
+                               exceptionType.setExceptionCode("InvalidParameterValue");
+                               exceptionType.getExceptionText().add("Operation request contains an invalid parameter value");
+                               exceptionReport.getException().add(exceptionType);
+                               LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : " + exceptionReport.getException().get(0).getExceptionText().get(0)));
+                               return badRequest(I18N.tr("The request was not properly written"));
+                           }
+                       }else{
+                           exceptionType.setExceptionCode("MissingParameterValue");
+                           exceptionType.getExceptionText().add("Operation request does not include a parameter value");
+                           exceptionReport.getException().add(exceptionType);
+                           LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : " + exceptionReport.getException().get(0).getExceptionText().get(0)));
+                           return badRequest(I18N.tr("You need to enter the request to get the corresponding xml file"));
+                       }
+                   }else{
+                       exceptionType.setExceptionCode("InvalidParameterValue");
+                       exceptionType.getExceptionText().add("Operation request contains an invalid parameter value");
+                       exceptionReport.getException().add(exceptionType);
+                       LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : " + exceptionReport.getException().get(0).getExceptionText().get(0)));
+                       return badRequest(I18N.tr("Please enter a good version of WPS, it should be 2.0.0"));
+                   }
+               }else{
+                   exceptionType.setExceptionCode("MissingParameterValue");
+                   exceptionType.getExceptionText().add("Operation request does not include a parameter value");
+                   exceptionReport.getException().add(exceptionType);
+                   LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : " + exceptionReport.getException().get(0).getExceptionText().get(0)));
+                   return badRequest(I18N.tr("You need to enter the version of WPS to get the corresponding xml file"));
+               }
+           }else{
+               exceptionType.setExceptionCode("InvalidParameterValue");
+               exceptionType.getExceptionText().add("Operation request contains an invalid parameter value");
+               exceptionReport.getException().add(exceptionType);
+               LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : " + exceptionReport.getException().get(0).getExceptionText().get(0)));
+               return badRequest(I18N.tr("The service was not properly written, it should be WPS here"));
+           }
+       }else{
+           exceptionType.setExceptionCode("MissingParameterValue");
+           exceptionType.getExceptionText().add("Operation request does not include a parameter value");
+           exceptionReport.getException().add(exceptionType);
+           LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : " + exceptionReport.getException().get(0).getExceptionText().get(0)));
+           return badRequest(I18N.tr("You need to enter a service to do queries, it should be WPS here"));
+       }
+   }
 }

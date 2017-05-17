@@ -1,5 +1,7 @@
 /**
- * OrbisServer is part of the platform OrbisGIS
+ * OrbisServer is an OSGI web application to expose OGC services.
+ *
+ * OrbisServer is part of the OrbisGIS platform
  *
  * OrbisGIS is a java GIS application dedicated to research in GIScience.
  * OrbisGIS is developed by the GIS group of the DECIDE team of the
@@ -15,9 +17,8 @@
  *
  * OrbisServer is distributed under LGPL 3 license.
  *
- * Copyright (C) 2015-2017 CNRS (Lab-STICC UMR CNRS 6285)
+ * Copyright (C) 2017 CNRS (Lab-STICC UMR CNRS 6285)
  *
- * This file is part of OrbisGIS.
  *
  * OrbisServer is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -26,7 +27,7 @@
  *
  * OrbisServer is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License along with
  * OrbisServer. If not, see <http://www.gnu.org/licenses/>.
@@ -44,7 +45,6 @@ import org.wisdom.api.annotations.View;
 import org.wisdom.api.http.HttpMethod;
 import org.wisdom.api.http.Result;
 import org.wisdom.api.templates.Template;
-import org.wisdom.api.security.Authenticated;
 
 /**
 * Instance of DefaultController used to control the welcome's page
@@ -53,21 +53,18 @@ import org.wisdom.api.security.Authenticated;
 */
 @Controller
 public class WelcomeController extends DefaultController {
+    /**
+     * Injects a template named 'welcome'.
+     */
+    @View("welcome")
+    Template welcome;
 
-
-  /**
-  * Injects a template named 'welcome'.
-  */
-  @View("welcome")
-  Template welcome;
-
-
- /**
-  * The action method returning the html welcome page containing a link to the index page.
-  *
-  */
-  @Route(method = HttpMethod.GET, uri = "/")
-  public Result welcome() {
+    /**
+     * The action method returning the html welcome page containing a link to the index page.
+     * @Return the Welcome page.
+     */
+    @Route(method = HttpMethod.GET, uri = "/")
+    public Result welcome() {
      return ok(render(welcome));
  }
 }
