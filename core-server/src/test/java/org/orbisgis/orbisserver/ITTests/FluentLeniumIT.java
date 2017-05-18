@@ -19,10 +19,9 @@
  */
 package org.orbisgis.orbisserver.ITTests;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.wisdom.test.parents.WisdomFluentLeniumTest;
-
-import static org.fluentlenium.assertj.FluentLeniumAssertions.assertThat;
 
 /**
  * A UI Test checking that the page contains the correct element.
@@ -33,6 +32,6 @@ public class FluentLeniumIT extends WisdomFluentLeniumTest {
     @Test
     public void testThatTheIndexPageContentIsCorrect() {
         goTo("/index");
-        assertThat(find(".unitTest")).hasText("OrbisServer");
+        Assert.assertTrue(find(".unitTest").getText().contains("OrbisServer"));
     }
 }

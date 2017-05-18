@@ -39,13 +39,12 @@
 
 package org.orbisgis.orbisserver.control.web;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.wisdom.api.http.Result;
 import org.wisdom.api.http.Status;
 import org.wisdom.api.templates.Template;
 import org.wisdom.test.parents.WisdomUnitTest;
-
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -63,6 +62,6 @@ public class WelcomeControllerTest extends WisdomUnitTest {
         controller.welcome = mock(Template.class);
         Result result = controller.welcome();
 
-        assertThat(result.getStatusCode()).isEqualTo(Status.OK);
+        Assert.assertEquals(result.getStatusCode(), OK);
     }
 }

@@ -54,14 +54,16 @@ import org.orbisgis.orbisserver.manager.WpsServerManager;
 import javax.xml.bind.JAXBException;
 
 /**
- * Instance of DefaultController containing a WpsServer.
+ * Instance of DefaultController used to control the welcome's page with a http request.
+ * It gets an instance of WpsServerManager to be able to display the result of GetCapabilities method,
+ * here it display a list of availables processes form OrbisWps in the index page.
  *
  * @author Sylvain PALOMINOS
  * @author Guillaume MANDE
  */
 @Controller
 public class IndexController extends DefaultController {
-    /** Gets the instance of the WpsServer. */
+    /** Instance of WpsServerManager, used to get a GetCapabilities list response. */
     private WpsServerManager wpsServer = new WpsServerManager();
     /** Logger */
     private static final Logger LOGGER = LoggerFactory.getLogger(IndexController.class);
@@ -85,14 +87,13 @@ public class IndexController extends DefaultController {
     public Result index() {
         /** List all of the OrbisWPS processes into a String which will be displayed on the index page. */
         String resultList = "";
-        //Simple example of getting information from the WpsServer
         try {
-            resultList = wpsServer.getXMLFromGetCapabilities();
+            resultList = wpsServer.getListFromGetCapabilities();
         } catch (JAXBException e) {
             LOGGER.error(I18N.tr("Unable to get the xml file corresponding to the GetCapabilities request. \nCause : {0}.", e.getMessage()));
             resultList = "Unable to get the xml file";
         }
-        return ok(render(index, "liste", resultList));
+        return ok(render(index, "list", resultList));
     }
 }
 

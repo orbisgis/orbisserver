@@ -79,11 +79,6 @@ public class WpsServerManager {
     private static WpsServer wpsServer;
 
     /**
-     * Used to display the corresponding xml file to GetCapabilities method.
-     */
-    private WPSCapabilitiesType wpsCapabilitiesType = null;
-
-    /**
      * Returns the instance of the WpsServer. If it was not already created, create it.
      * @return The instance of the WpsServer
      */
@@ -110,8 +105,25 @@ public class WpsServerManager {
      * @throws JAXBException JAXB Exception.
      * @Return The processes list into a String.
      */
-    public String getXMLFromGetCapabilities() throws JAXBException {
+    public String getListFromGetCapabilities() throws JAXBException {
+
         String processesList = "";
+
+        List<ProcessSummaryType> list = getXMLFromGetCapabilities().getContents().getProcessSummary();
+        for (ProcessSummaryType processSummaryType : list) {
+            processesList = processesList + processSummaryType.getTitle().get(0).getValue() + "\n";
+        }
+        return processesList;
+    }
+
+
+    /**
+     * Return the wpsCapabilitiesType object which is a xml object.
+     *
+     * @throws JAXBException JAXB Exception.
+     * @Return the wpsCapabilitiesType object.
+     */
+    public WPSCapabilitiesType getXMLFromGetCapabilities() throws JAXBException {
         Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
         ObjectFactory factory = new ObjectFactory();
@@ -138,20 +150,7 @@ public class WpsServerManager {
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
         Object resultObject = unmarshaller.unmarshal(resultXml);
         WPSCapabilitiesType wpsCapabilitiesType = (WPSCapabilitiesType) ((JAXBElement) resultObject).getValue();
-        this.wpsCapabilitiesType = wpsCapabilitiesType;
-        List<ProcessSummaryType> list = wpsCapabilitiesType.getContents().getProcessSummary();
-        for (ProcessSummaryType processSummaryType : list) {
-            processesList = processesList + processSummaryType.getTitle().get(0).getValue() + "\n";
-        }
-        return processesList;
-    }
 
-
-    /**
-     * Return the wpsCapabilitiesType object which is a xml object.
-     * @Return the wpsCapabilitiesType object.
-     */
-    public WPSCapabilitiesType getWPSCapabilitiesType() {
-        return this.wpsCapabilitiesType;
+        return wpsCapabilitiesType;
     }
 }

@@ -19,6 +19,7 @@
  */
 package org.orbisgis.orbisserver.ITTests;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.wisdom.api.http.Result;
 import org.wisdom.test.parents.Action;
@@ -30,7 +31,6 @@ import org.orbisgis.orbisserver.control.xml.*;
 
 import javax.inject.Inject;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.wisdom.test.parents.Action.action;
 
 /**
@@ -62,36 +62,36 @@ public class InContainerIT extends WisdomTest {
         }).invoke();
 
         //It returns a redirection to the index.html page
-        assertThat(status(result)).isEqualTo(OK);
-        assertThat(toString(result)).contains("OrbisServer");
-        assertThat(toString(result)).contains("Welcome");
-        assertThat(toString(result)).contains("Welcome to OrbisServer");
+        Assert.assertEquals(status(result), OK);
+        Assert.assertTrue(toString(result).contains("OrbisServer"));
+        Assert.assertTrue(toString(result).contains("Welcome"));
+        Assert.assertTrue(toString(result).contains("Welcome to OrbisServer"));
 
-        assertThat(toString(result)).contains("Variable distance buffer");
-        assertThat(toString(result)).contains("Fixed distance buffer");
-        assertThat(toString(result)).contains("Extract center");
-        assertThat(toString(result)).contains("Create a grid of points");
-        assertThat(toString(result)).contains("Create a grid of polygons");
-        assertThat(toString(result)).contains("Fixed extrude polygons");
-        assertThat(toString(result)).contains("Variable extrude polygons");
-        assertThat(toString(result)).contains("Geometry properties");
-        assertThat(toString(result)).contains("Reproject geometries");
-        assertThat(toString(result)).contains("Point table from CSV");
-        assertThat(toString(result)).contains("Import a CSV file");
-        assertThat(toString(result)).contains("Import a DBF file");
-        assertThat(toString(result)).contains("Import a GPX file");
-        assertThat(toString(result)).contains("Import a GeoJSON file");
-        assertThat(toString(result)).contains("Import a OSM file");
-        assertThat(toString(result)).contains("Import a shapeFile");
-        assertThat(toString(result)).contains("Import a TSV file");
-        assertThat(toString(result)).contains("Create a graph");
-        assertThat(toString(result)).contains("Delete columns");
-        assertThat(toString(result)).contains("Delete rows");
-        assertThat(toString(result)).contains("Describe columns");
-        assertThat(toString(result)).contains("Insert values in a table");
-        assertThat(toString(result)).contains("Tables join");
+        Assert.assertTrue(toString(result).contains("Variable distance buffer"));
+        Assert.assertTrue(toString(result).contains("Fixed distance buffer"));
+        Assert.assertTrue(toString(result).contains("Extract center"));
+        Assert.assertTrue(toString(result).contains("Create a grid of points"));
+        Assert.assertTrue(toString(result).contains("Create a grid of polygons"));
+        Assert.assertTrue(toString(result).contains("Fixed extrude polygons"));
+        Assert.assertTrue(toString(result).contains("Variable extrude polygons"));
+        Assert.assertTrue(toString(result).contains("Geometry properties"));
+        Assert.assertTrue(toString(result).contains("Reproject geometries"));
+        Assert.assertTrue(toString(result).contains("Point table from CSV"));
+        Assert.assertTrue(toString(result).contains("Import a CSV file"));
+        Assert.assertTrue(toString(result).contains("Import a DBF file"));
+        Assert.assertTrue(toString(result).contains("Import a GPX file"));
+        Assert.assertTrue(toString(result).contains("Import a GeoJSON file"));
+        Assert.assertTrue(toString(result).contains("Import a OSM file"));
+        Assert.assertTrue(toString(result).contains("Import a shapeFile"));
+        Assert.assertTrue(toString(result).contains("Import a TSV file"));
+        Assert.assertTrue(toString(result).contains("Create a graph"));
+        Assert.assertTrue(toString(result).contains("Delete columns"));
+        Assert.assertTrue(toString(result).contains("Delete rows"));
+        Assert.assertTrue(toString(result).contains("Describe columns"));
+        Assert.assertTrue(toString(result).contains("Insert values in a table"));
+        Assert.assertTrue(toString(result).contains("Tables join"));
 
-        assertThat(toString(result)).contains("GetCapabilities");
+        Assert.assertTrue(toString(result).contains("GetCapabilities"));
 
     }
 
@@ -106,8 +106,10 @@ public class InContainerIT extends WisdomTest {
         }).invoke();
 
         //It returns a redirection to the welcome.html page
-        assertThat(status(result)).isEqualTo(OK);
-        assertThat(toString(result)).contains("Welcome to Orbis Server");
-        assertThat(toString(result)).contains("Please", "login");
-      }
+        Assert.assertEquals(status(result), OK);
+        Assert.assertTrue(toString(result).contains("Welcome to Orbis Server"));
+        Assert.assertTrue(toString(result).contains("Please"));
+        Assert.assertTrue(toString(result).contains("login"));
+
+    }
 }

@@ -40,6 +40,7 @@
 package org.orbisgis.orbisserver.control.xml;
 
 import net.opengis.ows._2.*;
+import net.opengis.wps._2_0.WPSCapabilitiesType;
 import org.orbisgis.orbisserver.manager.WpsServerManager;
 import org.wisdom.api.DefaultController;
 import org.wisdom.api.annotations.Controller;
@@ -54,14 +55,18 @@ import org.xnap.commons.i18n.*;
 import javax.xml.bind.JAXBException;
 
 /**
- * Instance of DefaultController containing a WpsServer.
+ * Instance of DefaultController used to control the GetCapabilities's page with the good http request.
+ * It gets an instance of WpsServerManager to be able to display the result of GetCapabilities method,
+ * here it display the xml file corresponding to GetCapabilities method.
  *
  * @author Guillaume MANDE
  */
 @Controller
 public class GetCapabilitiesController extends DefaultController {
-    /** IndexController's object, used to get some useful attributes */
+    /** Instance of WpsServerManager, used to get a GetCapabilities xml response. */
     private WpsServerManager wpsServerManager = new WpsServerManager();
+    /** XML Object returned on the web page, which display the result of GetCapabilities method.   */
+    private WPSCapabilitiesType wpsCapabilitiesType= new WPSCapabilitiesType();
     /** Logger */
     private static final Logger LOGGER = LoggerFactory.getLogger(GetCapabilitiesController.class);
     /** I18N object */
@@ -79,12 +84,11 @@ public class GetCapabilitiesController extends DefaultController {
     * @return the xml file
     */
    @Route(method = HttpMethod.GET, uri = "/orbisserver/ows")
-   public Result displayXML(@Parameter("service") String service, @Parameter("version") String version, @Parameter("request") String request){
+   public Result displayXML(@Parameter("service") String service, @Parameter("version") String version, @Parameter("request") String request) throws JAXBException{
 
        ExceptionType exceptionType = new ExceptionType();
        ExceptionReport exceptionReport = new ExceptionReport();
 
-       //Simple example of getting information from the WpsServer
        if(service != null && !service.isEmpty()){
            if(service.equals("WPS")){
                if(version != null && !version.isEmpty()){
@@ -92,12 +96,12 @@ public class GetCapabilitiesController extends DefaultController {
                        if(request!= null && !request.isEmpty()){
                            if(request.equals("GetCapabilities")){
                                try {
-                                   wpsServerManager.getXMLFromGetCapabilities();
+                                   this.wpsCapabilitiesType = wpsServerManager.getXMLFromGetCapabilities();
                                } catch (JAXBException e) {
                                    LOGGER.error(I18N.tr("Unable to get the xml file corresponding to the GetCapabilities request. \nCause : {0}.", e.getMessage()));
                                    return ok(e);
                                }
-                               return ok(wpsServerManager.getWPSCapabilitiesType());
+                               return ok(wpsCapabilitiesType);
                            }else{
                                exceptionType.setExceptionCode("InvalidParameterValue");
                                exceptionType.getExceptionText().add("Operation request contains an invalid parameter value");

@@ -20,11 +20,10 @@
 package org.orbisgis.orbisserver.ITTests;
 
 import org.jsoup.nodes.Document;
+import org.junit.Assert;
 import org.junit.Test;
 import org.wisdom.test.http.HttpResponse;
 import org.wisdom.test.parents.WisdomBlackBoxTest;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * A black box test checking that the html pages are correctly serve on the good path.
@@ -36,8 +35,8 @@ public class BlackBoxIT extends WisdomBlackBoxTest {
     @Test
     public void testThatTheIndexPageIsServed() throws Exception {
         HttpResponse<Document> page = get("/index").asHtml();
-        assertThat(page.body().title()).isEqualTo("Welcome to OrbisServer");
-        assertThat(page.body().getElementsByClass("footer").text()).isEqualTo("OrbisServer");
+        Assert.assertEquals(page.body().title(), "Welcome to OrbisServer");
+        Assert.assertEquals(page.body().getElementsByClass("footer").text(), "OrbisServer");
     }
 
     /**
@@ -46,6 +45,6 @@ public class BlackBoxIT extends WisdomBlackBoxTest {
     @Test
     public void testThatTheWelcomePageIsServed() throws Exception {
         HttpResponse<Document> page = get("/").asHtml();
-        assertThat(page.body().title()).isEqualTo("Welcome");
+        Assert.assertEquals(page.body().title(), "Welcome");
     }
 }
