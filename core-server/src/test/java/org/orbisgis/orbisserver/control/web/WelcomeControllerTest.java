@@ -1,5 +1,7 @@
 /**
- * OrbisServer is part of the platform OrbisGIS
+ * OrbisServer is an OSGI web application to expose OGC services.
+ *
+ * OrbisServer is part of the OrbisGIS platform
  *
  * OrbisGIS is a java GIS application dedicated to research in GIScience.
  * OrbisGIS is developed by the GIS group of the DECIDE team of the
@@ -15,10 +17,8 @@
  *
  * OrbisServer is distributed under LGPL 3 license.
  *
- * Copyright (C) 2007-2014 CNRS (IRSTV FR CNRS 2488)
- * Copyright (C) 2015-2017 CNRS (Lab-STICC UMR CNRS 6285)
+ * Copyright (C) 2017 CNRS (Lab-STICC UMR CNRS 6285)
  *
- * This file is part of OrbisGIS.
  *
  * OrbisServer is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -27,7 +27,7 @@
  *
  * OrbisServer is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License along with
  * OrbisServer. If not, see <http://www.gnu.org/licenses/>.
@@ -37,31 +37,31 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.orbisserver;
+package org.orbisgis.orbisserver.control.web;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.wisdom.api.http.Result;
 import org.wisdom.api.http.Status;
 import org.wisdom.api.templates.Template;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.wisdom.test.parents.WisdomUnitTest;
 import static org.mockito.Mockito.mock;
 
 /**
  * A couple of unit tests.
  */
-public class UnitTest {
-
+public class WelcomeControllerTest extends WisdomUnitTest {
     /**
-     * Checks that your controller is returning OK.
+     * Checks that the WelcomeController is returning OK.
      */
     @Test
     public void testWelcome() throws Exception {
-        IndexController controller = new IndexController();
+        WelcomeController controller = new WelcomeController();
         // Use a mock to simulate the template.
         // You can do this for every service and template your controller is using.
-        controller.index = mock(Template.class);
-        Result result = controller.index();
-        assertThat(result.getStatusCode()).isEqualTo(Status.OK);
+        controller.welcome = mock(Template.class);
+        Result result = controller.welcome();
+
+        Assert.assertEquals(result.getStatusCode(), OK);
     }
 }

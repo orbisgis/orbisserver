@@ -1,5 +1,7 @@
 /**
- * OrbisServer is part of the platform OrbisGIS
+ * OrbisServer is an OSGI web application to expose OGC services.
+ *
+ * OrbisServer is part of the OrbisGIS platform
  *
  * OrbisGIS is a java GIS application dedicated to research in GIScience.
  * OrbisGIS is developed by the GIS group of the DECIDE team of the
@@ -15,10 +17,8 @@
  *
  * OrbisServer is distributed under LGPL 3 license.
  *
- * Copyright (C) 2007-2014 CNRS (IRSTV FR CNRS 2488)
- * Copyright (C) 2015-2017 CNRS (Lab-STICC UMR CNRS 6285)
+ * Copyright (C) 2017 CNRS (Lab-STICC UMR CNRS 6285)
  *
- * This file is part of OrbisGIS.
  *
  * OrbisServer is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -27,7 +27,7 @@
  *
  * OrbisServer is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License along with
  * OrbisServer. If not, see <http://www.gnu.org/licenses/>.
@@ -36,7 +36,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisserver;
+package org.orbisgis.orbisserver.manager;
 
 import net.opengis.ows._2.AcceptVersionsType;
 import net.opengis.ows._2.SectionsType;
@@ -44,16 +44,13 @@ import net.opengis.wps._2_0.GetCapabilitiesType;
 import net.opengis.wps._2_0.ObjectFactory;
 import net.opengis.wps._2_0.ProcessSummaryType;
 import net.opengis.wps._2_0.WPSCapabilitiesType;
+import org.apache.felix.ipojo.annotations.Requires;
+import org.orbiswps.scripts.WpsScriptPlugin;
 import org.orbiswps.server.WpsServer;
+import org.orbiswps.server.WpsServerImpl;
 import org.orbiswps.server.model.JaxbContainer;
-import org.wisdom.api.DefaultController;
-import org.wisdom.api.annotations.Controller;
-import org.wisdom.api.annotations.Route;
-import org.wisdom.api.annotations.View;
-import org.wisdom.api.http.HttpMethod;
-import org.wisdom.api.http.Result;
-import org.wisdom.api.templates.Template;
 
+import javax.sql.DataSource;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -65,42 +62,68 @@ import java.io.InputStream;
 import java.util.List;
 
 /**
- * Very light instance of DefaultController containing a WpsServer.
+ * Class managing the WpsServer instances.
  *
  * @author Sylvain PALOMINOS
  */
-@Controller
-public class IndexController extends DefaultController {
+public class WpsServerManager {
+    /**
+     * Data source used by the WpsServer.
+     */
+    @Requires
+    private static DataSource ds;
 
     /**
-     * Gets the instance of the WpsServer.
+     * Instance of the WpsServer.
      */
-    private WpsServer wpsServer = WpsServerManager.getWpsServer();
+    private static WpsServer wpsServer;
 
     /**
-     * Injects a template named 'index'.
+     * Returns the instance of the WpsServer. If it was not already created, create it.
+     * @return The instance of the WpsServer
      */
-    @View("index")
-    Template index;
-
-    /**
-     * The action method returning the index page. It handles
-     * HTTP GET request on the "/" URL.
-     *
-     * @return the index page
-     */
-    @Route(method = HttpMethod.GET, uri = "/")
-    public Result index() {
-        //Simple example of getting information from the WpsServer
-        try { simpleWpsRequest(); } catch (JAXBException ignored) {}
-        return ok(render(index, "index", "Welcome"));
+    public static WpsServer getWpsServer(){
+        if(wpsServer == null){
+            createWpsServerInstance();
+        }
+        return wpsServer;
     }
 
     /**
-     * Dirty method to display in the logger the list of the processes.
-     * @throws JAXBException JAXB Exception.
+     * Creates an instance of the WpsServer.
      */
-    private void simpleWpsRequest() throws JAXBException {
+    private static void createWpsServerInstance(){
+        wpsServer = new WpsServerImpl(System.getProperty("java.io.tmpdir"), ds);
+        WpsScriptPlugin scriptPlugin = new WpsScriptPlugin();
+        scriptPlugin.setWpsServer(wpsServer);
+        scriptPlugin.activate();
+    }
+
+    /**
+     * Method to get the xml file corresponding to the GetCapabilities request.
+     *
+     * @throws JAXBException JAXB Exception.
+     * @Return The processes list into a String.
+     */
+    public String getListFromGetCapabilities() throws JAXBException {
+
+        String processesList = "";
+
+        List<ProcessSummaryType> list = getXMLFromGetCapabilities().getContents().getProcessSummary();
+        for (ProcessSummaryType processSummaryType : list) {
+            processesList = processesList + processSummaryType.getTitle().get(0).getValue() + "\n";
+        }
+        return processesList;
+    }
+
+
+    /**
+     * Return the wpsCapabilitiesType object which is a xml object.
+     *
+     * @throws JAXBException JAXB Exception.
+     * @Return the wpsCapabilitiesType object.
+     */
+    public WPSCapabilitiesType getXMLFromGetCapabilities() throws JAXBException {
         Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
         ObjectFactory factory = new ObjectFactory();
@@ -121,16 +144,13 @@ public class IndexController extends DefaultController {
         marshaller.marshal(factory.createGetCapabilities(getCapabilitiesType), out);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
         InputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
-        ByteArrayOutputStream xml = (ByteArrayOutputStream) wpsServer.callOperation(in);
+        ByteArrayOutputStream xml = (ByteArrayOutputStream) this.getWpsServer().callOperation(in);
         //Get back the result of the DescribeProcess request as a BufferReader
         ByteArrayInputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
         Object resultObject = unmarshaller.unmarshal(resultXml);
-        WPSCapabilitiesType wpsCapabilitiesType = (WPSCapabilitiesType)((JAXBElement)resultObject).getValue();
-        List<ProcessSummaryType> list = wpsCapabilitiesType.getContents().getProcessSummary();
-        for(ProcessSummaryType processSummaryType : list){
-            System.out.println(processSummaryType.getTitle().get(0).getValue());
-        }
-    }
+        WPSCapabilitiesType wpsCapabilitiesType = (WPSCapabilitiesType) ((JAXBElement) resultObject).getValue();
 
+        return wpsCapabilitiesType;
+    }
 }

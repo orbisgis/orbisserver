@@ -37,39 +37,25 @@
 - info_at_ orbisgis.org
 -->
 
+
 <!DOCTYPE html>
 <html>
 <head lang="en">
-    <title>Welcome to OrbisServer</title>
+    <title>Welcome</title>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
     <link rel="stylesheet" href="/libs/css/bootstrap.css" media="screen"/>
     <link rel="stylesheet" href="/assets/main.css"/>
-
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-        <ul class="nav nav-pills pull-right">
-            <li><a href="/">Welcome</a></li>
-        </ul>
-    </div>
+  <h1>Welcome to Orbis Server !</h1>
 
-    <div class="footer">
-        <p class="unitTest">OrbisServer</p>
-    </div>
+  <li>Please <a href="/index"> login</a> ! </li>
 
-</div>
-
-<pre th:text="${list}">Welcome!</pre>
-
-<li><a type="text/html"  href="orbisserver/ows?service=WPS&amp;version=2.0.0&amp;request=GetCapabilities" th:text="GetCapabilities">GetCapabilities</a></li>
-
-<!-- Scripts -->
-<script src="/libs/jquery.min.js"></script>
-<script src="/libs/js/bootstrap.min.js"></script>
+  <script src="/libs/jquery.min.js"></script>
+  <script src="/libs/js/bootstrap.min.js"></script>
 
 </body>
 </html>
