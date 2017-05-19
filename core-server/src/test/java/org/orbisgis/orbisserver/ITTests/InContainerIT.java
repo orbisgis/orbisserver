@@ -49,7 +49,7 @@ public class InContainerIT extends WisdomTest {
     WelcomeController welcomeController;
 
     @Inject
-    GetCapabilitiesController getCapabilitiesController;
+    WpsOperationController getCapabilitiesController;
 
     @Test
     public void testIndexPageContent() {

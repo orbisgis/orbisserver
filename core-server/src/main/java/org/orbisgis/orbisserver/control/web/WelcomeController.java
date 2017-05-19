@@ -65,6 +65,7 @@ public class WelcomeController extends DefaultController {
      */
     @Route(method = HttpMethod.GET, uri = "/")
     public Result welcome() {
-     return ok(render(welcome));
- }
+        return ok(render(welcome));
+    }
+
 }

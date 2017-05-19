@@ -40,10 +40,7 @@ package org.orbisgis.orbisserver.manager;
 
 import net.opengis.ows._2.AcceptVersionsType;
 import net.opengis.ows._2.SectionsType;
-import net.opengis.wps._2_0.GetCapabilitiesType;
-import net.opengis.wps._2_0.ObjectFactory;
-import net.opengis.wps._2_0.ProcessSummaryType;
-import net.opengis.wps._2_0.WPSCapabilitiesType;
+import net.opengis.wps._2_0.*;
 import org.apache.felix.ipojo.annotations.Requires;
 import org.orbiswps.scripts.WpsScriptPlugin;
 import org.orbiswps.server.WpsServer;
@@ -153,4 +150,13 @@ public class WpsServerManager {
 
         return wpsCapabilitiesType;
     }
+/*
+    public ProcessDescriptionType getXMLFromDescribeProcess() throws JAXBException {
+        getListFromGetCapabilities();
+
+
+
+
+    }*/
+
 }
