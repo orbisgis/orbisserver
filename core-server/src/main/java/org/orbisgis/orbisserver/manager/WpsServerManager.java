@@ -39,6 +39,7 @@
 package org.orbisgis.orbisserver.manager;
 
 import net.opengis.ows._2.AcceptVersionsType;
+import net.opengis.ows._2.CodeType;
 import net.opengis.ows._2.SectionsType;
 import net.opengis.wps._2_0.*;
 import org.apache.felix.ipojo.annotations.Requires;
@@ -56,6 +57,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -63,7 +65,7 @@ import java.util.List;
  *
  * @author Sylvain PALOMINOS
  */
-public class WpsServerManager {
+public class WpsServerManager extends DescribeProcess{
     /**
      * Data source used by the WpsServer.
      */
@@ -74,6 +76,9 @@ public class WpsServerManager {
      * Instance of the WpsServer.
      */
     private static WpsServer wpsServer;
+
+    /** List of all identifier of all the processes */
+    private List<CodeType> codeTypeList;
 
     /**
      * Returns the instance of the WpsServer. If it was not already created, create it.
@@ -87,7 +92,7 @@ public class WpsServerManager {
     }
 
     /**
-     * Creates an instance of the WpsServer.
+     * Creates an  instance of the WpsServer.
      */
     private static void createWpsServerInstance(){
         wpsServer = new WpsServerImpl(System.getProperty("java.io.tmpdir"), ds);
@@ -103,16 +108,17 @@ public class WpsServerManager {
      * @Return The processes list into a String.
      */
     public String getListFromGetCapabilities() throws JAXBException {
-
         String processesList = "";
+
+        this.codeTypeList = new ArrayList<CodeType>();
 
         List<ProcessSummaryType> list = getXMLFromGetCapabilities().getContents().getProcessSummary();
         for (ProcessSummaryType processSummaryType : list) {
             processesList = processesList + processSummaryType.getTitle().get(0).getValue() + "\n";
+            this.codeTypeList.add(processSummaryType.getIdentifier());
         }
         return processesList;
     }
-
 
     /**
      * Return the wpsCapabilitiesType object which is a xml object.
@@ -150,13 +156,55 @@ public class WpsServerManager {
 
         return wpsCapabilitiesType;
     }
-/*
-    public ProcessDescriptionType getXMLFromDescribeProcess() throws JAXBException {
+
+    /**
+     * Return the xml file corresponding to the DescribeProcess request.
+     *
+     * @throws JAXBException JAXB Exception.
+     * @Return a ProcessOfferings object
+     */
+    public Object getXMLFromDescribeProcess(String id) throws JAXBException {
         getListFromGetCapabilities();
+        Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
+        Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
+        //Creates the getCapabilities
+        CodeType codeTypeFinal = new CodeType();
+        for(CodeType codeType : codeTypeList){
+            if(codeType.getValue().equals(id)){
+                codeTypeFinal = codeType;
+            }
+        }
+        DescribeProcess describeProcess = new DescribeProcess();
+        describeProcess.setLang("en");
+        describeProcess.getIdentifier().add(codeTypeFinal);
+        //Marshall the DescribeProcess object into an OutputStream
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        marshaller.marshal(describeProcess, out);
+        //Write the OutputStream content into an Input stream before sending it to the wpsService
+        InputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
+        ByteArrayOutputStream xml = (ByteArrayOutputStream) wpsServer.callOperation(in);
+        //Get back the result of the DescribeProcess request as a BufferReader
+        InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
+        //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
+        Object resultObject = unmarshaller.unmarshal(resultXml);
 
+        return resultObject;
+    }
 
+    /**
+     * This method returns the list of identifiers from the CodeType's list.
+     *
+     * @throws JAXBException
+     * @return List of String
+     */
+    public List<String> getCodeTypeList() throws JAXBException {
+        getListFromGetCapabilities();
+        List<String> listId = new ArrayList<String>();
 
-
-    }*/
-
+        for(CodeType codeType : this.codeTypeList){
+            listId.add(codeType.getValue());
+        }
+        return listId;
+    }
 }
