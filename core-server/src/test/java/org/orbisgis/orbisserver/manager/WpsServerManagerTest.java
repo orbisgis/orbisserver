@@ -36,36 +36,30 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisserver.control.web;
 
-import org.wisdom.api.DefaultController;
-import org.wisdom.api.annotations.Controller;
-import org.wisdom.api.annotations.Route;
-import org.wisdom.api.annotations.View;
-import org.wisdom.api.http.HttpMethod;
-import org.wisdom.api.http.Result;
-import org.wisdom.api.templates.Template;
+package org.orbisgis.orbisserver.manager;
+
+import net.opengis.wps._2_0.ProcessOfferings;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
-* Instance of DefaultController used to control the welcome's page
-*
-* @author Guillaume MANDE
-*/
-@Controller
-public class WelcomeController extends DefaultController {
+ * A couple of unit tests.
+ */
+public class WpsServerManagerTest {
     /**
-     * Injects a template named 'welcome'.
+     * Checks that the WpsOperationController is returning OK, and returning the good response corresponding to the DescribeProcess method.
      */
-    @View("welcome")
-    Template welcome;
+    @Test
+    public void testGetXMLFromDescribeProcess() throws Exception {
+        WpsServerManager wpsServerManager = new WpsServerManager();
+        Object resultObject = wpsServerManager.getXMLFromDescribeProcess("orbisgis:wps:official:deleteRows");
 
-    /**
-     * The action method returning the html welcome page containing a link to the index page.
-     * @Return the Welcome page.
-     */
-    @Route(method = HttpMethod.GET, uri = "/")
-    public Result welcome() {
-        return ok(render(welcome));
+        Assert.assertNotNull("Error on unmarshalling the WpsService answer, the object should not be null",
+                resultObject);
+        Assert.assertTrue("Error on unmarshalling the WpsService answer, the object should be a ProcessOfferings",
+                resultObject instanceof ProcessOfferings);
+        Assert.assertNotNull("Error on unmarshalling the WpsService answer, the ProcessOfferings should not be null",
+                ((ProcessOfferings)resultObject).getProcessOffering());
     }
-
 }
