@@ -41,18 +41,26 @@ package org.orbisgis.orbisserver.manager;
 import net.opengis.ows._2.AcceptVersionsType;
 import net.opengis.ows._2.CodeType;
 import net.opengis.ows._2.SectionsType;
+import net.opengis.wps._1_0_0.GetCapabilities;
 import net.opengis.wps._2_0.*;
 import org.apache.felix.ipojo.annotations.Requires;
 import org.orbiswps.scripts.WpsScriptPlugin;
 import org.orbiswps.server.WpsServer;
 import org.orbiswps.server.WpsServerImpl;
 import org.orbiswps.server.model.JaxbContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -64,8 +72,13 @@ import java.util.List;
  * Class managing the WpsServer instances.
  *
  * @author Sylvain PALOMINOS
+ * @author Guillaume Mande
  */
-public class WpsServerManager extends DescribeProcess{
+public class WpsServerManager{
+
+    /** Logger */
+    private static final Logger LOGGER = LoggerFactory.getLogger(WpsServerImpl.class);
+
     /**
      * Data source used by the WpsServer.
      */
@@ -190,6 +203,80 @@ public class WpsServerManager extends DescribeProcess{
         Object resultObject = unmarshaller.unmarshal(resultXml);
 
         return resultObject;
+    }
+
+
+    /**
+     * Return the Document object which is a xml object.
+     *
+     * @throws JAXBException JAXB Exception.
+     * @Return the wpsCapabilitiesType object.
+     */
+    public Document getDocumentFromGetCapabilities100() {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+            Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
+            //Creates the getCapabilities
+            GetCapabilities getCapabilities = new GetCapabilities();
+            getCapabilities.setLanguage("en");
+            net.opengis.ows._1.AcceptVersionsType versionsType = new net.opengis.ows._1.AcceptVersionsType();
+            versionsType.getVersion().add("1.0.0");
+            getCapabilities.setAcceptVersions(versionsType);
+            //Marshall the DescribeProcess object into an OutputStream
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            marshaller.marshal(getCapabilities, out);
+        } catch (Exception e) {
+            LOGGER.error("Unable to create the WPS request.");
+        }
+        //Write the OutputStream content into an Input stream before sending it to the wpsService
+        InputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
+        ByteArrayOutputStream xml = (ByteArrayOutputStream) getWpsServer().callOperation(in);
+        //Get back the result of the DescribeProcess request as a BufferReader
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        try {
+            builder = factory.newDocumentBuilder();
+            ByteArrayInputStream stream = new ByteArrayInputStream(xml.toByteArray());
+            return builder.parse(stream);
+        } catch (Exception e) {
+            LOGGER.error("Unable to convert the WPSServer answer into a Document Object.");
+        }
+
+        return null;
+    }
+
+    /**
+     * Return the Document object corresponding to the DescribeProcess request.
+     *
+     * @throws JAXBException JAXB Exception.
+     * @Return a ProcessOfferings object
+     */
+    public Document getDocumentFromDescribeProcess100(String id) throws JAXBException {
+        Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
+        net.opengis.wps._1_0_0.DescribeProcess describeProcess = new net.opengis.wps._1_0_0.DescribeProcess();
+        describeProcess.setLanguage("en");
+        net.opengis.ows._1.CodeType codeType = new net.opengis.ows._1.CodeType();
+        codeType.setValue(id);
+        describeProcess.getIdentifier().add(codeType);
+        //Marshall the DescribeProcess object into an OutputStream
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        marshaller.marshal(describeProcess, out);
+        //Write the OutputStream content into an Input stream before sending it to the wpsService
+        InputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
+        ByteArrayOutputStream xml = (ByteArrayOutputStream) getWpsServer().callOperation(in);
+        //Get back the result of the DescribeProcess request as a BufferReader
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        try {
+            builder = factory.newDocumentBuilder();
+            ByteArrayInputStream stream = new ByteArrayInputStream(xml.toByteArray());
+            return builder.parse(stream);
+        } catch (Exception e) {
+            LOGGER.error("Unable to convert the WPSServer answer into a Document Object.");
+        }
+
+        return null;
     }
 
     /**
