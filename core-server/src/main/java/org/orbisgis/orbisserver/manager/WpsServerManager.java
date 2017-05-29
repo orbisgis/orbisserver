@@ -43,6 +43,7 @@ import net.opengis.ows._2.CodeType;
 import net.opengis.ows._2.SectionsType;
 import net.opengis.wps._2_0.*;
 import org.apache.felix.ipojo.annotations.Requires;
+import org.fusesource.jansi.AnsiRenderer;
 import org.orbiswps.scripts.WpsScriptPlugin;
 import org.orbiswps.server.WpsServer;
 import org.orbiswps.server.WpsServerImpl;
@@ -167,23 +168,48 @@ public class WpsServerManager extends DescribeProcess{
         getListFromGetCapabilities();
         Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
-        //Creates the getCapabilities
-        CodeType codeTypeFinal = new CodeType();
-        for(CodeType codeType : codeTypeList){
-            if(codeType.getValue().equals(id)){
-                codeTypeFinal = codeType;
-            }
-        }
+        //Creates the DescribeProcess
         DescribeProcess describeProcess = new DescribeProcess();
         describeProcess.setLang("en");
-        describeProcess.getIdentifier().add(codeTypeFinal);
+        describeProcess.getIdentifier().add(getCodeTypeFromId(id));
         //Marshall the DescribeProcess object into an OutputStream
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         marshaller.marshal(describeProcess, out);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
         InputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
-        ByteArrayOutputStream xml = (ByteArrayOutputStream) wpsServer.callOperation(in);
+        ByteArrayOutputStream xml = (ByteArrayOutputStream) this.getWpsServer().callOperation(in);
+        //Get back the result of the DescribeProcess request as a BufferReader
+        InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
+        //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
+        Object resultObject = unmarshaller.unmarshal(resultXml);
+
+        return resultObject;
+    }
+
+    /**
+     * Return the xml file corresponding to the DescribeProcess request.
+     *
+     * @throws JAXBException JAXB Exception.
+     * @Return a ProcessOfferings object
+     */
+    public Object getXMLFromExecute(String id, String mode, String response) throws JAXBException {
+
+        Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
+        Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
+        //Creates the ExecuteRequestType
+        ExecuteRequestType executeRequestType = new ExecuteRequestType();
+        executeRequestType.setIdentifier(getCodeTypeFromId(id));
+        executeRequestType.setMode(mode);
+        executeRequestType.setResponse(response);
+
+        //Marshall the DescribeProcess object into an OutputStream
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        marshaller.marshal(executeRequestType, out);
+        //Write the OutputStream content into an Input stream before sending it to the wpsService
+        InputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
+        ByteArrayOutputStream xml = (ByteArrayOutputStream) this.getWpsServer().callOperation(in);
         //Get back the result of the DescribeProcess request as a BufferReader
         InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
@@ -206,5 +232,22 @@ public class WpsServerManager extends DescribeProcess{
             listId.add(codeType.getValue());
         }
         return listId;
+    }
+
+    /**
+     * This method returns the CodeType corresponding to the identifier.
+     *
+     * @throws JAXBException
+     * @return CodeType object
+     */
+    public CodeType getCodeTypeFromId(String id) throws JAXBException{
+        getListFromGetCapabilities();
+        CodeType codeTypeFinal = new CodeType();
+        for(CodeType codeType : codeTypeList){
+            if(codeType.getValue().equals(id)){
+                codeTypeFinal = codeType;
+            }
+        }
+        return codeTypeFinal;
     }
 }
