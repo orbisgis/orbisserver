@@ -53,38 +53,41 @@ import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.*;
 
 import javax.xml.bind.JAXBException;
-
 /**
- * Instance of DefaultController used to control the GetCapabilities's page with the good http request.
- * It gets an instance of WpsServerManager to be able to display the result of GetCapabilities method,
- * here it display the xml file corresponding to GetCapabilities method.
+ * Instance of DefaultController used to control the WPS operation's page with the good http request.
+ * It gets an instance of WpsServerManager to be able to display the result of WPS operation,
+ * here it display the xml file corresponding to WPS operation.
  *
  * @author Guillaume MANDE
  */
 @Controller
-public class GetCapabilitiesController extends DefaultController {
+public class WpsOperationController extends DefaultController {
     /** Instance of WpsServerManager, used to get a GetCapabilities xml response. */
     private WpsServerManager wpsServerManager = new WpsServerManager();
-    /** XML Object returned on the web page, which display the result of GetCapabilities method.   */
-    private WPSCapabilitiesType wpsCapabilitiesType= new WPSCapabilitiesType();
+    /** XML Object returned on the web page, which display the result of GetCapabilities method. */
+    private WPSCapabilitiesType wpsCapabilitiesType = new WPSCapabilitiesType();
+    /** XML Object returned on the web page, which display the result of DescribeProcess method. */
+    private Object processDescriptionType = new Object();
     /** Logger */
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetCapabilitiesController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WpsOperationController.class);
     /** I18N object */
-    private static final I18n I18N = I18nFactory.getI18n(GetCapabilitiesController.class);
+    private static final I18n I18N = I18nFactory.getI18n(WpsOperationController.class);
 
    /**
-    * The action method returning the xml file corresponding to the GetCapabilities method. It handles
-    * HTTP GET request on the "/orbisserver/ows" URL. Displays exception (MissingParameterValue or InvalidParameterValue) in the logger if is the request is not well writen.
-    * A good request should be http://localhost:8080/orbisserver/ows?service=WPS&version=2.0.0&request=GetCapabilities
+    * The action method returning the xml file corresponding to the WPS operations. It handles
+    * HTTP GET request on the "/orbisserver/ows" URL. Displays exception (MissingParameterValue or InvalidParameterValue) in the logger if is the request is not well written.
+    * A good request for the GetCapabilities operation should be http://localhost:8080/orbisserver/ows?service=WPS&version=2.0.0&request=GetCapabilities
+    * A good request for the DescribeProcess operation should be http://localhost:8080/orbisserver/ows?service=WPS&version=2.0.0&request=DescribeProcess&identifier=orbisgis:wps:official:deleteRows
     *
     * @Parameter service Name of the service you want to use. Should be WPS here.
     * @Parameter version Version of the service. It must be an accepted version like 2.0.0.
     * @Parameter request Request according to the service that you ask to the server. It could be GetCapabilities.
+    * @Parameter identifier Identifier of the process used by operation like DescribeProcess.
     *
     * @return the xml file
     */
    @Route(method = HttpMethod.GET, uri = "/orbisserver/ows")
-   public Result displayXML(@Parameter("service") String service, @Parameter("version") String version, @Parameter("request") String request) throws JAXBException{
+   public Result displayXML(@Parameter("service") String service, @Parameter("version") String version, @Parameter("request") String request, @Parameter("identifier") String identifier) throws JAXBException{
 
        ExceptionType exceptionType = new ExceptionType();
        ExceptionReport exceptionReport = new ExceptionReport();
@@ -94,20 +97,55 @@ public class GetCapabilitiesController extends DefaultController {
                if(version != null && !version.isEmpty()){
                    if(version.equals("2.0.0")){
                        if(request!= null && !request.isEmpty()){
+                           //Request for GetCapabilities
                            if(request.equals("GetCapabilities")){
-                               try {
-                                   this.wpsCapabilitiesType = wpsServerManager.getXMLFromGetCapabilities();
-                               } catch (JAXBException e) {
-                                   LOGGER.error(I18N.tr("Unable to get the xml file corresponding to the GetCapabilities request. \nCause : {0}.", e.getMessage()));
-                                   return ok(e);
+                               if(identifier == null) {
+                                   try {
+                                       this.wpsCapabilitiesType = wpsServerManager.getXMLFromGetCapabilities();
+                                   } catch (JAXBException e) {
+                                       LOGGER.error(I18N.tr("Unable to get the xml file corresponding to the GetCapabilities request. \nCause : {0}.", e.getMessage()));
+                                       return ok(e);
+                                   }
+                                   return ok(wpsCapabilitiesType);
+                               }else{
+                                   exceptionType.setExceptionCode("InvalidParameterValue");
+                                   exceptionType.getExceptionText().add("Operation request contains an invalid parameter value");
+                                   exceptionReport.getException().add(exceptionType);
+                                   LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : " + exceptionReport.getException().get(0).getExceptionText().get(0)));
+                                   return badRequest(I18N.tr("GetCapabilities does not need identifier, so don't write it."));
                                }
-                               return ok(wpsCapabilitiesType);
+                           }
+                           //Request for DescribeProcess
+                           else if(request.equals("DescribeProcess")){
+                               if(identifier != null && !identifier.isEmpty()){
+                                   if(wpsServerManager.getCodeTypeList().contains(identifier)){
+                                       try {
+                                           this.processDescriptionType = wpsServerManager.getXMLFromDescribeProcess(identifier);
+                                       } catch (JAXBException e) {
+                                           LOGGER.error(I18N.tr("Unable to get the xml file corresponding to the GetCapabilities request. \nCause : {0}.", e.getMessage()));
+                                           return ok(e);
+                                       }
+                                       return ok(processDescriptionType);
+                                   }else{
+                                       exceptionType.setExceptionCode("InvalidParameterValue");
+                                       exceptionType.getExceptionText().add("Operation request contains an invalid parameter value");
+                                       exceptionReport.getException().add(exceptionType);
+                                       LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : " + exceptionReport.getException().get(0).getExceptionText().get(0)));
+                                       return badRequest(I18N.tr("No process has this identifier, please be more accurate."));
+                                   }
+                               }else {
+                                   exceptionType.setExceptionCode("MissingParameterValue");
+                                   exceptionType.getExceptionText().add("Operation request does not include a parameter value");
+                                   exceptionReport.getException().add(exceptionType);
+                                   LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : " + exceptionReport.getException().get(0).getExceptionText().get(0)));
+                                   return badRequest(I18N.tr("An Identifier is missing."));
+                               }
                            }else{
                                exceptionType.setExceptionCode("InvalidParameterValue");
                                exceptionType.getExceptionText().add("Operation request contains an invalid parameter value");
                                exceptionReport.getException().add(exceptionType);
                                LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : " + exceptionReport.getException().get(0).getExceptionText().get(0)));
-                               return badRequest(I18N.tr("The request was not properly written"));
+                               return badRequest(I18N.tr("This request does not exist, please try something else like GetCapabilities."));
                            }
                        }else{
                            exceptionType.setExceptionCode("MissingParameterValue");
