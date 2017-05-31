@@ -43,7 +43,6 @@ import net.opengis.ows._2.CodeType;
 import net.opengis.ows._2.SectionsType;
 import net.opengis.wps._2_0.*;
 import org.apache.felix.ipojo.annotations.Requires;
-import org.fusesource.jansi.AnsiRenderer;
 import org.orbiswps.scripts.WpsScriptPlugin;
 import org.orbiswps.server.WpsServer;
 import org.orbiswps.server.WpsServerImpl;
@@ -54,10 +53,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -193,29 +189,28 @@ public class WpsServerManager extends DescribeProcess{
      * @throws JAXBException JAXB Exception.
      * @Return a ProcessOfferings object
      */
-    public Object getXMLFromExecute(String id, String mode, String response) throws JAXBException {
-
-        Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
+    public Object getXMLFromExecute(String id) throws JAXBException,IOException {
+        /*Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
         //Creates the ExecuteRequestType
-        ExecuteRequestType executeRequestType = new ExecuteRequestType();
-        executeRequestType.setIdentifier(getCodeTypeFromId(id));
-        executeRequestType.setMode(mode);
-        executeRequestType.setResponse(response);
-
+        File executeFile = new File(this.getClass().getResource("ExecuteRequest.xml").getFile());
+        System.out.println(this.getClass().getResource("ExecuteRequest.xml").getFile());
+        Object element = unmarshaller.unmarshal(executeFile);
         //Marshall the DescribeProcess object into an OutputStream
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        marshaller.marshal(executeRequestType, out);
+        marshaller.marshal(element, out);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
         InputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
-        ByteArrayOutputStream xml = (ByteArrayOutputStream) this.getWpsServer().callOperation(in);
+        ByteArrayOutputStream xml = (ByteArrayOutputStream) wpsServer.callOperation(in);
         //Get back the result of the DescribeProcess request as a BufferReader
         InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
         Object resultObject = unmarshaller.unmarshal(resultXml);
+        Object statusInfo = (StatusInfo)resultObject;*/
 
-        return resultObject;
+        Object statusInfo = 3;
+        return statusInfo;  //resultObject is a StatusInfo Object
     }
 
     /**

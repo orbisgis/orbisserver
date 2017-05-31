@@ -27,7 +27,7 @@ import org.wisdom.test.parents.Invocation;
 import org.wisdom.test.parents.WisdomTest;
 
 import org.orbisgis.orbisserver.control.web.*;
-import org.orbisgis.orbisserver.control.xml.*;
+import org.orbisgis.orbisserver.control.WPS.*;
 
 import javax.inject.Inject;
 
@@ -123,7 +123,7 @@ public class InContainerIT extends WisdomTest {
         Action.ActionResult result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.0", "GetCapabilities", null);
+                return wpsOperationController.displayXML("WPS", "2.0.0", "GetCapabilities", null, null, null, null, null);
             }
         }).invoke();
 
@@ -134,7 +134,7 @@ public class InContainerIT extends WisdomTest {
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("", "2.0.0", "GetCapabilities",null);
+                return wpsOperationController.displayXML("", "2.0.0", "GetCapabilities",null, null, null, null, null);
             }
         }).invoke();
 
@@ -145,7 +145,7 @@ public class InContainerIT extends WisdomTest {
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WP", "2.0.0", "GetCapabilities",null);
+                return wpsOperationController.displayXML("WP", "2.0.0", "GetCapabilities",null, null, null, null, null);
             }
         }).invoke();
 
@@ -156,7 +156,7 @@ public class InContainerIT extends WisdomTest {
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "", "GetCapabilities",null);
+                return wpsOperationController.displayXML("WPS", "", "GetCapabilities",null, null, null, null, null);
             }
         }).invoke();
 
@@ -167,7 +167,7 @@ public class InContainerIT extends WisdomTest {
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.1", "GetCapabilities",null);
+                return wpsOperationController.displayXML("WPS", "2.0.1", "GetCapabilities",null, null, null, null, null);
             }
         }).invoke();
 
@@ -178,7 +178,7 @@ public class InContainerIT extends WisdomTest {
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.0", "",null);
+                return wpsOperationController.displayXML("WPS", "2.0.0", "",null, null, null, null, null);
             }
         }).invoke();
 
@@ -189,7 +189,7 @@ public class InContainerIT extends WisdomTest {
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.0", "GetCapabilites",null);
+                return wpsOperationController.displayXML("WPS", "2.0.0", "GetCapabilites",null, null, null, null, null);
             }
         }).invoke();
 
@@ -200,7 +200,7 @@ public class InContainerIT extends WisdomTest {
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.0", "GetCapabilities", "orbisgis:wps:official:deleteRows");
+                return wpsOperationController.displayXML("WPS", "2.0.0", "GetCapabilities", "orbisgis:wps:official:deleteRows", null, null, null, null);
             }
         }).invoke();
 
@@ -221,7 +221,7 @@ public class InContainerIT extends WisdomTest {
         Action.ActionResult result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.0", "DescribeProcess", "orbisgis:wps:official:deleteRows");
+                return wpsOperationController.displayXML("WPS", "2.0.0", "DescribeProcess", "orbisgis:wps:official:deleteRows", null, null, null, null);
             }
         }).invoke();
 
@@ -232,7 +232,7 @@ public class InContainerIT extends WisdomTest {
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.0", "DescribeProcess", "file:/C:/Users/mande/AppData/Local/Temp/csvToPointsTable.groovy");
+                return wpsOperationController.displayXML("WPS", "2.0.0", "DescribeProcess", "file:/C:/Users/mande/AppData/Local/Temp/csvToPointsTable.groovy", null, null, null, null);
             }
         }).invoke();
 
@@ -243,7 +243,7 @@ public class InContainerIT extends WisdomTest {
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("", "2.0.0", "DescribeProcess", "orbisgis:wps:official:deleteRows");
+                return wpsOperationController.displayXML("", "2.0.0", "DescribeProcess", "orbisgis:wps:official:deleteRows", null, null, null, null);
             }
         }).invoke();
 
@@ -254,7 +254,7 @@ public class InContainerIT extends WisdomTest {
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WP", "2.0.0", "DescribeProcess", "orbisgis:wps:official:deleteRows");
+                return wpsOperationController.displayXML("WP", "2.0.0", "DescribeProcess", "orbisgis:wps:official:deleteRows", null, null, null, null);
             }
         }).invoke();
 
@@ -265,7 +265,7 @@ public class InContainerIT extends WisdomTest {
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "", "DescribeProcess", "orbisgis:wps:official:deleteRows");
+                return wpsOperationController.displayXML("WPS", "", "DescribeProcess", "orbisgis:wps:official:deleteRows", null, null, null, null);
             }
         }).invoke();
 
@@ -276,7 +276,7 @@ public class InContainerIT extends WisdomTest {
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.1", "DescribeProcess", "orbisgis:wps:official:deleteRows");
+                return wpsOperationController.displayXML("WPS", "2.0.1", "DescribeProcess", "orbisgis:wps:official:deleteRows", null, null, null, null);
             }
         }).invoke();
 
@@ -287,7 +287,7 @@ public class InContainerIT extends WisdomTest {
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.0", "", "orbisgis:wps:official:deleteRows");
+                return wpsOperationController.displayXML("WPS", "2.0.0", "", "orbisgis:wps:official:deleteRows", null, null, null, null);
             }
         }).invoke();
 
@@ -298,7 +298,7 @@ public class InContainerIT extends WisdomTest {
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.0", "DescribeProces", "orbisgis:wps:official:deleteRows");
+                return wpsOperationController.displayXML("WPS", "2.0.0", "DescribeProces", "orbisgis:wps:official:deleteRows", null, null, null, null);
             }
         }).invoke();
 
@@ -309,7 +309,7 @@ public class InContainerIT extends WisdomTest {
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.0", "DescribeProcess","");
+                return wpsOperationController.displayXML("WPS", "2.0.0", "DescribeProcess","", null, null, null, null);
             }
         }).invoke();
 
@@ -320,11 +320,129 @@ public class InContainerIT extends WisdomTest {
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.0", "DescribeProcess", "orbgis:wps:official:deleteRows");
+                return wpsOperationController.displayXML("WPS", "2.0.0", "DescribeProcess", "orbgis:wps:official:deleteRows", null, null, null, null);
             }
         }).invoke();
 
         Assert.assertEquals(status(result), 400);
         Assert.assertTrue(toString(result).contains("No process has this identifier, please be more accurate."));
     }
+
+    /**
+     * Checks that the WpsOperationController is returning OK, and returning the good response corresponding to the Execute method.
+     */
+    /*@Test
+    public void testExecuteRequest() throws Exception {
+
+        // Test of Execute with the correct parameters
+        Action.ActionResult result = action(new Invocation(){
+            @Override
+            public Result invoke() throws Throwable {
+                return wpsOperationController.displayXML("WPS", "2.0.0", "Execute", "orbisgis:wps:official:deleteRows", null, null, null, null);
+            }
+        }).invoke();
+
+        Assert.assertEquals(status(result), 500);
+       // Assert.assertTrue(toString(result).contains("net.opengis.wps._2_0.StatusInfo@"));
+
+        // Test of DescribeProcess with the correct parameters
+        result = action(new Invocation(){
+            @Override
+            public Result invoke() throws Throwable {
+                return wpsOperationController.displayXML("WPS", "2.0.0", "Execute", "file:/C:/Users/mande/AppData/Local/Temp/csvToPointsTable.groovy", null, null, null, null);
+            }
+        }).invoke();
+
+        Assert.assertEquals(status(result), 500);
+        //Assert.assertTrue(toString(result).contains("net.opengis.wps._2_0.StatusInfo@"));
+
+        // Test of  DescribeProcess, when the service parameter is missing
+        result = action(new Invocation(){
+            @Override
+            public Result invoke() throws Throwable {
+                return wpsOperationController.displayXML("", "2.0.0", "Execute", "orbisgis:wps:official:deleteRows", null, null, null, null);
+            }
+        }).invoke();
+
+        Assert.assertEquals(status(result), 400);
+        Assert.assertTrue(toString(result).contains("You need to enter a service to do queries, it should be WPS here"));
+
+        // Test of DescribeProcess, when the service parameter is wrong
+        result = action(new Invocation(){
+            @Override
+            public Result invoke() throws Throwable {
+                return wpsOperationController.displayXML("WP", "2.0.0", "Execute", "orbisgis:wps:official:deleteRows", null, null, null, null);
+            }
+        }).invoke();
+
+        Assert.assertEquals(status(result), 400);
+        Assert.assertTrue(toString(result).contains("The service was not properly written, it should be WPS here"));
+
+        // Test of DescribeProcess, when the version parameter is missing
+        result = action(new Invocation(){
+            @Override
+            public Result invoke() throws Throwable {
+                return wpsOperationController.displayXML("WPS", "", "Execute", "orbisgis:wps:official:deleteRows", null, null, null, null);
+            }
+        }).invoke();
+
+        Assert.assertEquals(status(result), 400);
+        Assert.assertTrue(toString(result).contains("You need to enter the version of WPS to get the corresponding xml file"));
+
+        // Test of DescribeProcess, when the version parameter is wrong
+        result = action(new Invocation(){
+            @Override
+            public Result invoke() throws Throwable {
+                return wpsOperationController.displayXML("WPS", "2.0.1", "Execute", "orbisgis:wps:official:deleteRows", null, null, null, null);
+            }
+        }).invoke();
+
+        Assert.assertEquals(status(result), 400);
+        Assert.assertTrue(toString(result).contains("Please enter a good version of WPS, it should be 2.0.0"));
+
+        // Test of DescribeProcess, when the request parameter is missing
+        result = action(new Invocation(){
+            @Override
+            public Result invoke() throws Throwable {
+                return wpsOperationController.displayXML("WPS", "2.0.0", "", "orbisgis:wps:official:deleteRows", null, null, null, null);
+            }
+        }).invoke();
+
+        Assert.assertEquals(status(result), 400);
+        Assert.assertTrue(toString(result).contains("You need to enter the request to get the corresponding xml file"));
+
+        // Test of DescribeProcess, when the request parameter is wrong
+        result = action(new Invocation(){
+            @Override
+            public Result invoke() throws Throwable {
+                return wpsOperationController.displayXML("WPS", "2.0.0", "Execut", "orbisgis:wps:official:deleteRows", null, null, null, null);
+            }
+        }).invoke();
+
+        Assert.assertEquals(status(result), 400);
+        Assert.assertTrue(toString(result).contains("This request does not exist, please try something else like GetCapabilities."));
+
+        // Test of DescribeProcess, when the request parameter is wrong
+        result = action(new Invocation(){
+            @Override
+            public Result invoke() throws Throwable {
+                return wpsOperationController.displayXML("WPS", "2.0.0", "Execute","", null, null, null, null);
+            }
+        }).invoke();
+
+        Assert.assertEquals(status(result), 400);
+        Assert.assertTrue(toString(result).contains("An Identifier is missing."));
+
+        // Test of DescribeProcess, when the request parameter is wrong
+        result = action(new Invocation(){
+            @Override
+            public Result invoke() throws Throwable {
+                return wpsOperationController.displayXML("WPS", "2.0.0", "Execute", "orbgis:wps:official:deleteRows", null, null, null, null);
+            }
+        }).invoke();
+
+        Assert.assertEquals(status(result), 400);
+        Assert.assertTrue(toString(result).contains("No process has this identifier, please be more accurate."));
+
+    }*/
 }
