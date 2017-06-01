@@ -93,11 +93,11 @@ public class WpsOperationController extends DefaultController {
      * A good request for the GetCapabilities operation should be http://localhost:8080/orbisserver/ows?service=WPS&version=2.0.0&request=GetCapabilities
      * A good request for the DescribeProcess operation should be http://localhost:8080/orbisserver/ows?service=WPS&version=2.0.0&request=DescribeProcess&identifier=orbisgis:wps:official:deleteRows
      *
-     * @return the xml file
      * @Parameter service Name of the service you want to use. Should be WPS here.
      * @Parameter version Version of the service. It must be an accepted version like 2.0.0.
      * @Parameter request Request according to the service that you ask to the server. It could be GetCapabilities.
      * @Parameter identifier Identifier of the process used by operation like DescribeProcess.
+     * @return the xml file
      */
     @Route(method = HttpMethod.GET, uri = "/orbisserver/ows")
     public Result displayXML(@Parameter("service") String service, @Parameter("version") String version, @Parameter("request") String request, @Parameter("identifier") String identifier, @Parameter("dataInputs") String dataInputs, @Parameter("response") String response, @Parameter("mode") String mode, @Parameter("dataOutputs") String dataOutputs) throws JAXBException,IOException {
@@ -153,30 +153,6 @@ public class WpsOperationController extends DefaultController {
                                     LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : " + exceptionReport.getException().get(0).getExceptionText().get(0)));
                                     return badRequest(I18N.tr("An Identifier is missing."));
                                 }
-                           //} else if (request.equals("Execute")) {
-                                /*if (identifier != null && !identifier.isEmpty()) {
-                                    if (wpsServerManager.getCodeTypeList().contains(identifier)) {
-                                        try {
-                                            this.executeRequestType = wpsServerManager.getXMLFromExecute(identifier);
-                                        } catch (JAXBException e) {
-                                            LOGGER.error(I18N.tr("Unable to get the xml file corresponding to the Execute request. \nCause : {0}.", e.getMessage()));
-                                            return ok(e);
-                                        }
-                                        return ok(executeRequestType);
-                                    } else {
-                                        exceptionType.setExceptionCode("InvalidParameterValue");
-                                        exceptionType.getExceptionText().add("Operation request contains an invalid parameter value");
-                                        exceptionReport.getException().add(exceptionType);
-                                        LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : " + exceptionReport.getException().get(0).getExceptionText().get(0)));
-                                        return badRequest(I18N.tr("No process has this identifier, please be more accurate."));
-                                    }
-                                } else {
-                                    exceptionType.setExceptionCode("MissingParameterValue");
-                                    exceptionType.getExceptionText().add("Operation request does not include a parameter value");
-                                    exceptionReport.getException().add(exceptionType);
-                                    LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : " + exceptionReport.getException().get(0).getExceptionText().get(0)));
-                                    return badRequest(I18N.tr("An Identifier is missing."));
-                                }*/
                             } else {
                                 exceptionType.setExceptionCode("InvalidParameterValue");
                                 exceptionType.getExceptionText().add("Operation request contains an invalid parameter value");
@@ -221,11 +197,38 @@ public class WpsOperationController extends DefaultController {
         }
     }
 
-    @Route(method = HttpMethod.POST, uri = "/wrap2")
-    public Result displayXML3(@FormParameter("username") String username, @FormParameter("password") String password) {
+    /**
+     * The action method returning the xml file corresponding to the WPS operations. It handles
+     * HTTP POST request on the "/orbisserver/ows/ExecuteRequest" URL.
+     * This method is called whenever the customer adds parameters in the form at /execute.
+     *
+     * @FormParameter identifier Identifier of the process you want to use, like orbisgis:wps:official:deleteRows.
+     * @FormParameter response Desired response format, i.e. a response document or raw data.
+     * @FormParameter mode Desired execution mode.
+     * @FormParameter input Data inputs provided to this process execution
+     * @FormParameter output Specification of outputs expected from the process execution, including the desired format and transmission mode for each output.
+     * @return the xml file
+     */
+    @Route(method = HttpMethod.POST, uri = "/orbisserver/ows/ExecuteRequest")
+    public Result displayXML3(@FormParameter("identifier") String identifier, @FormParameter("response") String response, @FormParameter("mode") String mode, @FormParameter("input") String input, @FormParameter("output") String output) throws JAXBException, IOException {
 
-        return ok(username);
+        ExceptionType exceptionType = new ExceptionType();
+        ExceptionReport exceptionReport = new ExceptionReport();
+
+        if (wpsServerManager.getCodeTypeList().contains(identifier)) {
+            try {
+                this.executeRequestType = wpsServerManager.getXMLFromExecute(identifier, response, mode, input, output);
+            } catch (JAXBException e) {
+                LOGGER.error(I18N.tr("Unable to get the xml file corresponding to the Execute request. \nCause : {0}.", e.getMessage()));
+                return ok(e);
+            }
+            return ok(executeRequestType);
+        } else {
+            exceptionType.setExceptionCode("InvalidParameterValue");
+            exceptionType.getExceptionText().add("Operation request contains an invalid parameter value");
+            exceptionReport.getException().add(exceptionType);
+            LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : " + exceptionReport.getException().get(0).getExceptionText().get(0)));
+            return badRequest(I18N.tr("No process has this identifier, please be more accurate."));
+        }
     }
-
-
-    }
+}

@@ -49,6 +49,9 @@ public class InContainerIT extends WisdomTest {
     WelcomeController welcomeController;
 
     @Inject
+    ExecuteController executeController;
+
+    @Inject
     WpsOperationController wpsOperationController;
 
     @Test
@@ -110,8 +113,24 @@ public class InContainerIT extends WisdomTest {
         Assert.assertTrue(toString(result).contains("Welcome to Orbis Server"));
         Assert.assertTrue(toString(result).contains("Please"));
         Assert.assertTrue(toString(result).contains("login"));
-
     }
+
+    @Test
+    public void testFormPageContent() {
+        // Call the action method as follows
+        Action.ActionResult result = action(new Invocation() {
+            @Override
+            public Result invoke() throws Throwable {
+                return executeController.execute();
+            }
+        }).invoke();
+
+        //It returns a redirection to the welcome.html page
+        Assert.assertEquals(status(result), OK);
+        Assert.assertTrue(toString(result).contains("Execute Parmeters"));
+    }
+
+
 
     /**
      * Checks that the WpsOperationController is returning OK, and returning the good response corresponding to the GetCapabilities method.

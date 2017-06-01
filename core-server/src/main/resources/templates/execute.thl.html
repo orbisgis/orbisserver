@@ -46,15 +46,22 @@
 
     <link rel="stylesheet" href="/libs/css/bootstrap.css" media="screen"/>
     <link rel="stylesheet" href="/assets/main.css"/>
-
 </head>
 <body>
 
-<form class="form-signin" role="form" th:attr="action=${#routes.route('displayXML3')}" method="POST">
-    Username: <input type="text" name="username"/> <br/>
-    Password: <input type="text" name="password"/> <br/>
-    <input type="submit" value="Login" />
-</form>
+<div class="container">
+    <form class="form-signin" role="form" th:attr="action=${#routes.route('org.orbisgis.orbisserver.control.WPS.WpsOperationController', 'displayXML3')}" method="POST">
+        <h3 class="form-signin-heading">Execute Parameters </h3>
+        <input type="text" class="form-control" name="identifier" placeholder="Identifier" required="true"
+               autofocus="true"/>
+        <input type="text" class="form-control" name="response" placeholder="Response"/>
+        <input type="text" class="form-control" name="mode" placeholder="Mode" />
+        <input type="text" class="form-control" name="input" placeholder="Input" />
+        <input type="text" class="form-control" name="output" placeholder="Output" />
+
+        <button class="btn btn-lg btn-primary btn-block" type="login">Submit</button>
+    </form>
+</div>
 
 <!-- Scripts -->
 <script src="/libs/jquery.min.js"></script>

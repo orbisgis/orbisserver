@@ -42,7 +42,6 @@ package org.orbisgis.orbisserver.control.web;
 import org.junit.Assert;
 import org.junit.Test;
 import org.wisdom.api.http.Result;
-import org.wisdom.api.http.Status;
 import org.wisdom.api.templates.Template;
 import org.wisdom.test.parents.WisdomUnitTest;
 import static org.mockito.Mockito.mock;

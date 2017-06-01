@@ -49,10 +49,7 @@ import org.orbiswps.server.WpsServerImpl;
 import org.orbiswps.server.model.JaxbContainer;
 
 import javax.sql.DataSource;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -184,33 +181,33 @@ public class WpsServerManager extends DescribeProcess{
     }
 
     /**
-     * Return the xml file corresponding to the DescribeProcess request.
+     * Return the xml file corresponding to the Execute request.
      *
      * @throws JAXBException JAXB Exception.
-     * @Return a ProcessOfferings object
+     * @Return a StatusInfo object
      */
-    public Object getXMLFromExecute(String id) throws JAXBException,IOException {
-        /*Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
+    public Object getXMLFromExecute(String id, String response, String mode, String input, String output) throws JAXBException,IOException {
+        Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
+        ObjectFactory factory = new ObjectFactory();
         //Creates the ExecuteRequestType
-        File executeFile = new File(this.getClass().getResource("ExecuteRequest.xml").getFile());
-        System.out.println(this.getClass().getResource("ExecuteRequest.xml").getFile());
-        Object element = unmarshaller.unmarshal(executeFile);
+        ExecuteRequestType ert = new ExecuteRequestType();
+        ert.setIdentifier(getCodeTypeFromId(id));
+        ert.setResponse(response);
+        ert.setMode(mode);
         //Marshall the DescribeProcess object into an OutputStream
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        marshaller.marshal(element, out);
+        marshaller.marshal(factory.createExecute(ert), out);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
         InputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
-        ByteArrayOutputStream xml = (ByteArrayOutputStream) wpsServer.callOperation(in);
+        ByteArrayOutputStream xml = (ByteArrayOutputStream) this.getWpsServer().callOperation(in);
         //Get back the result of the DescribeProcess request as a BufferReader
         InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
         Object resultObject = unmarshaller.unmarshal(resultXml);
-        Object statusInfo = (StatusInfo)resultObject;*/
 
-        Object statusInfo = 3;
-        return statusInfo;  //resultObject is a StatusInfo Object
+        return resultObject;  //resultObject is a StatusInfo Object
     }
 
     /**
