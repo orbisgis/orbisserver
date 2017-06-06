@@ -210,19 +210,35 @@ public class WpsOperationController extends DefaultController {
      * @return the xml file
      */
     @Route(method = HttpMethod.POST, uri = "/orbisserver/ows/ExecuteRequest")
-    public Result displayXML3(@FormParameter("identifier") String identifier, @FormParameter("response") String response, @FormParameter("mode") String mode, @FormParameter("input") String input, @FormParameter("output") String output) throws JAXBException, IOException {
+    public Result displayXMLForExecute(@FormParameter("identifier") String identifier, @FormParameter("response") String response, @FormParameter("mode") String mode, @FormParameter("input") String input, @FormParameter("output") String output) throws JAXBException, IOException {
 
         ExceptionType exceptionType = new ExceptionType();
         ExceptionReport exceptionReport = new ExceptionReport();
 
         if (wpsServerManager.getCodeTypeList().contains(identifier)) {
-            try {
-                this.executeRequestType = wpsServerManager.getXMLFromExecute(identifier, response, mode, input, output);
-            } catch (JAXBException e) {
-                LOGGER.error(I18N.tr("Unable to get the xml file corresponding to the Execute request. \nCause : {0}.", e.getMessage()));
-                return ok(e);
+            if(response.equals("raw") || response.equals("document")) {
+                if(mode.equals("auto") || mode.equals("sync") || mode.equals("async")) {
+                    try {
+                        this.executeRequestType = wpsServerManager.getXMLFromExecute(identifier, response, mode, input, output);
+                    } catch (JAXBException e) {
+                        LOGGER.error(I18N.tr("Unable to get the xml file corresponding to the Execute request. \nCause : {0}.", e.getMessage()));
+                        return ok(e);
+                    }
+                    return ok(executeRequestType);
+                }else {
+                    exceptionType.setExceptionCode("InvalidParameterValue");
+                    exceptionType.getExceptionText().add("Operation request contains an invalid parameter value");
+                    exceptionReport.getException().add(exceptionType);
+                    LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : " + exceptionReport.getException().get(0).getExceptionText().get(0)));
+                    return badRequest(I18N.tr("The desired execution method is incorrect, please set it to auto, sync or async."));
+                }
+            }else {
+                exceptionType.setExceptionCode("InvalidParameterValue");
+                exceptionType.getExceptionText().add("Operation request contains an invalid parameter value");
+                exceptionReport.getException().add(exceptionType);
+                LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : " + exceptionReport.getException().get(0).getExceptionText().get(0)));
+                return badRequest(I18N.tr("The desired response format is incorrect, please set it to document or raw."));
             }
-            return ok(executeRequestType);
         } else {
             exceptionType.setExceptionCode("InvalidParameterValue");
             exceptionType.getExceptionText().add("Operation request contains an invalid parameter value");

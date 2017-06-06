@@ -187,6 +187,7 @@ public class WpsServerManager extends DescribeProcess{
      * @Return a StatusInfo object
      */
     public Object getXMLFromExecute(String id, String response, String mode, String input, String output) throws JAXBException,IOException {
+        getListFromGetCapabilities();
         Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
         ObjectFactory factory = new ObjectFactory();
@@ -233,7 +234,6 @@ public class WpsServerManager extends DescribeProcess{
      * @return CodeType object
      */
     public CodeType getCodeTypeFromId(String id) throws JAXBException{
-        getListFromGetCapabilities();
         CodeType codeTypeFinal = new CodeType();
         for(CodeType codeType : codeTypeList){
             if(codeType.getValue().equals(id)){

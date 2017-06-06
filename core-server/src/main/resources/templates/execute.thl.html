@@ -50,12 +50,12 @@
 <body>
 
 <div class="container">
-    <form class="form-signin" role="form" th:attr="action=${#routes.route('org.orbisgis.orbisserver.control.WPS.WpsOperationController', 'displayXML3')}" method="POST">
+    <form class="form-signin" role="form" th:attr="action=${#routes.route('org.orbisgis.orbisserver.control.WPS.WpsOperationController', 'displayXMLForExecute')}" method="POST">
         <h3 class="form-signin-heading">Execute Parameters </h3>
         <input type="text" class="form-control" name="identifier" placeholder="Identifier" required="true"
                autofocus="true"/>
-        <input type="text" class="form-control" name="response" placeholder="Response"/>
-        <input type="text" class="form-control" name="mode" placeholder="Mode" />
+        <input type="text" class="form-control" name="response" placeholder="Response" required="true"/>
+        <input type="text" class="form-control" name="mode" placeholder="Mode" required="true"/>
         <input type="text" class="form-control" name="input" placeholder="Input" />
         <input type="text" class="form-control" name="output" placeholder="Output" />
 
