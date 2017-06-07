@@ -49,17 +49,17 @@ import static org.mockito.Mockito.mock;
 /**
  * A couple of unit tests.
  */
-public class IndexControllerTest extends WisdomUnitTest {
+public class GetCapabilitiesControllerTest extends WisdomUnitTest {
     /**
-     * Checks that the IndexController is returning OK.
+     * Checks that the GetCapabilitiesController is returning OK.
      */
     @Test
     public void testIndex() throws Exception {
-        IndexController controller = new IndexController();
+        GetCapabilitiesController controller = new GetCapabilitiesController();
         // Use a mock to simulate the template.
         // You can do this for every service and template your controller is using.
-        controller.index = mock(Template.class);
-        Result result = controller.index();
+        controller.getCapabilities = mock(Template.class);
+        Result result = controller.getCapabilities();
 
         Assert.assertEquals(result.getStatusCode(), OK);
     }

@@ -38,49 +38,13 @@
  */
 package org.orbisgis.orbisserver.manager;
 
-import net.opengis.wps._2_0.*;
-import org.apache.felix.ipojo.annotations.Requires;
-import org.orbiswps.scripts.WpsScriptPlugin;
-import org.orbiswps.server.WpsServer;
-import org.orbiswps.server.WpsServerImpl;
-
-import javax.sql.DataSource;
 /**
- * Class managing the WpsServer instances.
+ * Class managing all the operations implemented by a WPS 1.0.0 server.
  *
- * @author Sylvain PALOMINOS
+ * @author Guillaume MANDE
  */
-public class WpsServerManager extends DescribeProcess{
-    /**
-     * Data source used by the WpsServer.
-     */
-    @Requires
-    private static DataSource ds;
+public class Wps_1_0_0_Operations {
 
-    /**
-     * Instance of the WpsServer.
-     */
-    private static WpsServer wpsServer;
 
-    /**
-     * Returns the instance of the WpsServer. If it was not already created, create it.
-     * @return The instance of the WpsServer
-     */
-    public static WpsServer getWpsServer(){
-        if(wpsServer == null){
-            createWpsServerInstance();
-        }
-        return wpsServer;
-    }
-
-    /**
-     * Creates an  instance of the WpsServer.
-     */
-    private static void createWpsServerInstance(){
-        wpsServer = new WpsServerImpl(System.getProperty("java.io.tmpdir"), ds);
-        WpsScriptPlugin scriptPlugin = new WpsScriptPlugin();
-        scriptPlugin.setWpsServer(wpsServer);
-        scriptPlugin.activate();
-    }
 
 }
