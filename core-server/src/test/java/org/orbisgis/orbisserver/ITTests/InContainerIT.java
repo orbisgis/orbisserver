@@ -396,7 +396,7 @@ public class InContainerIT extends WisdomTest {
             @Override
             public Result invoke() throws Throwable {
                 return wpsOperationController.displayXMLForExecute("file:/C:/Users/mande/AppData/Local/Temp/csvToPointsTable.groovy",
-                        "document", "auto", null, null);
+                        "document", "auto", "toto&tata;titi&identifiant&30&25&true&true&test", "ErrorMessage");
             }
         }).invoke();
 
@@ -440,5 +440,16 @@ public class InContainerIT extends WisdomTest {
         Assert.assertEquals(status(result), 400);
         Assert.assertTrue(toString(result).contains("The desired execution method is incorrect, " +
                 "please set it to auto, sync or async."));
+
+        // Test of Execute with the correct parameters
+        result = action(new Invocation(){
+            @Override
+            public Result invoke() throws Throwable {
+                return wpsOperationController.displayXMLForExecute("file:/C:/Users/mande/AppData/Local/Temp/csvToPointsTable.groovy",
+                        "document", "auto", "toto&tata;titi&identifiant&30&25&true&true&test&test2", "ErrorMessage");
+            }
+        }).invoke();
+
+        Assert.assertEquals(status(result), 500);
     }
 }

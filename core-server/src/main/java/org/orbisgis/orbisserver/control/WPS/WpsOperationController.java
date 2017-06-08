@@ -51,6 +51,7 @@ import org.xnap.commons.i18n.*;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Instance of DefaultController used to control the wps operation's page with the good http request.
