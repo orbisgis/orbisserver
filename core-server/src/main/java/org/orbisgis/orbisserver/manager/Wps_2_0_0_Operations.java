@@ -124,7 +124,6 @@ public class Wps_2_0_0_Operations {
         InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
         Object resultObject = unmarshaller.unmarshal(resultXml);
-
         return resultObject;
     }
 
@@ -137,14 +136,54 @@ public class Wps_2_0_0_Operations {
     public static Object getResponseFromExecute(String id, String response, String mode, String input, String output)
             throws JAXBException,IOException {
         getListFromGetCapabilities();
+
+        ProcessOffering processOffering =  ((ProcessOfferings)getResponseFromDescribeProcess(id)).getProcessOffering().get(0);
+        ExecuteRequestType ert = new ExecuteRequestType();
+
+        String[] inputParts = new String[]{};
+        if(input !=null) {
+           inputParts = input.split("&");
+        }
+        if(processOffering.getProcess().getIdentifier().getValue().equals(id)) {
+            for (int i = 0; i < inputParts.length; i++) {
+                DataInputType dataInputType = new DataInputType();
+                Data data = new Data();
+                if(!inputParts[i].contains(";")) {
+                    data.getContent().add(inputParts[i]);
+                    data.setEncoding("simple");
+                    data.setMimeType("text/plain");
+                    dataInputType.setData(data);
+                }else{
+                    String[] dataInput;
+                    dataInput = inputParts[i].split(";");
+                    for (String aDataInput : dataInput) {
+                        data.getContent().add(aDataInput);
+                        data.setEncoding("simple");
+                        data.setMimeType("text/plain");
+                        dataInputType.setData(data);
+                    }
+                }
+                InputDescriptionType inputDescriptionType = processOffering.getProcess().getInput().get(i);
+                dataInputType.setId(inputDescriptionType.getIdentifier().getValue());
+                ert.getInput().add(dataInputType);
+            }
+            OutputDefinitionType outputDefinitionType = new OutputDefinitionType();
+            OutputDescriptionType outputDescriptionType = processOffering.getProcess().getOutput().get(0);
+            outputDefinitionType.setId(outputDescriptionType.getIdentifier().getValue());
+            outputDefinitionType.setEncoding("simple");
+            outputDefinitionType.setMimeType("text/plain");
+            ert.getOutput().add(outputDefinitionType);
+        }
+
         Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
         ObjectFactory factory = new ObjectFactory();
         //Creates the ExecuteRequestType
-        ExecuteRequestType ert = new ExecuteRequestType();
+
         ert.setIdentifier(getCodeTypeFromId(id));
         ert.setResponse(response);
         ert.setMode(mode);
+
         //Marshall the DescribeProcess object into an OutputStream
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
