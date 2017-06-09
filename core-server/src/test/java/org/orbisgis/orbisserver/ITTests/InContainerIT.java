@@ -27,7 +27,7 @@ import org.wisdom.test.parents.Invocation;
 import org.wisdom.test.parents.WisdomTest;
 
 import org.orbisgis.orbisserver.control.web.*;
-import org.orbisgis.orbisserver.control.xml.*;
+import org.orbisgis.orbisserver.control.wps.*;
 
 import javax.inject.Inject;
 
@@ -43,21 +43,27 @@ public class InContainerIT extends WisdomTest {
      * templates.
      */
     @Inject
-    IndexController indexController;
+    GetCapabilitiesController getCapabilitiesController;
 
     @Inject
     WelcomeController welcomeController;
 
     @Inject
+    ExecuteController executeController;
+
+    @Inject
     WpsOperationController wpsOperationController;
 
+    /**
+     * Checks that the index page content is good.
+     */
     @Test
     public void testIndexPageContent() {
         // Call the action method as follows
         Action.ActionResult result = action(new Invocation() {
             @Override
             public Result invoke() throws Throwable {
-                return indexController.index();
+                return getCapabilitiesController.getCapabilities();
             }
         }).invoke();
 
@@ -91,10 +97,15 @@ public class InContainerIT extends WisdomTest {
         Assert.assertTrue(toString(result).contains("Insert values in a table"));
         Assert.assertTrue(toString(result).contains("Tables join"));
 
+        Assert.assertTrue(toString(result).contains("Please select an operation"));
         Assert.assertTrue(toString(result).contains("GetCapabilities"));
+        Assert.assertTrue(toString(result).contains("Create an execute method"));
 
     }
 
+    /**
+     * Checks that the welcome page content is good.
+     */
     @Test
     public void testWelcomePageContent() {
         // Call the action method as follows
@@ -110,11 +121,34 @@ public class InContainerIT extends WisdomTest {
         Assert.assertTrue(toString(result).contains("Welcome to Orbis Server"));
         Assert.assertTrue(toString(result).contains("Please"));
         Assert.assertTrue(toString(result).contains("login"));
-
     }
 
     /**
-     * Checks that the WpsOperationController is returning OK, and returning the good response corresponding to the GetCapabilities method.
+     * Checks that the form page content is good.
+     */
+    @Test
+    public void testFormPageContent() {
+        // Call the action method as follows
+        Action.ActionResult result = action(new Invocation() {
+            @Override
+            public Result invoke() throws Throwable {
+                return executeController.execute();
+            }
+        }).invoke();
+
+        //It returns a redirection to the welcome.html page
+        Assert.assertEquals(status(result), OK);
+        Assert.assertTrue(toString(result).contains("Execute Parameters"));
+        Assert.assertTrue(toString(result).contains("Identifier"));
+        Assert.assertTrue(toString(result).contains("Response"));
+        Assert.assertTrue(toString(result).contains("Mode"));
+        Assert.assertTrue(toString(result).contains("Input"));
+        Assert.assertTrue(toString(result).contains("Output"));
+    }
+
+    /**
+     * Checks that the WpsOperationController is returning OK,
+     * and returning the good response corresponding to the GetCapabilities method.
      */
     @Test
     public void testGetCapabilitiesRequest() throws Exception {
@@ -139,7 +173,7 @@ public class InContainerIT extends WisdomTest {
         }).invoke();
 
         Assert.assertEquals(status(result), 400);
-        Assert.assertTrue(toString(result).contains("You need to enter a service to do queries, it should be WPS here"));
+        Assert.assertTrue(toString(result).contains("You need to enter a service to do queries, it should be wps here"));
 
         // Test of GetCapabilities, when the service parameter is wrong
         result = action(new Invocation(){
@@ -150,7 +184,7 @@ public class InContainerIT extends WisdomTest {
         }).invoke();
 
         Assert.assertEquals(status(result), 400);
-        Assert.assertTrue(toString(result).contains("The service was not properly written, it should be WPS here"));
+        Assert.assertTrue(toString(result).contains("The service was not properly written, it should be wps here"));
 
         // Test of GetCapabilities, when the version parameter is missing
         result = action(new Invocation(){
@@ -161,7 +195,7 @@ public class InContainerIT extends WisdomTest {
         }).invoke();
 
         Assert.assertEquals(status(result), 400);
-        Assert.assertTrue(toString(result).contains("You need to enter the version of WPS to get the corresponding xml file"));
+        Assert.assertTrue(toString(result).contains("You need to enter the version of wps to get the corresponding xml file"));
 
         // Test of GetCapabilities, when the version parameter is wrong
         result = action(new Invocation(){
@@ -172,7 +206,7 @@ public class InContainerIT extends WisdomTest {
         }).invoke();
 
         Assert.assertEquals(status(result), 400);
-        Assert.assertTrue(toString(result).contains("Please enter a good version of WPS, it should be 2.0.0"));
+        Assert.assertTrue(toString(result).contains("Please enter a good version of wps, it should be 2.0.0"));
 
         // Test of GetCapabilities, when the request parameter is missing
         result = action(new Invocation(){
@@ -194,25 +228,26 @@ public class InContainerIT extends WisdomTest {
         }).invoke();
 
         Assert.assertEquals(status(result), 400);
-        Assert.assertTrue(toString(result).contains("This request does not exist, please try something else like GetCapabilities."));
+        Assert.assertTrue(toString(result).contains("This request does not exist," +
+                " please try something else like GetCapabilities."));
 
         // Test of GetCapabilities, when the request parameter is wrong
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.0", "GetCapabilities", "orbisgis:wps:official:deleteRows");
+                return wpsOperationController.displayXML("WPS", "2.0.0",
+                        "GetCapabilities", "orbisgis:wps:official:deleteRows");
             }
         }).invoke();
 
         Assert.assertEquals(status(result), 400);
         Assert.assertTrue(toString(result).contains("GetCapabilities does not need identifier, so don't write it."));
 
-
-
     }
 
     /**
-     * Checks that the WpsOperationController is returning OK, and returning the good response corresponding to the DescribeProcess method.
+     * Checks that the WpsOperationController is returning OK,
+     * and returning the good response corresponding to the DescribeProcess method.
      */
     @Test
     public void testDescribeProcessRequest() throws Exception {
@@ -221,7 +256,8 @@ public class InContainerIT extends WisdomTest {
         Action.ActionResult result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.0", "DescribeProcess", "orbisgis:wps:official:deleteRows");
+                return wpsOperationController.displayXML("WPS", "2.0.0",
+                        "DescribeProcess", "orbisgis:wps:official:deleteRows");
             }
         }).invoke();
 
@@ -232,7 +268,8 @@ public class InContainerIT extends WisdomTest {
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.0", "DescribeProcess", "file:/C:/Users/mande/AppData/Local/Temp/csvToPointsTable.groovy");
+                return wpsOperationController.displayXML("WPS", "2.0.0", "DescribeProcess",
+                        "file:/C:/Users/mande/AppData/Local/Temp/csvToPointsTable.groovy");
             }
         }).invoke();
 
@@ -243,45 +280,49 @@ public class InContainerIT extends WisdomTest {
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("", "2.0.0", "DescribeProcess", "orbisgis:wps:official:deleteRows");
+                return wpsOperationController.displayXML("", "2.0.0",
+                        "DescribeProcess", "orbisgis:wps:official:deleteRows");
             }
         }).invoke();
 
         Assert.assertEquals(status(result), 400);
-        Assert.assertTrue(toString(result).contains("You need to enter a service to do queries, it should be WPS here"));
+        Assert.assertTrue(toString(result).contains("You need to enter a service to do queries, it should be wps here"));
 
         // Test of DescribeProcess, when the service parameter is wrong
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WP", "2.0.0", "DescribeProcess", "orbisgis:wps:official:deleteRows");
+                return wpsOperationController.displayXML("WP", "2.0.0",
+                        "DescribeProcess", "orbisgis:wps:official:deleteRows");
             }
         }).invoke();
 
         Assert.assertEquals(status(result), 400);
-        Assert.assertTrue(toString(result).contains("The service was not properly written, it should be WPS here"));
+        Assert.assertTrue(toString(result).contains("The service was not properly written, it should be wps here"));
 
         // Test of DescribeProcess, when the version parameter is missing
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "", "DescribeProcess", "orbisgis:wps:official:deleteRows");
+                return wpsOperationController.displayXML("WPS", "",
+                        "DescribeProcess", "orbisgis:wps:official:deleteRows");
             }
         }).invoke();
 
         Assert.assertEquals(status(result), 400);
-        Assert.assertTrue(toString(result).contains("You need to enter the version of WPS to get the corresponding xml file"));
+        Assert.assertTrue(toString(result).contains("You need to enter the version of wps to get the corresponding xml file"));
 
         // Test of DescribeProcess, when the version parameter is wrong
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.1", "DescribeProcess", "orbisgis:wps:official:deleteRows");
+                return wpsOperationController.displayXML("WPS", "2.0.1",
+                        "DescribeProcess", "orbisgis:wps:official:deleteRows");
             }
         }).invoke();
 
         Assert.assertEquals(status(result), 400);
-        Assert.assertTrue(toString(result).contains("Please enter a good version of WPS, it should be 2.0.0"));
+        Assert.assertTrue(toString(result).contains("Please enter a good version of wps, it should be 2.0.0"));
 
         // Test of DescribeProcess, when the request parameter is missing
         result = action(new Invocation(){
@@ -298,12 +339,14 @@ public class InContainerIT extends WisdomTest {
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.0", "DescribeProces", "orbisgis:wps:official:deleteRows");
+                return wpsOperationController.displayXML("WPS", "2.0.0",
+                        "DescribeProces", "orbisgis:wps:official:deleteRows");
             }
         }).invoke();
 
         Assert.assertEquals(status(result), 400);
-        Assert.assertTrue(toString(result).contains("This request does not exist, please try something else like GetCapabilities."));
+        Assert.assertTrue(toString(result).contains("This request does not exist," +
+                " please try something else like GetCapabilities."));
 
         // Test of DescribeProcess, when the request parameter is wrong
         result = action(new Invocation(){
@@ -320,11 +363,93 @@ public class InContainerIT extends WisdomTest {
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.0", "DescribeProcess", "orbgis:wps:official:deleteRows");
+                return wpsOperationController.displayXML("WPS", "2.0.0",
+                        "DescribeProcess", "orbgis:wps:official:deleteRows");
             }
         }).invoke();
 
         Assert.assertEquals(status(result), 400);
         Assert.assertTrue(toString(result).contains("No process has this identifier, please be more accurate."));
+    }
+
+    /**
+     * Checks that the WpsOperationController is returning OK,
+     * and returning the good response corresponding to the Execute method.
+     */
+    @Test
+    public void testExecuteRequest() throws Exception {
+
+        // Test of Execute with the correct parameters
+        Action.ActionResult result = action(new Invocation(){
+            @Override
+            public Result invoke() throws Throwable {
+                return wpsOperationController.displayXMLForExecute("orbisgis:wps:official:deleteRows",
+                        "document", "auto", null, null);
+            }
+        }).invoke();
+
+        Assert.assertEquals(status(result), OK);
+        Assert.assertTrue(toString(result).contains("net.opengis.wps._2_0.StatusInfo@"));
+
+        // Test of Execute with the correct parameters
+        result = action(new Invocation(){
+            @Override
+            public Result invoke() throws Throwable {
+                return wpsOperationController.displayXMLForExecute("file:/C:/Users/mande/AppData/Local/Temp/csvToPointsTable.groovy",
+                        "document", "auto", "toto&tata;titi&identifiant&30&25&true&true&test", "ErrorMessage");
+            }
+        }).invoke();
+
+        Assert.assertEquals(status(result), OK);
+        Assert.assertTrue(toString(result).contains("net.opengis.wps._2_0.StatusInfo@"));
+
+        // Test of  Execute, when the identifier parameter is wrong
+        result = action(new Invocation(){
+            @Override
+            public Result invoke() throws Throwable {
+                return wpsOperationController.displayXMLForExecute("orbisis:wps:official:deleteRows",
+                        "document", "auto", null, null);
+            }
+        }).invoke();
+
+        Assert.assertEquals(status(result), 400);
+        Assert.assertTrue(toString(result).contains("No process has this identifier, please be more accurate."));
+
+        // Test of Execute, when the response parameter is wrong
+        result = action(new Invocation(){
+            @Override
+            public Result invoke() throws Throwable {
+                return wpsOperationController.displayXMLForExecute("orbisgis:wps:official:deleteRows",
+                        "docment", "auto", null, null);
+            }
+        }).invoke();
+
+        Assert.assertEquals(status(result), 400);
+        Assert.assertTrue(toString(result).contains("The desired response format is incorrect, " +
+                "please set it to document or raw."));
+
+        // Test of Execute, when the mode parameter is wrong
+        result = action(new Invocation(){
+            @Override
+            public Result invoke() throws Throwable {
+                return wpsOperationController.displayXMLForExecute("orbisgis:wps:official:deleteRows",
+                        "document", "aut", null, null);
+            }
+        }).invoke();
+
+        Assert.assertEquals(status(result), 400);
+        Assert.assertTrue(toString(result).contains("The desired execution method is incorrect, " +
+                "please set it to auto, sync or async."));
+
+        // Test of Execute with the correct parameters
+        result = action(new Invocation(){
+            @Override
+            public Result invoke() throws Throwable {
+                return wpsOperationController.displayXMLForExecute("file:/C:/Users/mande/AppData/Local/Temp/csvToPointsTable.groovy",
+                        "document", "auto", "toto&tata;titi&identifiant&30&25&true&true&test&test2", "ErrorMessage");
+            }
+        }).invoke();
+
+        Assert.assertEquals(status(result), 500);
     }
 }

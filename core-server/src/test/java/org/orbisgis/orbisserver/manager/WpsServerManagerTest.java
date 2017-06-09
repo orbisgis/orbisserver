@@ -48,12 +48,13 @@ import org.junit.Test;
  */
 public class WpsServerManagerTest {
     /**
-     * Checks that the WpsOperationController is returning OK, and returning the good response corresponding to the DescribeProcess method.
+     * Checks that the WpsOperationController is returning OK, and returning the good response
+     * corresponding to the DescribeProcess method.
      */
     @Test
     public void testGetXMLFromDescribeProcess() throws Exception {
-        WpsServerManager wpsServerManager = new WpsServerManager();
-        Object resultObject = wpsServerManager.getXMLFromDescribeProcess("orbisgis:wps:official:deleteRows");
+        Wps_2_0_0_Operations wpsOperations = new Wps_2_0_0_Operations();
+        Object resultObject = wpsOperations.getResponseFromDescribeProcess("orbisgis:wps:official:deleteRows");
 
         Assert.assertNotNull("Error on unmarshalling the WpsService answer, the object should not be null",
                 resultObject);

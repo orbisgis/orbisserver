@@ -36,51 +36,31 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisserver.manager;
 
-import net.opengis.wps._2_0.*;
-import org.apache.felix.ipojo.annotations.Requires;
-import org.orbiswps.scripts.WpsScriptPlugin;
-import org.orbiswps.server.WpsServer;
-import org.orbiswps.server.WpsServerImpl;
+package org.orbisgis.orbisserver.control.web;
 
-import javax.sql.DataSource;
+import org.junit.Assert;
+import org.junit.Test;
+import org.wisdom.api.http.Result;
+import org.wisdom.api.templates.Template;
+import org.wisdom.test.parents.WisdomUnitTest;
+import static org.mockito.Mockito.mock;
+
 /**
- * Class managing the WpsServer instances.
- *
- * @author Sylvain PALOMINOS
+ * A couple of unit tests.
  */
-public class WpsServerManager extends DescribeProcess{
+public class GetCapabilitiesControllerTest extends WisdomUnitTest {
     /**
-     * Data source used by the WpsServer.
+     * Checks that the GetCapabilitiesController is returning OK.
      */
-    @Requires
-    private static DataSource ds;
+    @Test
+    public void testIndex() throws Exception {
+        GetCapabilitiesController controller = new GetCapabilitiesController();
+        // Use a mock to simulate the template.
+        // You can do this for every service and template your controller is using.
+        controller.getCapabilities = mock(Template.class);
+        Result result = controller.getCapabilities();
 
-    /**
-     * Instance of the WpsServer.
-     */
-    private static WpsServer wpsServer;
-
-    /**
-     * Returns the instance of the WpsServer. If it was not already created, create it.
-     * @return The instance of the WpsServer
-     */
-    public static WpsServer getWpsServer(){
-        if(wpsServer == null){
-            createWpsServerInstance();
-        }
-        return wpsServer;
+        Assert.assertEquals(result.getStatusCode(), OK);
     }
-
-    /**
-     * Creates an  instance of the WpsServer.
-     */
-    private static void createWpsServerInstance(){
-        wpsServer = new WpsServerImpl(System.getProperty("java.io.tmpdir"), ds);
-        WpsScriptPlugin scriptPlugin = new WpsScriptPlugin();
-        scriptPlugin.setWpsServer(wpsServer);
-        scriptPlugin.activate();
-    }
-
 }
