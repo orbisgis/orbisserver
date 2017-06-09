@@ -38,6 +38,7 @@
  */
 package org.orbisgis.orbisserver.control.web;
 
+import org.orbisgis.orbisserver.manager.Wps_2_0_0_Operations;
 import org.wisdom.api.DefaultController;
 import org.wisdom.api.annotations.Controller;
 import org.wisdom.api.annotations.Route;
@@ -48,8 +49,6 @@ import org.wisdom.api.templates.Template;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.*;
-
-import org.orbisgis.orbisserver.manager.WpsServerManager;
 
 import javax.xml.bind.JAXBException;
 
@@ -62,19 +61,17 @@ import javax.xml.bind.JAXBException;
  * @author Guillaume MANDE
  */
 @Controller
-public class IndexController extends DefaultController {
-    /** Instance of WpsServerManager, used to get a GetCapabilities list response. */
-    private WpsServerManager wpsServer = new WpsServerManager();
+public class GetCapabilitiesController extends DefaultController {
     /** Logger */
-    private static final Logger LOGGER = LoggerFactory.getLogger(IndexController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetCapabilitiesController.class);
     /** I18N object */
-    private static final I18n I18N = I18nFactory.getI18n(IndexController.class);
+    private static final I18n I18N = I18nFactory.getI18n(GetCapabilitiesController.class);
 
     /**
-     * Injects a template named 'index'.
+     * Injects a template named 'getCapabilities'.
      */
-    @View("index")
-    Template index;
+    @View("getCapabilities")
+    Template getCapabilities;
 
     /**
      * The action method returning the html index page containing a list of all the OrbisWPS processes
@@ -84,16 +81,17 @@ public class IndexController extends DefaultController {
      * @Return The index page including the processes list.
      */
     @Route(method = HttpMethod.GET, uri = "/index")
-    public Result index() {
+    public Result getCapabilities() {
         /** List all of the OrbisWPS processes into a String which will be displayed on the index page. */
         String resultList = "";
         try {
-            resultList = wpsServer.getListFromGetCapabilities();
+            resultList = Wps_2_0_0_Operations.getListFromGetCapabilities();
         } catch (JAXBException e) {
-            LOGGER.error(I18N.tr("Unable to get the xml file corresponding to the GetCapabilities request. \nCause : {0}.", e.getMessage()));
+            LOGGER.error(I18N.tr("Unable to get the xml file corresponding to the GetCapabilities request." +
+                    " \nCause : {0}.", e.getMessage()));
             resultList = "Unable to get the xml file";
         }
-        return ok(render(index, "list", resultList));
+        return ok(render(getCapabilities, "list", resultList));
     }
 }
 

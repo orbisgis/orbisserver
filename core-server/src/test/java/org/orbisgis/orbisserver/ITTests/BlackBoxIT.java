@@ -47,4 +47,14 @@ public class BlackBoxIT extends WisdomBlackBoxTest {
         HttpResponse<Document> page = get("/").asHtml();
         Assert.assertEquals(page.body().title(), "Welcome");
     }
+
+    /**
+     * Checks that the Form page is correctly serve on "/execute".
+     */
+    @Test
+    public void testThatTheFormPageIsServed() throws Exception {
+        HttpResponse<Document> page = get("/execute").asHtml();
+        Assert.assertEquals(page.body().title(), "Execute method");
+    }
+
 }

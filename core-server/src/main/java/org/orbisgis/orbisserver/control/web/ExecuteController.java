@@ -36,32 +36,37 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-
 package org.orbisgis.orbisserver.control.web;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.wisdom.api.DefaultController;
+import org.wisdom.api.annotations.Controller;
+import org.wisdom.api.annotations.FormParameter;
+import org.wisdom.api.annotations.Route;
+import org.wisdom.api.annotations.View;
+import org.wisdom.api.http.HttpMethod;
 import org.wisdom.api.http.Result;
-import org.wisdom.api.http.Status;
 import org.wisdom.api.templates.Template;
-import org.wisdom.test.parents.WisdomUnitTest;
-import static org.mockito.Mockito.mock;
 
 /**
- * A couple of unit tests.
+ * Instance of DefaultController used to control the welcome's page
+ *
+ * @author Guillaume MANDE
  */
-public class IndexControllerTest extends WisdomUnitTest {
+@Controller
+public class ExecuteController extends DefaultController {
     /**
-     * Checks that the IndexController is returning OK.
+     * Injects a template named 'welcome'.
      */
-    @Test
-    public void testIndex() throws Exception {
-        IndexController controller = new IndexController();
-        // Use a mock to simulate the template.
-        // You can do this for every service and template your controller is using.
-        controller.index = mock(Template.class);
-        Result result = controller.index();
+    @View("execute")
+    Template execute;
 
-        Assert.assertEquals(result.getStatusCode(), OK);
+    /**
+     * The action method returning the html welcome page containing a formulary to do an execute request.
+     * @Return the execute page.
+     */
+    @Route(method = HttpMethod.GET, uri = "/execute")
+    public Result execute() {
+        return ok(render(execute));
     }
+
 }
