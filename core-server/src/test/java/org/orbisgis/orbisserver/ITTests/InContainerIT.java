@@ -157,7 +157,7 @@ public class InContainerIT extends WisdomTest {
         Action.ActionResult result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.0", "GetCapabilities", null);
+                return wpsOperationController.displayXML("wps", "2.0.0", "GetCapabilities", null);
             }
         }).invoke();
 
@@ -190,7 +190,7 @@ public class InContainerIT extends WisdomTest {
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "", "GetCapabilities",null);
+                return wpsOperationController.displayXML("wps", "", "GetCapabilities",null);
             }
         }).invoke();
 
@@ -201,7 +201,7 @@ public class InContainerIT extends WisdomTest {
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.1", "GetCapabilities",null);
+                return wpsOperationController.displayXML("wps", "2.0.1", "GetCapabilities",null);
             }
         }).invoke();
 
@@ -212,7 +212,7 @@ public class InContainerIT extends WisdomTest {
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.0", "",null);
+                return wpsOperationController.displayXML("wps", "2.0.0", "",null);
             }
         }).invoke();
 
@@ -223,7 +223,7 @@ public class InContainerIT extends WisdomTest {
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.0", "GetCapabilites",null);
+                return wpsOperationController.displayXML("wps", "2.0.0", "GetCapabilites",null);
             }
         }).invoke();
 
@@ -235,7 +235,7 @@ public class InContainerIT extends WisdomTest {
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.0",
+                return wpsOperationController.displayXML("wps", "2.0.0",
                         "GetCapabilities", "orbisgis:wps:official:deleteRows");
             }
         }).invoke();
@@ -256,7 +256,7 @@ public class InContainerIT extends WisdomTest {
         Action.ActionResult result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.0",
+                return wpsOperationController.displayXML("wps", "2.0.0",
                         "DescribeProcess", "orbisgis:wps:official:deleteRows");
             }
         }).invoke();
@@ -268,7 +268,7 @@ public class InContainerIT extends WisdomTest {
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.0", "DescribeProcess",
+                return wpsOperationController.displayXML("wps", "2.0.0", "DescribeProcess",
                         "file:/C:/Users/mande/AppData/Local/Temp/csvToPointsTable.groovy");
             }
         }).invoke();
@@ -304,7 +304,7 @@ public class InContainerIT extends WisdomTest {
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "",
+                return wpsOperationController.displayXML("wps", "",
                         "DescribeProcess", "orbisgis:wps:official:deleteRows");
             }
         }).invoke();
@@ -316,7 +316,7 @@ public class InContainerIT extends WisdomTest {
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.1",
+                return wpsOperationController.displayXML("wps", "2.0.1",
                         "DescribeProcess", "orbisgis:wps:official:deleteRows");
             }
         }).invoke();
@@ -328,7 +328,7 @@ public class InContainerIT extends WisdomTest {
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.0", "", "orbisgis:wps:official:deleteRows");
+                return wpsOperationController.displayXML("wps", "2.0.0", "", "orbisgis:wps:official:deleteRows");
             }
         }).invoke();
 
@@ -339,7 +339,7 @@ public class InContainerIT extends WisdomTest {
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.0",
+                return wpsOperationController.displayXML("wps", "2.0.0",
                         "DescribeProces", "orbisgis:wps:official:deleteRows");
             }
         }).invoke();
@@ -352,7 +352,7 @@ public class InContainerIT extends WisdomTest {
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.0", "DescribeProcess","");
+                return wpsOperationController.displayXML("wps", "2.0.0", "DescribeProcess","");
             }
         }).invoke();
 
@@ -363,7 +363,7 @@ public class InContainerIT extends WisdomTest {
         result = action(new Invocation(){
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.0",
+                return wpsOperationController.displayXML("wps", "2.0.0",
                         "DescribeProcess", "orbgis:wps:official:deleteRows");
             }
         }).invoke();

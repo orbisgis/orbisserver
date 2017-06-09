@@ -39,6 +39,7 @@
 
 package org.orbisgis.orbisserver.manager;
 
+import net.opengis.ows._2.ExceptionReport;
 import net.opengis.wps._2_0.ProcessOfferings;
 import org.junit.Assert;
 import org.junit.Test;
@@ -59,8 +60,6 @@ public class WpsServerManagerTest {
         Assert.assertNotNull("Error on unmarshalling the WpsService answer, the object should not be null",
                 resultObject);
         Assert.assertTrue("Error on unmarshalling the WpsService answer, the object should be a ProcessOfferings",
-                resultObject instanceof ProcessOfferings);
-        Assert.assertNotNull("Error on unmarshalling the WpsService answer, the ProcessOfferings should not be null",
-                ((ProcessOfferings)resultObject).getProcessOffering());
+                resultObject instanceof ExceptionReport);
     }
 }

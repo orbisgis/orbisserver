@@ -27,19 +27,19 @@ msgid "You need to enter the request to get the corresponding xml file"
 msgstr ""
 
 #: org/orbisgis/orbisserver/control/xml/GetCapabilitiesController.java:117
-msgid "Please enter a good version of WPS, it should be 2.0.0"
+msgid "Please enter a good version of wps, it should be 2.0.0"
 msgstr ""
 
 #: org/orbisgis/orbisserver/control/xml/GetCapabilitiesController.java:120
-msgid "You need to enter the version of WPS to get the corresponding xml file"
+msgid "You need to enter the version of wps to get the corresponding xml file"
 msgstr ""
 
 #: org/orbisgis/orbisserver/control/xml/GetCapabilitiesController.java:123
-msgid "The service was not properly written, it should be WPS here"
+msgid "The service was not properly written, it should be wps here"
 msgstr ""
 
 #: org/orbisgis/orbisserver/control/xml/GetCapabilitiesController.java:126
-msgid "You need to enter a service to do queries, it should be WPS here"
+msgid "You need to enter a service to do queries, it should be wps here"
 msgstr ""
 
 #: org/orbisgis/orbisserver/control/web/IndexController.java:123

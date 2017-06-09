@@ -1,4 +1,4 @@
-/**
+/*
  * OrbisServer is an OSGI web application to expose OGC services.
  *
  * OrbisServer is part of the OrbisGIS platform
@@ -40,6 +40,7 @@
 package org.orbisgis.orbisserver.control.wps;
 
 import net.opengis.ows._2.*;
+
 import org.orbisgis.orbisserver.manager.Wps_2_0_0_Operations;
 import org.wisdom.api.DefaultController;
 import org.wisdom.api.annotations.*;
@@ -51,7 +52,6 @@ import org.xnap.commons.i18n.*;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Instance of DefaultController used to control the wps operation's page with the good http request.
@@ -83,10 +83,10 @@ public class WpsOperationController extends DefaultController {
      * http://localhost:8080/orbisserver/ows?service=WPS&version=2.0.0&
      * request=DescribeProcess&identifier=orbisgis:wps:official:deleteRows
      *
-     * @Parameter service Name of the service you want to use. Should be wps here.
-     * @Parameter version Version of the service. It must be an accepted version like 2.0.0.
-     * @Parameter request Request according to the service that you ask to the server. It could be GetCapabilities.
-     * @Parameter identifier Identifier of the process used by operation like DescribeProcess.
+     * @param service Name of the service you want to use. Should be wps here.
+     * @param version Version of the service. It must be an accepted version like 2.0.0.
+     * @param request Request according to the service that you ask to the server. It could be GetCapabilities.
+     * @param identifier Identifier of the process used by the DescribeProcess operation.
      * @return the xml file
      */
     @Route(method = HttpMethod.GET, uri = "/orbisserver/ows")
@@ -94,89 +94,68 @@ public class WpsOperationController extends DefaultController {
                              @Parameter("request") String request, @Parameter("identifier") String identifier)
             throws JAXBException,IOException {
 
-        ExceptionType exceptionType = new ExceptionType();
         ExceptionReport exceptionReport = new ExceptionReport();
 
-        if (service == null || service.isEmpty()) {
+        if (service == null || service.isEmpty() ||
+                version == null || version.isEmpty() ||
+                request == null || request.isEmpty()) {
+            ExceptionType exceptionType = new ExceptionType();
             exceptionType.setExceptionCode("MissingParameterValue");
             exceptionType.getExceptionText().add("Operation request does not include a parameter value");
             exceptionReport.getException().add(exceptionType);
             LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : "
                     + exceptionReport.getException().get(0).getExceptionText().get(0)));
-            return badRequest(I18N.tr("You need to enter a service to do queries, it should be wps here"));
+            return badRequest(exceptionReport);
         }
 
         if (!service.equals("WPS")) {
+            ExceptionType exceptionType = new ExceptionType();
             exceptionType.setExceptionCode("InvalidParameterValue");
             exceptionType.getExceptionText().add("Operation request contains an invalid parameter value");
             exceptionReport.getException().add(exceptionType);
             LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : "
                     + exceptionReport.getException().get(0).getExceptionText().get(0)));
-            return badRequest(I18N.tr("The service was not properly written, it should be wps here"));
+            return badRequest(exceptionReport);
         }
 
-        if (version == null || version.isEmpty()) {
-            exceptionType.setExceptionCode("MissingParameterValue");
-            exceptionType.getExceptionText().add("Operation request does not include a parameter value");
-            exceptionReport.getException().add(exceptionType);
-            LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : "
-                    + exceptionReport.getException().get(0).getExceptionText().get(0)));
-            return badRequest(I18N.tr("You need to enter the version of wps to get the corresponding xml file"));
+        switch(version){
+            case "2.0.0":
+                return wps200GetRequest(request, identifier);
+            default:
+                ExceptionType exceptionType = new ExceptionType();
+                exceptionType.setExceptionCode("InvalidParameterValue");
+                exceptionType.getExceptionText().add("Operation request contains an invalid parameter value");
+                exceptionReport.getException().add(exceptionType);
+                LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : "
+                        + exceptionReport.getException().get(0).getExceptionText().get(0)));
+                return badRequest(exceptionReport);
         }
+    }
 
-        if (!version.equals("2.0.0")) {
-            exceptionType.setExceptionCode("InvalidParameterValue");
-            exceptionType.getExceptionText().add("Operation request contains an invalid parameter value");
-            exceptionReport.getException().add(exceptionType);
-            LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : "
-                    + exceptionReport.getException().get(0).getExceptionText().get(0)));
-            return badRequest(I18N.tr("Please enter a good version of wps, it should be 2.0.0"));
-        }
-
-        if (request == null || request.isEmpty()) {
-            exceptionType.setExceptionCode("MissingParameterValue");
-            exceptionType.getExceptionText().add("Operation request does not include a parameter value");
-            exceptionReport.getException().add(exceptionType);
-            LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : "
-                    + exceptionReport.getException().get(0).getExceptionText().get(0)));
-            return badRequest(I18N.tr("You need to enter the request to get the corresponding xml file"));
-        }
-
+    private Result wps200GetRequest(String request, String identifier){
+        ExceptionReport exceptionReport = new ExceptionReport();
         switch (request) {
             case "GetCapabilities":
-                if (identifier != null) {
-                    exceptionType.setExceptionCode("InvalidParameterValue");
-                    exceptionType.getExceptionText().add("Operation request contains an invalid parameter value");
-                    exceptionReport.getException().add(exceptionType);
-                    LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : "
-                            + exceptionReport.getException().get(0).getExceptionText().get(0)));
-                    return badRequest(I18N.tr("GetCapabilities does not need identifier, so don't write it."));
-                }
                 try {
                     return ok(Wps_2_0_0_Operations.getResponseFromGetCapabilities());
                 } catch (JAXBException e) {
                     LOGGER.error(I18N.tr("Unable to get the xml file corresponding to the GetCapabilities request." +
                             " \nCause : {0}.", e.getMessage()));
-                    return ok(e);
+                    ExceptionType exceptionType = new ExceptionType();
+                    exceptionType.setExceptionCode(e.getErrorCode());
+                    exceptionType.getExceptionText().add(e.getMessage());
+                    exceptionReport.getException().add(exceptionType);
+                    return badRequest(e);
                 }
             case "DescribeProcess":
                 if (identifier == null || identifier.isEmpty()) {
+                    ExceptionType exceptionType = new ExceptionType();
                     exceptionType.setExceptionCode("MissingParameterValue");
                     exceptionType.getExceptionText().add("Operation request does not include a parameter value");
                     exceptionReport.getException().add(exceptionType);
                     LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : "
                             + exceptionReport.getException().get(0).getExceptionText().get(0)));
-                    return badRequest(I18N.tr("An Identifier is missing."));
-                }
-
-                if (!Wps_2_0_0_Operations.getCodeTypeList().contains(identifier)) {
-                    exceptionType.setExceptionCode("NoSuchProcess");
-                    exceptionType.getExceptionText().add("One of the identifiers passed does not match with any " +
-                            "of the processes offered by this server.");
-                    exceptionReport.getException().add(exceptionType);
-                    LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : "
-                            + exceptionReport.getException().get(0).getExceptionText().get(0)));
-                    return badRequest(I18N.tr("No process has this identifier, please be more accurate."));
+                    return badRequest(exceptionReport);
                 }
 
                 try {
@@ -184,15 +163,20 @@ public class WpsOperationController extends DefaultController {
                 } catch (JAXBException e) {
                     LOGGER.error(I18N.tr("Unable to get the xml file corresponding to the DescribeProcess request." +
                             " \nCause : {0}.", e.getMessage()));
-                    return ok(e);
+                    ExceptionType exceptionType = new ExceptionType();
+                    exceptionType.setExceptionCode(e.getErrorCode());
+                    exceptionType.getExceptionText().add(e.getMessage());
+                    exceptionReport.getException().add(exceptionType);
+                    return badRequest(e);
                 }
             default:
+                ExceptionType exceptionType = new ExceptionType();
                 exceptionType.setExceptionCode("InvalidParameterValue");
                 exceptionType.getExceptionText().add("Operation request contains an invalid parameter value");
                 exceptionReport.getException().add(exceptionType);
                 LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : "
                         + exceptionReport.getException().get(0).getExceptionText().get(0)));
-                return badRequest(I18N.tr("This request does not exist, please try something else like GetCapabilities."));
+                return badRequest(exceptionReport);
         }
     }
 
