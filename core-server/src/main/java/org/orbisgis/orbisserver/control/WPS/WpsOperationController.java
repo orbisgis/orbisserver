@@ -200,7 +200,7 @@ public class WpsOperationController extends DefaultController {
                             + exceptionReport.getException().get(0).getExceptionText().get(0)));
                     return badRequest(I18N.tr("An Identifier is missing."));
                 }
-                if(!Wps_2_0_0_Operations.getGetStatus().getJobID().equals(jobid)){
+                if(!Wps_2_0_0_Operations.getGetStatus().contains(jobid)){
                     exceptionType.setExceptionCode("NoSuchJob");
                     exceptionType.getExceptionText().add("The JobID from the request does not match" +
                             "any of the Jobs running on this server");

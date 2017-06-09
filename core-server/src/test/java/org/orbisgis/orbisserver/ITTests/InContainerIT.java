@@ -22,6 +22,7 @@ package org.orbisgis.orbisserver.ITTests;
 import org.junit.Assert;
 import org.junit.Test;
 import org.orbisgis.orbisserver.manager.Wps_2_0_0_Operations;
+import org.orbiswps.server.controller.utils.Job;
 import org.wisdom.api.http.Result;
 import org.wisdom.test.parents.Action;
 import org.wisdom.test.parents.Invocation;
@@ -487,8 +488,7 @@ public class InContainerIT extends WisdomTest {
         //Execution of the Execute method with a process
 
         wpsOperationController.displayXMLForExecute("orbisgis:wps:official:deleteRows", "document", "auto", null, null);
-        final String jobId = Wps_2_0_0_Operations.getGetStatus().getJobID();
-        System.out.println(jobId);
+        final String jobId = Wps_2_0_0_Operations.getLastJobId();
 
         // Test of GetStatus with the correct parameters
         Action.ActionResult result = action(new Invocation(){
@@ -556,7 +556,7 @@ public class InContainerIT extends WisdomTest {
             @Override
             public Result invoke() throws Throwable {
                 return wpsOperationController.displayXML("WPS", "2.0.0", "", null,
-                        Wps_2_0_0_Operations.getGetStatus().getJobID());
+                        jobId);
             }
         }).invoke();
 

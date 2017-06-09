@@ -38,7 +38,6 @@
  */
 package org.orbisgis.orbisserver.manager;
 
-import jdk.nashorn.internal.scripts.JO;
 import net.opengis.ows._2.AcceptVersionsType;
 import net.opengis.ows._2.CodeType;
 import net.opengis.ows._2.SectionsType;
@@ -68,7 +67,7 @@ public class Wps_2_0_0_Operations {
     /**
      * GetStatus object used to display the response the result of the GetStatus operation.
      */
-    private static GetStatus getStatus= new GetStatus();
+    private static List<GetStatus> getStatusList = new ArrayList<>();
 
     /**
      * Return the wpsCapabilitiesType object which is a xml object.
@@ -213,7 +212,9 @@ public class Wps_2_0_0_Operations {
         Object resultObject = unmarshaller.unmarshal(resultXml);
 
         StatusInfo statusInfo = (StatusInfo)resultObject;
+        GetStatus getStatus = new GetStatus();
         getStatus.setJobID(statusInfo.getJobID());
+        getStatusList.add(getStatus);
 
         return resultObject;  //resultObject is a StatusInfo Object
     }
@@ -230,10 +231,17 @@ public class Wps_2_0_0_Operations {
 
         Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
+        //Get the corresponding GetStatus
+        GetStatus finalGetStatus = new GetStatus();
+        for(GetStatus getStatus : getStatusList){
+            if(getStatus.getJobID().equals(JobId)){
+                finalGetStatus = getStatus;
+            }
+        }
         //Marshall the DescribeProcess object into an OutputStream
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        marshaller.marshal(getGetStatus(), out);
+        marshaller.marshal(finalGetStatus, out);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
         InputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
         ByteArrayOutputStream xml = (ByteArrayOutputStream) WpsServerManager.getWpsServer().callOperation(in);
@@ -245,13 +253,28 @@ public class Wps_2_0_0_Operations {
     }
 
     /**
-     * Return the getStatus attribute.
-     * @return the getStatus attribute.
+     * Return the list of jobid.
+     * @return the list of jobid.
      */
-    public static GetStatus getGetStatus(){
-        return getStatus;
+    public static List<String> getGetStatus(){
+        List<String> listId = new ArrayList<>();
+        for(GetStatus getStatus : getStatusList){
+            listId.add(getStatus.getJobID());
+        }
+        return listId;
     }
 
+    /**
+     * Return the last jobid add to the list.
+     * @return a jobid.
+     */
+    public static String getLastJobId() {
+        String JobId = "";
+        for (GetStatus getStatus : getStatusList) {
+            JobId = getStatus.getJobID();
+        }
+        return JobId;
+    }
 
     /**
      * Method to get the xml file corresponding to the GetCapabilities request.
