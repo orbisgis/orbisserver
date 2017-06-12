@@ -199,7 +199,7 @@ public class Wps_2_0_0_Operations {
         ert.setResponse(response);
         ert.setMode(mode);
 
-        //Marshall the DescribeProcess object into an OutputStream
+        //Marshall the ExecuteRequestType object into an OutputStream
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         marshaller.marshal(factory.createExecute(ert), out);
@@ -238,10 +238,39 @@ public class Wps_2_0_0_Operations {
                 finalGetStatus = getStatus;
             }
         }
-        //Marshall the DescribeProcess object into an OutputStream
+        //Marshall the GetStatus object into an OutputStream
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         marshaller.marshal(finalGetStatus, out);
+        //Write the OutputStream content into an Input stream before sending it to the wpsService
+        InputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
+        ByteArrayOutputStream xml = (ByteArrayOutputStream) WpsServerManager.getWpsServer().callOperation(in);
+        //Get back the result of the DescribeProcess request as a BufferReader
+        InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
+        //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
+
+        return unmarshaller.unmarshal(resultXml);
+    }
+
+    /**
+     * Return the xml file corresponding to the GetResult request.
+     *
+     * @param JobId Unambiguously identifier of a job within a WPS instance.
+     * @return a StatusInfo object.
+     * @throws JAXBException JAXB Exception.
+     * @throws IOException IOException.
+     */
+    public static Object getResponseFromGetResult(String JobId) throws JAXBException{
+
+        Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
+        Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
+        //Get the corresponding GetStatus
+        GetResult getResult = new GetResult();
+        getResult.setJobID(JobId);
+        //Marshall the GetResult object into an OutputStream
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        marshaller.marshal(getResult, out);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
         InputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
         ByteArrayOutputStream xml = (ByteArrayOutputStream) WpsServerManager.getWpsServer().callOperation(in);
