@@ -114,13 +114,14 @@ public class Wps_2_0_0_Operations {
      * @throws JAXBException JAXB Exception.
      */
     public static Object getResponseFromDescribeProcess(String id) throws JAXBException {
-        getListFromGetCapabilities();
         Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
         //Creates the DescribeProcess
         DescribeProcess describeProcess = new DescribeProcess();
         describeProcess.setLang("en");
-        describeProcess.getIdentifier().add(getCodeTypeFromId(id));
+        CodeType codeType = new CodeType();
+        codeType.setValue(id);
+        describeProcess.getIdentifier().add(codeType);
         //Marshall the DescribeProcess object into an OutputStream
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
