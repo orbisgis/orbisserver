@@ -541,4 +541,125 @@ public class InContainerIT extends WisdomTest {
 
         Assert.assertEquals(status(result), 400);
     }
+
+    /**
+     * Checks that the WpsOperationController is returning OK,
+     * and returning the good response corresponding to the GetResult method. It makes the Execute method before.
+     */
+    @Test
+    public void testGetResultRequest() throws Exception {
+        //Execution of the Execute method with a process
+
+        wpsOperationController.displayXMLForExecute("orbisgis:wps:official:deleteRows", "document", "auto", null, null);
+        final String jobId = Wps_2_0_0_Operations.getLastJobId();
+
+        // Test of GetStatus with the correct parameters
+        Action.ActionResult result = action(new Invocation(){
+            @Override
+            public Result invoke() throws Throwable {
+                return wpsOperationController.displayXML("WPS", "2.0.0",
+                        "GetResult", null, jobId);
+            }
+        }).invoke();
+
+        Assert.assertEquals(status(result), OK);
+        Assert.assertTrue(toString(result).contains("net.opengis.wps._2_0.Result@"));
+
+        // Test of  GetResult, when the service parameter is missing
+        result = action(new Invocation(){
+            @Override
+            public Result invoke() throws Throwable {
+                return wpsOperationController.displayXML("", "2.0.0",
+                        "GetResult", null, jobId);
+            }
+        }).invoke();
+
+        Assert.assertEquals(status(result), 400);
+        Assert.assertTrue(toString(result).contains("You need to enter a service to do queries, it should be wps here"));
+
+        // Test of GetResult, when the service parameter is wrong
+        result = action(new Invocation(){
+            @Override
+            public Result invoke() throws Throwable {
+                return wpsOperationController.displayXML("WP", "2.0.0",
+                        "GetResult", null, jobId);
+            }
+        }).invoke();
+
+        Assert.assertEquals(status(result), 400);
+        Assert.assertTrue(toString(result).contains("The service was not properly written, it should be wps here"));
+
+        // Test of GetResult, when the version parameter is missing
+        result = action(new Invocation(){
+            @Override
+            public Result invoke() throws Throwable {
+                return wpsOperationController.displayXML("WPS", "",
+                        "GetResult", null, jobId);
+            }
+        }).invoke();
+
+        Assert.assertEquals(status(result), 400);
+        Assert.assertTrue(toString(result).contains("You need to enter the version of wps to get the corresponding xml file"));
+
+        // Test of GetResult, when the version parameter is wrong
+        result = action(new Invocation(){
+            @Override
+            public Result invoke() throws Throwable {
+                return wpsOperationController.displayXML("WPS", "2.0.1",
+                        "GetResult", null, jobId);
+            }
+        }).invoke();
+
+        Assert.assertEquals(status(result), 400);
+        Assert.assertTrue(toString(result).contains("Please enter a good version of wps, it should be 2.0.0"));
+
+        // Test of GetResult, when the request parameter is missing
+        result = action(new Invocation(){
+            @Override
+            public Result invoke() throws Throwable {
+                return wpsOperationController.displayXML("WPS", "2.0.0", "", null,
+                        jobId);
+            }
+        }).invoke();
+
+        Assert.assertEquals(status(result), 400);
+        Assert.assertTrue(toString(result).contains("You need to enter the request to get the corresponding xml file"));
+
+        // Test of GetResult, when the request parameter is wrong
+        result = action(new Invocation(){
+            @Override
+            public Result invoke() throws Throwable {
+                return wpsOperationController.displayXML("WPS", "2.0.0",
+                        "GetResul", null, jobId);
+            }
+        }).invoke();
+
+        Assert.assertEquals(status(result), 400);
+        Assert.assertTrue(toString(result).contains("This request does not exist," +
+                " please try something else like GetCapabilities."));
+
+        // Test of GetResult, when the jobId parameter is missing
+        result = action(new Invocation(){
+            @Override
+            public Result invoke() throws Throwable {
+                return wpsOperationController.displayXML("WPS", "2.0.0", "GetResult",null,
+                        "");
+            }
+        }).invoke();
+
+        Assert.assertEquals(status(result), 400);
+        Assert.assertTrue(toString(result).contains("An Identifier is missing."));
+
+        // Test of GetResult, when the jobId parameter is wrong
+        result = action(new Invocation(){
+            @Override
+            public Result invoke() throws Throwable {
+                return wpsOperationController.displayXML("WPS", "2.0.0",
+                        "GetResult", null, jobId + "r");
+            }
+        }).invoke();
+
+        Assert.assertEquals(status(result), 400);
+        Assert.assertTrue(toString(result).contains("No execution has this JobId, please be more accurate."));
+    }
 }
