@@ -83,15 +83,21 @@ public class WpsOperationController extends DefaultController {
      * http://localhost:8080/orbisserver/ows?service=WPS&version=2.0.0&
      * request=DescribeProcess&identifier=orbisgis:wps:official:deleteRows
      *
+     * A good request for the GetStatus operation should be
+     * http://localhost:8080/orbisserver/ows?service=WPS&version=2.0.0&request=GetStatus&jobid=
+     * b38ad67b-8c94-4e92-bf97-7b42b08e04c7
+     *
      * @param service Name of the service you want to use. Should be wps here.
      * @param version Version of the service. It must be an accepted version like 2.0.0.
      * @param request Request according to the service that you ask to the server. It could be GetCapabilities.
      * @param identifier Identifier of the process used by the DescribeProcess operation.
+     * @param jobId Identifier of the job used for the GetStatus and GetSResult requests.
      * @return the xml file
      */
     @Route(method = HttpMethod.GET, uri = "/orbisserver/ows")
     public Result displayXML(@Parameter("service") String service, @Parameter("version") String version,
-                             @Parameter("request") String request, @Parameter("identifier") String identifier)
+                             @Parameter("request") String request, @Parameter("identifier") String identifier,
+                             @Parameter("jobId") String jobId)
             throws JAXBException,IOException {
 
         ExceptionReport exceptionReport = new ExceptionReport();
@@ -120,7 +126,7 @@ public class WpsOperationController extends DefaultController {
 
         switch(version){
             case "2.0.0":
-                return wps200GetRequest(request, identifier);
+                return wps200GetRequest(request, identifier, jobId);
             default:
                 ExceptionType exceptionType = new ExceptionType();
                 exceptionType.setExceptionCode("InvalidParameterValue");
@@ -132,7 +138,7 @@ public class WpsOperationController extends DefaultController {
         }
     }
 
-    private Result wps200GetRequest(String request, String identifier){
+    private Result wps200GetRequest(String request, String identifier, String jobId){
         ExceptionReport exceptionReport = new ExceptionReport();
         switch (request) {
             case "GetCapabilities":
@@ -162,6 +168,27 @@ public class WpsOperationController extends DefaultController {
                     return ok(Wps_2_0_0_Operations.getResponseFromDescribeProcess(identifier));
                 } catch (JAXBException e) {
                     LOGGER.error(I18N.tr("Unable to get the xml file corresponding to the DescribeProcess request." +
+                            " \nCause : {0}.", e.getMessage()));
+                    ExceptionType exceptionType = new ExceptionType();
+                    exceptionType.setExceptionCode(e.getErrorCode());
+                    exceptionType.getExceptionText().add(e.getMessage());
+                    exceptionReport.getException().add(exceptionType);
+                    return badRequest(e);
+                }
+            case "GetStatus":
+                if(jobId == null || jobId.isEmpty()){
+                    ExceptionType exceptionType = new ExceptionType();
+                    exceptionType.setExceptionCode("MissingParameterValue");
+                    exceptionType.getExceptionText().add("Operation request does not include a parameter value");
+                    exceptionReport.getException().add(exceptionType);
+                    LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : "
+                            + exceptionReport.getException().get(0).getExceptionText().get(0)));
+                    return badRequest(I18N.tr("An Identifier is missing."));
+                }
+                try {
+                    return ok(Wps_2_0_0_Operations.getResponseFromGetStatus(jobId));
+                } catch (JAXBException e) {
+                    LOGGER.error(I18N.tr("Unable to get the xml file corresponding to the GetStatus request." +
                             " \nCause : {0}.", e.getMessage()));
                     ExceptionType exceptionType = new ExceptionType();
                     exceptionType.setExceptionCode(e.getErrorCode());
@@ -211,6 +238,15 @@ public class WpsOperationController extends DefaultController {
             return badRequest(exceptionType);
         }
 
+        if(response == null || response.isEmpty()) {
+            exceptionType.setExceptionCode("MissingParameterValue");
+            exceptionType.getExceptionText().add("Operation request does not include a parameter value");
+            exceptionReport.getException().add(exceptionType);
+            LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : "
+                    + exceptionReport.getException().get(0).getExceptionText().get(0)));
+            return badRequest(I18N.tr("The desired response format is missing, please set it to document or raw."));
+        }
+
         if(!response.equals("raw") && !response.equals("document")) {
             exceptionType.setExceptionCode("InvalidParameterValue");
             exceptionType.getExceptionText().add("Operation request contains an invalid parameter value");
@@ -218,6 +254,15 @@ public class WpsOperationController extends DefaultController {
             LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : "
                     + exceptionReport.getException().get(0).getExceptionText().get(0)));
             return badRequest(exceptionType);
+        }
+
+        if(mode == null || mode.isEmpty()) {
+            exceptionType.setExceptionCode("MissingParameterValue");
+            exceptionType.getExceptionText().add("Operation request does not include a parameter value");
+            exceptionReport.getException().add(exceptionType);
+            LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : "
+                    + exceptionReport.getException().get(0).getExceptionText().get(0)));
+            return badRequest(I18N.tr("The desired execution method is missing, please set it to auto, sync or async."));
         }
 
         if(!mode.equals("auto") && !mode.equals("sync") && !mode.equals("async")) {

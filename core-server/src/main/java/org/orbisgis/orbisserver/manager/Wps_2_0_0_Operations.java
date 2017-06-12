@@ -59,8 +59,15 @@ import java.util.List;
  */
 public class Wps_2_0_0_Operations {
 
-    /** List of all identifier of all the processes */
+    /**
+     * List of all identifier of all the processes.
+     */
     private static List<CodeType> codeTypeList;
+
+    /**
+     * GetStatus object used to display the response the result of the GetStatus operation.
+     */
+    private static List<GetStatus> getStatusList = new ArrayList<>();
 
     /**
      * Return the wpsCapabilitiesType object which is a xml object.
@@ -102,8 +109,9 @@ public class Wps_2_0_0_Operations {
     /**
      * Return the xml file corresponding to the DescribeProcess request.
      *
+     * @param id Unambiguous identifier of the process that shall be executed.
+     * @return a ProcessOfferings object
      * @throws JAXBException JAXB Exception.
-     * @Return a ProcessOfferings object
      */
     public static Object getResponseFromDescribeProcess(String id) throws JAXBException {
         Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
@@ -131,30 +139,37 @@ public class Wps_2_0_0_Operations {
     /**
      * Return the xml file corresponding to the Execute request.
      *
+     * @param id Unambiguous identifier of the process that shall be executed.
+     * @param response Desired response format, i.e. a response document or raw data.
+     * @param mode Desired execution mode.
+     * @param input Data inputs provided to this process execution.
+     * @param output Specification of outputs expected from the process execution, including the desired format and
+     * transmission mode for each output.
+     * @return a StatusInfo object
      * @throws JAXBException JAXB Exception.
-     * @Return a StatusInfo object
+     * @throws IOException IOException.
      */
     public static Object getResponseFromExecute(String id, String response, String mode, String input, String output)
-            throws JAXBException,IOException {
+            throws JAXBException, IOException {
         getListFromGetCapabilities();
 
-        ProcessOffering processOffering =  ((ProcessOfferings)getResponseFromDescribeProcess(id)).getProcessOffering().get(0);
+        ProcessOffering processOffering = ((ProcessOfferings) getResponseFromDescribeProcess(id)).getProcessOffering().get(0);
         ExecuteRequestType ert = new ExecuteRequestType();
 
         String[] inputParts = new String[]{};
-        if(input !=null) {
-           inputParts = input.split("&");
+        if (input != null) {
+            inputParts = input.split("&");
         }
-        if(processOffering.getProcess().getIdentifier().getValue().equals(id)) {
+        if (processOffering.getProcess().getIdentifier().getValue().equals(id)) {
             for (int i = 0; i < inputParts.length; i++) {
                 DataInputType dataInputType = new DataInputType();
                 Data data = new Data();
-                if(!inputParts[i].contains(";")) {
+                if (!inputParts[i].contains(";")) {
                     data.getContent().add(inputParts[i]);
                     data.setEncoding("simple");
                     data.setMimeType("text/plain");
                     dataInputType.setData(data);
-                }else{
+                } else {
                     String[] dataInput;
                     dataInput = inputParts[i].split(";");
                     for (String aDataInput : dataInput) {
@@ -197,15 +212,76 @@ public class Wps_2_0_0_Operations {
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
         Object resultObject = unmarshaller.unmarshal(resultXml);
 
+        StatusInfo statusInfo = (StatusInfo)resultObject;
+        GetStatus getStatus = new GetStatus();
+        getStatus.setJobID(statusInfo.getJobID());
+        getStatusList.add(getStatus);
+
         return resultObject;  //resultObject is a StatusInfo Object
     }
 
+    /**
+     * Return the xml file corresponding to the GetStatus request.
+     *
+     * @param JobId Unambiguously identifier of a job within a WPS instance.
+     * @return a StatusInfo object.
+     * @throws JAXBException JAXB Exception.
+     * @throws IOException IOException.
+     */
+    public static Object getResponseFromGetStatus(String JobId) throws JAXBException{
+
+        Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
+        Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
+        //Get the corresponding GetStatus
+        GetStatus finalGetStatus = new GetStatus();
+        for(GetStatus getStatus : getStatusList){
+            if(getStatus.getJobID().equals(JobId)){
+                finalGetStatus = getStatus;
+            }
+        }
+        //Marshall the DescribeProcess object into an OutputStream
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        marshaller.marshal(finalGetStatus, out);
+        //Write the OutputStream content into an Input stream before sending it to the wpsService
+        InputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
+        ByteArrayOutputStream xml = (ByteArrayOutputStream) WpsServerManager.getWpsServer().callOperation(in);
+        //Get back the result of the DescribeProcess request as a BufferReader
+        InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
+        //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
+
+        return unmarshaller.unmarshal(resultXml);
+    }
+
+    /**
+     * Return the list of jobid.
+     * @return the list of jobid.
+     */
+    public static List<String> getGetStatus(){
+        List<String> listId = new ArrayList<>();
+        for(GetStatus getStatus : getStatusList){
+            listId.add(getStatus.getJobID());
+        }
+        return listId;
+    }
+
+    /**
+     * Return the last jobid add to the list.
+     * @return a jobid.
+     */
+    public static String getLastJobId() {
+        String JobId = "";
+        for (GetStatus getStatus : getStatusList) {
+            JobId = getStatus.getJobID();
+        }
+        return JobId;
+    }
 
     /**
      * Method to get the xml file corresponding to the GetCapabilities request.
      *
-     * @throws JAXBException JAXB Exception.
      * @Return The processes list into a String.
+     * @throws JAXBException JAXBException.
      */
     public static String getListFromGetCapabilities() throws JAXBException {
         String processesList = "";
@@ -223,8 +299,8 @@ public class Wps_2_0_0_Operations {
     /**
      * This method returns the list of identifiers from the CodeType's list.
      *
-     * @throws JAXBException
-     * @return List of String
+     * @return List of String.
+     * @throws JAXBException JAXBException.
      */
     public static List<String> getCodeTypeList() throws JAXBException {
         getListFromGetCapabilities();
@@ -239,8 +315,8 @@ public class Wps_2_0_0_Operations {
     /**
      * This method returns the CodeType corresponding to the identifier.
      *
-     * @throws JAXBException
-     * @return CodeType object
+     * @return CodeType object.
+     * @throws JAXBException JAXBException.
      */
     public static CodeType getCodeTypeFromId(String id) throws JAXBException{
         CodeType codeTypeFinal = new CodeType();
