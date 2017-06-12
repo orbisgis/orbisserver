@@ -176,6 +176,12 @@ public class InContainerIT extends WisdomTest {
 
         Assert.assertEquals(status(result), 400);
         Assert.assertTrue(result.getResult().getRenderable().content() instanceof ExceptionReport);
+        ExceptionReport report = (ExceptionReport) result.getResult().getRenderable().content();
+        Assert.assertFalse(report.getException().isEmpty());
+        Assert.assertEquals("MissingParameterValue", report.getException().get(0).getExceptionCode());
+        Assert.assertFalse(report.getException().get(0).getExceptionText().isEmpty());
+        Assert.assertEquals("The service parameter should be WPS",
+                report.getException().get(0).getExceptionText().get(0));
 
         // Test of GetCapabilities, when the service parameter is wrong
         result = action(new Invocation() {
@@ -187,6 +193,12 @@ public class InContainerIT extends WisdomTest {
 
         Assert.assertEquals(status(result), 400);
         Assert.assertTrue(result.getResult().getRenderable().content() instanceof ExceptionReport);
+        report = (ExceptionReport) result.getResult().getRenderable().content();
+        Assert.assertFalse(report.getException().isEmpty());
+        Assert.assertEquals("InvalidParameterValue", report.getException().get(0).getExceptionCode());
+        Assert.assertFalse(report.getException().get(0).getExceptionText().isEmpty());
+        Assert.assertEquals("The service parameter should be WPS",
+                report.getException().get(0).getExceptionText().get(0));
 
         // Test of GetCapabilities, when the version parameter is missing
         result = action(new Invocation() {
@@ -198,17 +210,29 @@ public class InContainerIT extends WisdomTest {
 
         Assert.assertEquals(status(result), 400);
         Assert.assertTrue(result.getResult().getRenderable().content() instanceof ExceptionReport);
+        report = (ExceptionReport) result.getResult().getRenderable().content();
+        Assert.assertFalse(report.getException().isEmpty());
+        Assert.assertEquals("MissingParameterValue", report.getException().get(0).getExceptionCode());
+        Assert.assertFalse(report.getException().get(0).getExceptionText().isEmpty());
+        Assert.assertEquals("The version parameter should set",
+                report.getException().get(0).getExceptionText().get(0));
 
         // Test of GetCapabilities, when the version parameter is wrong
         result = action(new Invocation() {
             @Override
             public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.1", "GetCapabilities", null, null);
+                return wpsOperationController.displayXML("WPS", "0.0.0", "GetCapabilities", null, null);
             }
         }).invoke();
 
         Assert.assertEquals(status(result), 400);
         Assert.assertTrue(result.getResult().getRenderable().content() instanceof ExceptionReport);
+        report = (ExceptionReport) result.getResult().getRenderable().content();
+        Assert.assertFalse(report.getException().isEmpty());
+        Assert.assertEquals("InvalidParameterValue", report.getException().get(0).getExceptionCode());
+        Assert.assertFalse(report.getException().get(0).getExceptionText().isEmpty());
+        Assert.assertEquals("Unsupported version.",
+                report.getException().get(0).getExceptionText().get(0));
 
         // Test of GetCapabilities, when the request parameter is missing
         result = action(new Invocation() {
@@ -220,6 +244,12 @@ public class InContainerIT extends WisdomTest {
 
         Assert.assertEquals(status(result), 400);
         Assert.assertTrue(result.getResult().getRenderable().content() instanceof ExceptionReport);
+        report = (ExceptionReport) result.getResult().getRenderable().content();
+        Assert.assertFalse(report.getException().isEmpty());
+        Assert.assertEquals("MissingParameterValue", report.getException().get(0).getExceptionCode());
+        Assert.assertFalse(report.getException().get(0).getExceptionText().isEmpty());
+        Assert.assertEquals("The request parameter should set",
+                report.getException().get(0).getExceptionText().get(0));
 
         // Test of GetCapabilities, when the request parameter is wrong
         result = action(new Invocation() {
@@ -231,17 +261,12 @@ public class InContainerIT extends WisdomTest {
 
         Assert.assertEquals(status(result), 400);
         Assert.assertTrue(result.getResult().getRenderable().content() instanceof ExceptionReport);
-
-        // Test of GetCapabilities, when the request parameter is wrong
-        result = action(new Invocation() {
-            @Override
-            public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.0",
-                        "GetCapabilities", "orbisgis:wps:official:deleteRows", null);
-            }
-        }).invoke();
-
-        Assert.assertEquals(status(result), 200);
+        report = (ExceptionReport) result.getResult().getRenderable().content();
+        Assert.assertFalse(report.getException().isEmpty());
+        Assert.assertEquals("InvalidParameterValue", report.getException().get(0).getExceptionCode());
+        Assert.assertFalse(report.getException().get(0).getExceptionText().isEmpty());
+        Assert.assertEquals("Invalid request.",
+                report.getException().get(0).getExceptionText().get(0));
     }
 
     /**

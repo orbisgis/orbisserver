@@ -107,7 +107,15 @@ public class WpsOperationController extends DefaultController {
                 request == null || request.isEmpty()) {
             ExceptionType exceptionType = new ExceptionType();
             exceptionType.setExceptionCode("MissingParameterValue");
-            exceptionType.getExceptionText().add("Operation request does not include a parameter value");
+            if(service == null || service.isEmpty()) {
+                exceptionType.getExceptionText().add("The service parameter should be WPS");
+            }
+            else if(version == null || version.isEmpty()) {
+                exceptionType.getExceptionText().add("The version parameter should set");
+            }
+            else if(request == null || request.isEmpty()) {
+                exceptionType.getExceptionText().add("The request parameter should set");
+            }
             exceptionReport.getException().add(exceptionType);
             LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : "
                     + exceptionReport.getException().get(0).getExceptionText().get(0)));
@@ -117,7 +125,7 @@ public class WpsOperationController extends DefaultController {
         if (!service.equals("WPS")) {
             ExceptionType exceptionType = new ExceptionType();
             exceptionType.setExceptionCode("InvalidParameterValue");
-            exceptionType.getExceptionText().add("Operation request contains an invalid parameter value");
+            exceptionType.getExceptionText().add("The service parameter should be WPS");
             exceptionReport.getException().add(exceptionType);
             LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : "
                     + exceptionReport.getException().get(0).getExceptionText().get(0)));
@@ -130,7 +138,7 @@ public class WpsOperationController extends DefaultController {
             default:
                 ExceptionType exceptionType = new ExceptionType();
                 exceptionType.setExceptionCode("InvalidParameterValue");
-                exceptionType.getExceptionText().add("Operation request contains an invalid parameter value");
+                exceptionType.getExceptionText().add("Unsupported version.");
                 exceptionReport.getException().add(exceptionType);
                 LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : "
                         + exceptionReport.getException().get(0).getExceptionText().get(0)));
@@ -220,7 +228,7 @@ public class WpsOperationController extends DefaultController {
             default:
                 ExceptionType exceptionType = new ExceptionType();
                 exceptionType.setExceptionCode("InvalidParameterValue");
-                exceptionType.getExceptionText().add("Operation request contains an invalid parameter value");
+                exceptionType.getExceptionText().add("Invalid request.");
                 exceptionReport.getException().add(exceptionType);
                 LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : "
                         + exceptionReport.getException().get(0).getExceptionText().get(0)));
