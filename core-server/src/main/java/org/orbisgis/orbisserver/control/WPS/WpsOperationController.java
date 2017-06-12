@@ -83,6 +83,10 @@ public class WpsOperationController extends DefaultController {
      * http://localhost:8080/orbisserver/ows?service=WPS&version=2.0.0&
      * request=DescribeProcess&identifier=orbisgis:wps:official:deleteRows
      *
+     * A good request for the GetStatus operation should be
+     * http://localhost:8080/orbisserver/ows?service=WPS&version=2.0.0&request=GetStatus&jobid=
+     * b38ad67b-8c94-4e92-bf97-7b42b08e04c7
+     *
      * @Parameter service Name of the service you want to use. Should be wps here.
      * @Parameter version Version of the service. It must be an accepted version like 2.0.0.
      * @Parameter request Request according to the service that you ask to the server. It could be GetCapabilities.
@@ -91,7 +95,8 @@ public class WpsOperationController extends DefaultController {
      */
     @Route(method = HttpMethod.GET, uri = "/orbisserver/ows")
     public Result displayXML(@Parameter("service") String service, @Parameter("version") String version,
-                             @Parameter("request") String request, @Parameter("identifier") String identifier)
+                             @Parameter("request") String request, @Parameter("identifier") String identifier,
+                             @Parameter("jobid") String jobid)
             throws JAXBException,IOException {
 
         ExceptionType exceptionType = new ExceptionType();
@@ -186,6 +191,31 @@ public class WpsOperationController extends DefaultController {
                             " \nCause : {0}.", e.getMessage()));
                     return ok(e);
                 }
+            case "GetStatus":
+                if(jobid == null || jobid.isEmpty()){
+                    exceptionType.setExceptionCode("MissingParameterValue");
+                    exceptionType.getExceptionText().add("Operation request does not include a parameter value");
+                    exceptionReport.getException().add(exceptionType);
+                    LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : "
+                            + exceptionReport.getException().get(0).getExceptionText().get(0)));
+                    return badRequest(I18N.tr("An Identifier is missing."));
+                }
+                if(!Wps_2_0_0_Operations.getGetStatus().contains(jobid)){
+                    exceptionType.setExceptionCode("NoSuchJob");
+                    exceptionType.getExceptionText().add("The JobID from the request does not match" +
+                            "any of the Jobs running on this server");
+                    exceptionReport.getException().add(exceptionType);
+                    LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : "
+                            + exceptionReport.getException().get(0).getExceptionText().get(0)));
+                    return badRequest(I18N.tr("No execution has this JobId, please be more accurate."));
+                }
+                try {
+                    return ok(Wps_2_0_0_Operations.getResponseFromGetStatus(jobid));
+                } catch (JAXBException e) {
+                    LOGGER.error(I18N.tr("Unable to get the xml file corresponding to the DescribeProcess request." +
+                            " \nCause : {0}.", e.getMessage()));
+                    return ok(e);
+                }
             default:
                 exceptionType.setExceptionCode("InvalidParameterValue");
                 exceptionType.getExceptionText().add("Operation request contains an invalid parameter value");
@@ -227,6 +257,15 @@ public class WpsOperationController extends DefaultController {
             return badRequest(I18N.tr("No process has this identifier, please be more accurate."));
         }
 
+        if(response == null || response.isEmpty()) {
+            exceptionType.setExceptionCode("MissingParameterValue");
+            exceptionType.getExceptionText().add("Operation request does not include a parameter value");
+            exceptionReport.getException().add(exceptionType);
+            LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : "
+                    + exceptionReport.getException().get(0).getExceptionText().get(0)));
+            return badRequest(I18N.tr("The desired response format is missing, please set it to document or raw."));
+        }
+
         if(!response.equals("raw") && !response.equals("document")) {
             exceptionType.setExceptionCode("InvalidParameterValue");
             exceptionType.getExceptionText().add("Operation request contains an invalid parameter value");
@@ -234,6 +273,15 @@ public class WpsOperationController extends DefaultController {
             LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : "
                     + exceptionReport.getException().get(0).getExceptionText().get(0)));
             return badRequest(I18N.tr("The desired response format is incorrect, please set it to document or raw."));
+        }
+
+        if(mode == null || mode.isEmpty()) {
+            exceptionType.setExceptionCode("MissingParameterValue");
+            exceptionType.getExceptionText().add("Operation request does not include a parameter value");
+            exceptionReport.getException().add(exceptionType);
+            LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : "
+                    + exceptionReport.getException().get(0).getExceptionText().get(0)));
+            return badRequest(I18N.tr("The desired execution method is missing, please set it to auto, sync or async."));
         }
 
         if(!mode.equals("auto") && !mode.equals("sync") && !mode.equals("async")) {
