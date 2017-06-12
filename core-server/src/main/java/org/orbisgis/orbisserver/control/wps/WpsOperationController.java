@@ -145,7 +145,7 @@ public class WpsOperationController extends DefaultController {
                     exceptionType.setExceptionCode(e.getErrorCode());
                     exceptionType.getExceptionText().add(e.getMessage());
                     exceptionReport.getException().add(exceptionType);
-                    return badRequest(e);
+                    return badRequest(exceptionType);
                 }
             case "DescribeProcess":
                 if (identifier == null || identifier.isEmpty()) {
@@ -185,11 +185,11 @@ public class WpsOperationController extends DefaultController {
      * HTTP POST request on the "/orbisserver/ows/ExecuteRequest" URL.
      * This method is called whenever the customer adds parameters in the form at /execute.
      *
-     * @FormParameter identifier Identifier of the process you want to use, like orbisgis:wps:official:deleteRows.
-     * @FormParameter response Desired response format, i.e. a response document or raw data.
-     * @FormParameter mode Desired execution mode.
-     * @FormParameter input Data inputs provided to this process execution
-     * @FormParameter output Specification of outputs expected from the process execution, including the desired format
+     * @param identifier Identifier of the process you want to use, like orbisgis:wps:official:deleteRows.
+     * @param response Desired response format, i.e. a response document or raw data.
+     * @param mode Desired execution mode.
+     * @param input Data inputs provided to this process execution
+     * @param output Specification of outputs expected from the process execution, including the desired format
      * and transmission mode for each output.
      * @return the xml file
      */
@@ -208,7 +208,7 @@ public class WpsOperationController extends DefaultController {
             exceptionReport.getException().add(exceptionType);
             LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : "
                     + exceptionReport.getException().get(0).getExceptionText().get(0)));
-            return badRequest(I18N.tr("No process has this identifier, please be more accurate."));
+            return badRequest(exceptionType);
         }
 
         if(!response.equals("raw") && !response.equals("document")) {
@@ -217,7 +217,7 @@ public class WpsOperationController extends DefaultController {
             exceptionReport.getException().add(exceptionType);
             LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : "
                     + exceptionReport.getException().get(0).getExceptionText().get(0)));
-            return badRequest(I18N.tr("The desired response format is incorrect, please set it to document or raw."));
+            return badRequest(exceptionType);
         }
 
         if(!mode.equals("auto") && !mode.equals("sync") && !mode.equals("async")) {
@@ -226,7 +226,7 @@ public class WpsOperationController extends DefaultController {
             exceptionReport.getException().add(exceptionType);
             LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : "
                     + exceptionReport.getException().get(0).getExceptionText().get(0)));
-            return badRequest(I18N.tr("The desired execution method is incorrect, please set it to auto, sync or async."));
+            return badRequest(exceptionType);
         }
 
         try {
@@ -234,7 +234,11 @@ public class WpsOperationController extends DefaultController {
         } catch (JAXBException e) {
             LOGGER.error(I18N.tr("Unable to get the xml file corresponding to the Execute request." +
                     " \nCause : {0}.", e.getMessage()));
-            return ok(e);
+            exceptionType = new ExceptionType();
+            exceptionType.setExceptionCode(e.getErrorCode());
+            exceptionType.getExceptionText().add(e.getMessage());
+            exceptionReport.getException().add(exceptionType);
+            return badRequest(exceptionType);
         }
     }
 }
