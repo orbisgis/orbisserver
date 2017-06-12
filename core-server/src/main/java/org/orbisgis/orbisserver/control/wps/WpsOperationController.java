@@ -183,7 +183,7 @@ public class WpsOperationController extends DefaultController {
                     exceptionReport.getException().add(exceptionType);
                     LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : "
                             + exceptionReport.getException().get(0).getExceptionText().get(0)));
-                    return badRequest(I18N.tr("An Identifier is missing."));
+                    return badRequest(exceptionReport);
                 }
                 try {
                     return ok(Wps_2_0_0_Operations.getResponseFromGetStatus(jobId));
@@ -197,28 +197,24 @@ public class WpsOperationController extends DefaultController {
                     return badRequest(e);
                 }
             case "GetResult":
-                if(jobid == null || jobid.isEmpty()){
+                if(jobId == null || jobId.isEmpty()){
+                    ExceptionType exceptionType = new ExceptionType();
                     exceptionType.setExceptionCode("MissingParameterValue");
                     exceptionType.getExceptionText().add("Operation request does not include a parameter value");
                     exceptionReport.getException().add(exceptionType);
                     LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : "
                             + exceptionReport.getException().get(0).getExceptionText().get(0)));
-                    return badRequest(I18N.tr("An Identifier is missing."));
-                }
-                if(!Wps_2_0_0_Operations.getGetStatus().contains(jobid)){
-                    exceptionType.setExceptionCode("NoSuchJob");
-                    exceptionType.getExceptionText().add("The JobID from the request does not match" +
-                            "any of the Jobs running on this server");
-                    exceptionReport.getException().add(exceptionType);
-                    LOGGER.error(I18N.tr(exceptionReport.getException().get(0).getExceptionCode() + " : "
-                            + exceptionReport.getException().get(0).getExceptionText().get(0)));
-                    return badRequest(I18N.tr("No execution has this JobId, please be more accurate."));
+                    return badRequest(exceptionReport);
                 }
                 try {
-                    return ok(Wps_2_0_0_Operations.getResponseFromGetResult(jobid));
+                    return ok(Wps_2_0_0_Operations.getResponseFromGetResult(jobId));
                 } catch (JAXBException e) {
                     LOGGER.error(I18N.tr("Unable to get the xml file corresponding to the DescribeProcess request." +
                             " \nCause : {0}.", e.getMessage()));
+                    ExceptionType exceptionType = new ExceptionType();
+                    exceptionType.setExceptionCode(e.getErrorCode());
+                    exceptionType.getExceptionText().add(e.getMessage());
+                    exceptionReport.getException().add(exceptionType);
                     return ok(e);
                 }
             default:

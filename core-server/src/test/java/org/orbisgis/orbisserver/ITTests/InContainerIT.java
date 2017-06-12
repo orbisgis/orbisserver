@@ -24,7 +24,6 @@ import net.opengis.ows._2.ExceptionType;
 import org.junit.Assert;
 import org.junit.Test;
 import org.orbisgis.orbisserver.manager.Wps_2_0_0_Operations;
-import org.orbiswps.server.controller.utils.Job;
 import org.wisdom.api.http.Result;
 import org.wisdom.test.parents.Action;
 import org.wisdom.test.parents.Invocation;
@@ -575,7 +574,7 @@ public class InContainerIT extends WisdomTest {
         }).invoke();
 
         Assert.assertEquals(status(result), 400);
-        Assert.assertTrue(toString(result).contains("You need to enter a service to do queries, it should be wps here"));
+        Assert.assertTrue(result.getResult().getRenderable().content() instanceof ExceptionReport);
 
         // Test of GetResult, when the service parameter is wrong
         result = action(new Invocation(){
@@ -587,7 +586,7 @@ public class InContainerIT extends WisdomTest {
         }).invoke();
 
         Assert.assertEquals(status(result), 400);
-        Assert.assertTrue(toString(result).contains("The service was not properly written, it should be wps here"));
+        Assert.assertTrue(result.getResult().getRenderable().content() instanceof ExceptionReport);
 
         // Test of GetResult, when the version parameter is missing
         result = action(new Invocation(){
@@ -599,7 +598,7 @@ public class InContainerIT extends WisdomTest {
         }).invoke();
 
         Assert.assertEquals(status(result), 400);
-        Assert.assertTrue(toString(result).contains("You need to enter the version of wps to get the corresponding xml file"));
+        Assert.assertTrue(result.getResult().getRenderable().content() instanceof ExceptionReport);
 
         // Test of GetResult, when the version parameter is wrong
         result = action(new Invocation(){
@@ -611,7 +610,7 @@ public class InContainerIT extends WisdomTest {
         }).invoke();
 
         Assert.assertEquals(status(result), 400);
-        Assert.assertTrue(toString(result).contains("Please enter a good version of wps, it should be 2.0.0"));
+        Assert.assertTrue(result.getResult().getRenderable().content() instanceof ExceptionReport);
 
         // Test of GetResult, when the request parameter is missing
         result = action(new Invocation(){
@@ -623,7 +622,7 @@ public class InContainerIT extends WisdomTest {
         }).invoke();
 
         Assert.assertEquals(status(result), 400);
-        Assert.assertTrue(toString(result).contains("You need to enter the request to get the corresponding xml file"));
+        Assert.assertTrue(result.getResult().getRenderable().content() instanceof ExceptionReport);
 
         // Test of GetResult, when the request parameter is wrong
         result = action(new Invocation(){
@@ -635,8 +634,7 @@ public class InContainerIT extends WisdomTest {
         }).invoke();
 
         Assert.assertEquals(status(result), 400);
-        Assert.assertTrue(toString(result).contains("This request does not exist," +
-                " please try something else like GetCapabilities."));
+        Assert.assertTrue(result.getResult().getRenderable().content() instanceof ExceptionReport);
 
         // Test of GetResult, when the jobId parameter is missing
         result = action(new Invocation(){
@@ -648,18 +646,6 @@ public class InContainerIT extends WisdomTest {
         }).invoke();
 
         Assert.assertEquals(status(result), 400);
-        Assert.assertTrue(toString(result).contains("An Identifier is missing."));
-
-        // Test of GetResult, when the jobId parameter is wrong
-        result = action(new Invocation(){
-            @Override
-            public Result invoke() throws Throwable {
-                return wpsOperationController.displayXML("WPS", "2.0.0",
-                        "GetResult", null, jobId + "r");
-            }
-        }).invoke();
-
-        Assert.assertEquals(status(result), 400);
-        Assert.assertTrue(toString(result).contains("No execution has this JobId, please be more accurate."));
+        Assert.assertTrue(result.getResult().getRenderable().content() instanceof ExceptionReport);
     }
 }
