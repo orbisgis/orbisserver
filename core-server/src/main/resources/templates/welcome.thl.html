@@ -47,15 +47,83 @@
 
     <link rel="stylesheet" href="/libs/css/bootstrap.css" media="screen"/>
     <link rel="stylesheet" href="/assets/main.css"/>
-</head>
-<body>
-
-    <h1>Welcome to Orbis Server !</h1>
-
-    <li>Please <a href="/index"> login</a> ! </li>
 
     <script src="/libs/jquery.min.js"></script>
     <script src="/libs/js/bootstrap.min.js"></script>
+</head>
+<body>
 
+    <style type="text/css">
+        body,html {
+            height: 100%;
+        }
+        #content,.pre-scrollable {
+            height: 100%;
+        }
+        #sidebar {
+            width: 15%;
+            height: 100%;
+            float: left;
+            background-color: #555555
+        }
+        .nav-element {
+            margin-top: 0px;
+            margin-bottom: 25px;
+        }
+        .line-separator{
+            height:1px;
+            background:#717171;
+            border-bottom:1px solid #818080;
+        }
+        .scrollable {
+            overflow-y: scroll;
+            max-height: 100%;
+        }
+    </style>
+
+    <div id="sidebar">
+        <ul class="nav nav-pills nav-stacked">
+            <li class="nav-element">
+                <h3>
+                    <a class="label" id="button-local" href="#">
+                        <span class="glyphicon glyphicon-home" aria-hidden="true"></span> Local Server
+                    </a>
+                </h3>
+            </li>
+            <li>
+                <div class="line-separator"></div>
+            </li>
+            <li class="nav-element">
+                <h3>
+                    <span class="label" role="button">
+                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Server
+                    </span>
+                </h3>
+            </li>
+        </ul>
+    </div>
+
+    <div id="content" class="scrollable">
+    </div>
+
+
+
+    <script>
+        $("#button-local").click( function(e) {
+            e.preventDefault();
+            $.ajax({ type: "GET",
+                url: "http://localhost:8080/index",
+                async: false,
+                success : function(text)
+                {
+                    $( "#content" ).html(String(text));
+                },
+                error : function(text)
+                {
+                    $( "#content" ).html(String(text));
+                }
+            });
+        });
+    </script>
 </body>
 </html>

@@ -37,43 +37,26 @@
 - info_at_ orbisgis.org
 -->
 
-<!DOCTYPE html>
-<html xmlns:th="http://www.w3.org/1999/xhtml">
-<head lang="en">
-    <title>Welcome to OrbisServer</title>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-
-    <link rel="stylesheet" href="/libs/css/bootstrap.css" media="screen"/>
-    <link rel="stylesheet" href="/assets/main.css"/>
-
-</head>
-<body>
-
-<div class="container">
-    <div class="header">
-        <ul class="nav nav-pills pull-right">
-            <li><a href="/">Welcome</a></li>
-        </ul>
-    </div>
-
-    <div class="footer">
-        <p class="unitTest">OrbisServer</p>
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+    <div class="panel panel-default" th:each="item : ${map}">
+        <div class="panel-heading" role="tab" id="headingOne">
+            <h4 class="panel-title">
+                <a th:text="${item.getValue()}" role="button" data-toggle="collapse" data-parent="#accordion"
+                   th:href="${'#'+item.getKey()}"
+                   aria-expanded="true" aria-controls="collapseOne">
+                    Collapsible Group Item #1
+                </a>
+            </h4>
+        </div>
+        <div th:id="${item.getKey()}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+            <div class="panel-body">
+                Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf
+                moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod.
+                Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda
+                shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea
+                proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim
+                aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+            </div>
+        </div>
     </div>
 </div>
-
-<pre th:text="${list}">Welcome!</pre>
-
-<p>Please select an operation</p>
-<ol>
-    <li><a type="text/html"
-           href="orbisserver/ows?service=WPS&amp;version=2.0.0&amp;request=GetCapabilities">GetCapabilities</a></li>
-    <li><a type="text/html"  href="execute">Create an execute method</a></li>
-</ol>
-
-<!-- Scripts -->
-<script src="/libs/jquery.min.js"></script>
-<script src="/libs/js/bootstrap.min.js"></script>
-
-</body>
-</html>
