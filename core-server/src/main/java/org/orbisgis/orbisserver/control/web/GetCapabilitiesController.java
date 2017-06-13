@@ -38,6 +38,7 @@
  */
 package org.orbisgis.orbisserver.control.web;
 
+import org.orbisgis.orbisserver.control.utils.ProcessContent;
 import org.orbisgis.orbisserver.manager.Wps_2_0_0_Operations;
 import org.wisdom.api.DefaultController;
 import org.wisdom.api.annotations.Controller;
@@ -53,12 +54,9 @@ import org.xnap.commons.i18n.*;
 import javax.xml.bind.JAXBException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
- * Instance of DefaultController used to control the welcome's page with a http request.
- * It gets an instance of WpsServerManager to be able to display the result of GetCapabilities method,
- * here it display a list of availables processes form OrbisWps in the index page.
+ * Instance of DefaultController used to control the GetCapabilities page with a http request.
  *
  * @author Sylvain PALOMINOS
  * @author Guillaume MANDE
@@ -77,23 +75,21 @@ public class GetCapabilitiesController extends DefaultController {
     Template getCapabilities;
 
     /**
-     * The action method returning the html index page containing a list of all the OrbisWPS processes
-     * readable by a human. It handles HTTP GET request on the "/index" URL.
-     * Display a message instead of the list if the method fails.
+     * The action method returning the html page containing a list of all the OrbisWPS processes
+     * readable by a human. It handles HTTP GET request on the "/internal/getcapabilities" URL.
      *
-     * @Return The index page including the processes list.
+     * @return The index page including the processes list.
      */
-    @Route(method = HttpMethod.GET, uri = "/index")
+    @Route(method = HttpMethod.GET, uri = "/internal/getcapabilities")
     public Result getCapabilities() {
-        /** List all of the OrbisWPS processes into a String which will be displayed on the index page. */
-        Map<String, String> resultMap = null;
+        List<ProcessContent> processContentList = new ArrayList<>();
         try {
-            resultMap = Wps_2_0_0_Operations.getProcessIdTitleMap();
+            processContentList = Wps_2_0_0_Operations.getProcessIdList();
         } catch (JAXBException e) {
             LOGGER.error(I18N.tr("Unable to get the xml file corresponding to the GetCapabilities request." +
                     " \nCause : {0}.", e.getMessage()));
         }
-        return ok(render(getCapabilities, "map", resultMap));
+        return ok(render(getCapabilities, "processList", processContentList));
     }
 }
 

@@ -112,7 +112,7 @@
         $("#button-local").click( function(e) {
             e.preventDefault();
             $.ajax({ type: "GET",
-                url: "http://localhost:8080/index",
+                url: "http://localhost:8080/internal/getcapabilities",
                 async: false,
                 success : function(text)
                 {

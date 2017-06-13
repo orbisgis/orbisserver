@@ -42,6 +42,7 @@ import net.opengis.ows._2.AcceptVersionsType;
 import net.opengis.ows._2.CodeType;
 import net.opengis.ows._2.SectionsType;
 import net.opengis.wps._2_0.*;
+import org.orbisgis.orbisserver.control.utils.ProcessContent;
 import org.orbiswps.server.model.JaxbContainer;
 
 import javax.xml.bind.JAXBElement;
@@ -50,9 +51,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Class managing all the operations implemented by a WPS 2.0.0 server.
@@ -153,7 +152,7 @@ public class Wps_2_0_0_Operations {
      */
     public static Object getResponseFromExecute(String id, String response, String mode, String input, String output)
             throws JAXBException, IOException {
-        getProcessIdTitleMap();
+        getProcessIdList();
 
         ProcessOffering processOffering = ((ProcessOfferings) getResponseFromDescribeProcess(id)).getProcessOffering().get(0);
         ExecuteRequestType ert = new ExecuteRequestType();
@@ -309,23 +308,25 @@ public class Wps_2_0_0_Operations {
     }
 
     /**
-     * Method to get the map containing the id and the title of the processes
+     * Method to get the list containing the id, the html id and the title of the processes
      *
-     * @Return The map containing the id and the title.
+     * @Return The map containing the id, the html id and the title.
      * @throws JAXBException JAXBException.
      */
-    public static Map<String, String> getProcessIdTitleMap() throws JAXBException {
-        Map<String, String> processesList = new HashMap<>();
+    public static List<ProcessContent> getProcessIdList() throws JAXBException {
+        List<ProcessContent> processeIdList = new ArrayList<>();
 
         codeTypeList = new ArrayList<>();
 
         List<ProcessSummaryType> list = getResponseFromGetCapabilities().getContents().getProcessSummary();
         for (ProcessSummaryType processSummaryType : list) {
-            processesList.put(processSummaryType.getIdentifier().getValue().replaceAll("([:/.-])", ""),
-                    processSummaryType.getTitle().get(0).getValue());
+            processeIdList.add(new ProcessContent(
+                    processSummaryType.getIdentifier().getValue().replaceAll("([:/.-])", ""),
+                    processSummaryType.getIdentifier().getValue(),
+                    processSummaryType.getTitle().get(0).getValue()));
             codeTypeList.add(processSummaryType.getIdentifier());
         }
-        return processesList;
+        return processeIdList;
     }
 
     /**
@@ -335,7 +336,7 @@ public class Wps_2_0_0_Operations {
      * @throws JAXBException JAXBException.
      */
     public static List<String> getCodeTypeList() throws JAXBException {
-        getProcessIdTitleMap();
+        getProcessIdList();
         List<String> listId = new ArrayList<String>();
 
         for(CodeType codeType : codeTypeList){
