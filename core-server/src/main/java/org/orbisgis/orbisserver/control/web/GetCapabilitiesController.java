@@ -51,6 +51,9 @@ import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.*;
 
 import javax.xml.bind.JAXBException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Instance of DefaultController used to control the welcome's page with a http request.
@@ -83,15 +86,14 @@ public class GetCapabilitiesController extends DefaultController {
     @Route(method = HttpMethod.GET, uri = "/index")
     public Result getCapabilities() {
         /** List all of the OrbisWPS processes into a String which will be displayed on the index page. */
-        String resultList = "";
+        Map<String, String> resultMap = null;
         try {
-            resultList = Wps_2_0_0_Operations.getListFromGetCapabilities();
+            resultMap = Wps_2_0_0_Operations.getProcessIdTitleMap();
         } catch (JAXBException e) {
             LOGGER.error(I18N.tr("Unable to get the xml file corresponding to the GetCapabilities request." +
                     " \nCause : {0}.", e.getMessage()));
-            resultList = "Unable to get the xml file";
         }
-        return ok(render(getCapabilities, "list", resultList));
+        return ok(render(getCapabilities, "map", resultMap));
     }
 }
 
