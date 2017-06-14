@@ -38,6 +38,8 @@
  */
 package org.orbisgis.orbisserver.control.web;
 
+import org.apache.felix.ipojo.annotations.Requires;
+import org.orbisgis.orbisserver.manager.WpsServerManager;
 import org.wisdom.api.DefaultController;
 import org.wisdom.api.annotations.Controller;
 import org.wisdom.api.annotations.Route;
@@ -46,6 +48,8 @@ import org.wisdom.api.http.HttpMethod;
 import org.wisdom.api.http.Result;
 import org.wisdom.api.templates.Template;
 
+import javax.sql.DataSource;
+
 /**
 * Instance of DefaultController used to control the welcome's page
 *
@@ -53,6 +57,13 @@ import org.wisdom.api.templates.Template;
 */
 @Controller
 public class WelcomeController extends DefaultController {
+
+    /**
+     * Data source used by the WpsServer.
+     */
+    @Requires
+    DataSource ds;
+
     /**
      * Injects a template named 'welcome'.
      */
@@ -65,6 +76,7 @@ public class WelcomeController extends DefaultController {
      */
     @Route(method = HttpMethod.GET, uri = "/")
     public Result welcome() {
+        WpsServerManager.setDataSource(ds);
         return ok(render(welcome));
     }
 

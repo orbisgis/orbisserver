@@ -75,30 +75,30 @@ public class WpsOperationController extends DefaultController {
      * The action method returning the xml file corresponding to the wps operations. It handles
      * HTTP GET request on the "/orbisserver/ows" URL. Displays exception (MissingParameterValue or InvalidParameterValue)
      * in the logger if is the request is not well written.
-     *
+     * <p>
      * A good request for the GetCapabilities operation should be
      * http://localhost:8080/orbisserver/ows?service=WPS&version=2.0.0&request=GetCapabilities
-     *
+     * <p>
      * A good request for the DescribeProcess operation should be
      * http://localhost:8080/orbisserver/ows?service=WPS&version=2.0.0&
      * request=DescribeProcess&identifier=orbisgis:wps:official:deleteRows
-     *
+     * <p>
      * A good request for the GetStatus operation should be
      * http://localhost:8080/orbisserver/ows?service=WPS&version=2.0.0&request=GetStatus&jobid=
      * b38ad67b-8c94-4e92-bf97-7b42b08e04c7
      *
-     * @param service Name of the service you want to use. Should be wps here.
-     * @param version Version of the service. It must be an accepted version like 2.0.0.
-     * @param request Request according to the service that you ask to the server. It could be GetCapabilities.
+     * @param service    Name of the service you want to use. Should be wps here.
+     * @param version    Version of the service. It must be an accepted version like 2.0.0.
+     * @param request    Request according to the service that you ask to the server. It could be GetCapabilities.
      * @param identifier Identifier of the process used by the DescribeProcess operation.
-     * @param jobId Identifier of the job used for the GetStatus and GetSResult requests.
+     * @param jobId      Identifier of the job used for the GetStatus and GetSResult requests.
      * @return the xml file
      */
     @Route(method = HttpMethod.GET, uri = "/orbisserver/ows")
     public Result displayXML(@Parameter("service") String service, @Parameter("version") String version,
                              @Parameter("request") String request, @Parameter("identifier") String identifier,
                              @Parameter("jobId") String jobId)
-            throws JAXBException,IOException {
+            throws JAXBException, IOException {
 
         ExceptionReport exceptionReport = new ExceptionReport();
 
@@ -107,13 +107,11 @@ public class WpsOperationController extends DefaultController {
                 request == null || request.isEmpty()) {
             ExceptionType exceptionType = new ExceptionType();
             exceptionType.setExceptionCode("MissingParameterValue");
-            if(service == null || service.isEmpty()) {
+            if (service == null || service.isEmpty()) {
                 exceptionType.getExceptionText().add("The service parameter should be WPS");
-            }
-            else if(version == null || version.isEmpty()) {
+            } else if (version == null || version.isEmpty()) {
                 exceptionType.getExceptionText().add("The version parameter should set");
-            }
-            else if(request == null || request.isEmpty()) {
+            } else if (request == null || request.isEmpty()) {
                 exceptionType.getExceptionText().add("The request parameter should set");
             }
             exceptionReport.getException().add(exceptionType);
@@ -132,7 +130,7 @@ public class WpsOperationController extends DefaultController {
             return badRequest(exceptionReport);
         }
 
-        switch(version){
+        switch (version) {
             case "2.0.0":
                 return wps200GetRequest(request, identifier, jobId);
             default:
@@ -146,7 +144,7 @@ public class WpsOperationController extends DefaultController {
         }
     }
 
-    private Result wps200GetRequest(String request, String identifier, String jobId){
+    private Result wps200GetRequest(String request, String identifier, String jobId) {
         ExceptionReport exceptionReport = new ExceptionReport();
         switch (request) {
             case "GetCapabilities":
@@ -184,7 +182,7 @@ public class WpsOperationController extends DefaultController {
                     return badRequest(e);
                 }
             case "GetStatus":
-                if(jobId == null || jobId.isEmpty()){
+                if (jobId == null || jobId.isEmpty()) {
                     ExceptionType exceptionType = new ExceptionType();
                     exceptionType.setExceptionCode("MissingParameterValue");
                     exceptionType.getExceptionText().add("Operation request does not include a parameter value");
@@ -205,7 +203,7 @@ public class WpsOperationController extends DefaultController {
                     return badRequest(e);
                 }
             case "GetResult":
-                if(jobId == null || jobId.isEmpty()){
+                if (jobId == null || jobId.isEmpty()) {
                     ExceptionType exceptionType = new ExceptionType();
                     exceptionType.setExceptionCode("MissingParameterValue");
                     exceptionType.getExceptionText().add("Operation request does not include a parameter value");
@@ -249,7 +247,7 @@ public class WpsOperationController extends DefaultController {
      * and transmission mode for each output.
      * @return the xml file
      */
-    @Route(method = HttpMethod.POST, uri = "/orbisserver/ows/ExecuteRequest")
+    /*@Route(method = HttpMethod.POST, uri = "/orbisserver/ows/ExecuteRequest")
     public Result displayXMLForExecute(@FormParameter("identifier") String identifier,
                                        @FormParameter("response") String response, @FormParameter("mode") String mode,
                                        @FormParameter("input") String input, @FormParameter("output") String output)
@@ -314,5 +312,5 @@ public class WpsOperationController extends DefaultController {
             exceptionReport.getException().add(exceptionType);
             return badRequest(exceptionType);
         }
-    }
+    }*/
 }

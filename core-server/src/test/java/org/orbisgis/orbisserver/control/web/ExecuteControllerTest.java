@@ -50,21 +50,4 @@ import static org.mockito.Mockito.mock;
  * A couple of unit tests.
  */
 public class ExecuteControllerTest extends WisdomUnitTest {
-    /**
-     * Checks that the ExecuteController is returning OK.
-     */
-    @Test
-    public void testExecute() throws Exception {
-        ExecuteController controller = new ExecuteController();
-        // Use a mock to simulate the template.
-        // You can do this for every service and template your controller is using.
-        controller.execute = mock(Template.class);
-        Result result = controller.execute();
-
-        Assert.assertEquals(result.getStatusCode(), OK);
-    }
-
-
-
-
 }

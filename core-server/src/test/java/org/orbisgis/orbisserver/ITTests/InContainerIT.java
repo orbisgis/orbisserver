@@ -395,7 +395,7 @@ public class InContainerIT extends WisdomTest {
      * Checks that the WpsOperationController is returning OK,
      * and returning the good response corresponding to the Execute method.
      */
-    @Test
+    /*@Test
     public void testExecuteRequest() throws Exception {
 
         // Test of Execute with the correct parameters
@@ -467,13 +467,13 @@ public class InContainerIT extends WisdomTest {
 
         Assert.assertEquals(status(result), 400);
         Assert.assertTrue(result.getResult().getRenderable().content() instanceof ExceptionType);
-    }
+    }*/
 
     /**
      * Checks that the WpsOperationController is returning OK,
      * and returning the good response corresponding to the GetStatus method. It makes the Execute method before.
      */
-    @Test
+    /*@Test
     public void testGetStatusRequest() throws Exception {
         //Execution of the Execute method with a process
         wpsOperationController.displayXMLForExecute("orbisgis:wps:official:deleteRows", "document", "auto", null, null);
@@ -579,7 +579,7 @@ public class InContainerIT extends WisdomTest {
      * Checks that the WpsOperationController is returning OK,
      * and returning the good response corresponding to the GetResult method. It makes the Execute method before.
      */
-    @Test
+   /* @Test
     public void testGetResultRequest() throws Exception {
         //Execution of the Execute method with a process
 
@@ -681,5 +681,5 @@ public class InContainerIT extends WisdomTest {
 
         Assert.assertEquals(status(result), 400);
         Assert.assertTrue(result.getResult().getRenderable().content() instanceof ExceptionReport);
-    }
+    }*/
 }

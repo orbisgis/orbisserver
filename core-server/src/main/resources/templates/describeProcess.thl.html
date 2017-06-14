@@ -37,9 +37,10 @@
 - info_at_ orbisgis.org
 -->
 <ul class="list-group">
-    <form>
+    <form action="http://localhost:8080/internal/execute" method="post">
         <h5 th:text="${abstr}"></h5>
         <li class="list-group list-group-item" th:each="input : ${inputList}">
+            <input type="hidden" name="processId" th:value="${processId}"></input>
             <div th:if="${input.name.equalsIgnoreCase('LiteralDataType')}">
                 <div th:if="${input.type.equalsIgnoreCase('String')}">
                     <span th:text="${input.title}">title</span>
@@ -96,5 +97,6 @@
                 <input type="file" th:name="${input.id}" value="File"></input>
             </div>
         </li>
+        <input type="submit" value="Submit"></input>
     </form>
 </ul>
