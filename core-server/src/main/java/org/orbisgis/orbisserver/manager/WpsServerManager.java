@@ -38,6 +38,7 @@
  */
 package org.orbisgis.orbisserver.manager;
 
+import org.h2gis.functions.factory.H2GISFunctions;
 import org.orbiswps.scripts.WpsScriptPlugin;
 import org.orbiswps.server.WpsServer;
 import org.orbiswps.server.WpsServerImpl;
@@ -45,6 +46,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+
 /**
  * Class managing the WpsServer instances.
  *
@@ -76,6 +80,13 @@ public class WpsServerManager{
      */
     public static WpsServer getWpsServer(){
         if(wpsServer == null){
+            if(ds!=null) {
+                try (Connection connection = ds.getConnection()) {
+                    H2GISFunctions.load(connection);
+                } catch (SQLException e) {
+                    LOGGER.warn("Unable to load H2GIS");
+                }
+            }
             createWpsServerInstance();
         }
         return wpsServer;
