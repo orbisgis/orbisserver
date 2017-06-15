@@ -94,7 +94,7 @@
             </div>
             <div th:if="${input.name.equalsIgnoreCase('RawData')}">
                 <span th:text="${input.title}">title</span>
-                <input type="file" th:name="${input.id}" value="File"></input>
+                <input type="text" th:name="${input.id}" value="File url"></input>
             </div>
         </li>
         <input type="submit" value="Submit"></input>

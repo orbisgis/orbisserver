@@ -48,7 +48,7 @@ import org.wisdom.api.http.Result;
 import org.wisdom.api.templates.Template;
 
 import javax.xml.bind.JAXBException;
-import java.io.IOException;
+import java.io.*;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
