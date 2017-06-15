@@ -99,9 +99,10 @@ public class DescribeProcessController extends DefaultController {
             LOGGER.error(I18N.tr("Unable to get the xml file corresponding to the DescribeProcess request." +
                     " \nCause : {0}.", e.getMessage()));
         }
-        String abstr = processOfferings.getProcessOffering().get(0).getProcess().getAbstract().get(0).getValue();
+        ProcessDescriptionType process = processOfferings.getProcessOffering().get(0).getProcess();
+        String abstr = process.getAbstract().get(0).getValue();
         List<InputContent> inputList = new ArrayList<>();
-        for(InputDescriptionType input : processOfferings.getProcessOffering().get(0).getProcess().getInput()){
+        for(InputDescriptionType input : process.getInput()){
             String title = input.getTitle().get(0).getValue();
             String inputId = input.getIdentifier().getValue();
             String name = input.getDataDescription().getValue().getClass().getSimpleName();
@@ -196,7 +197,8 @@ public class DescribeProcessController extends DefaultController {
             inputList.add(inputContent);
         }
         List<OutputDescriptionType> outputList = processOfferings.getProcessOffering().get(0).getProcess().getOutput();
-        return ok(render(describeProcess, "abstr", abstr, "inputList", inputList, "outputList", outputList));
+        return ok(render(describeProcess, "abstr", abstr, "inputList", inputList,
+                "outputList", outputList, "processId", process.getIdentifier().getValue()));
     }
 }
 

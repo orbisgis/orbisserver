@@ -38,33 +38,17 @@
  */
 package org.orbisgis.orbisserver.manager;
 
-import net.opengis.ows._2.AcceptVersionsType;
-import net.opengis.ows._2.CodeType;
-import net.opengis.ows._2.SectionsType;
-import net.opengis.wps._1_0_0.GetCapabilities;
-import net.opengis.wps._2_0.*;
-import org.apache.felix.ipojo.annotations.Requires;
+import org.h2gis.functions.factory.H2GISFunctions;
 import org.orbiswps.scripts.WpsScriptPlugin;
 import org.orbiswps.server.WpsServer;
 import org.orbiswps.server.WpsServerImpl;
-import org.orbiswps.server.model.JaxbContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
 
 import javax.sql.DataSource;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Connection;
+import java.sql.SQLException;
+
 /**
  * Class managing the WpsServer instances.
  *
@@ -79,7 +63,6 @@ public class WpsServerManager{
     /**
      * Data source used by the WpsServer.
      */
-    @Requires
     private static DataSource ds;
 
     /**
@@ -87,12 +70,23 @@ public class WpsServerManager{
      */
     private static WpsServer wpsServer;
 
+    public static void setDataSource(DataSource ds){
+        WpsServerManager.ds = ds;
+    }
+
     /**
      * Returns the instance of the WpsServer. If it was not already created, create it.
      * @return The instance of the WpsServer
      */
     public static WpsServer getWpsServer(){
         if(wpsServer == null){
+            if(ds!=null) {
+                try (Connection connection = ds.getConnection()) {
+                    H2GISFunctions.load(connection);
+                } catch (SQLException e) {
+                    LOGGER.warn("Unable to load H2GIS");
+                }
+            }
             createWpsServerInstance();
         }
         return wpsServer;
@@ -103,6 +97,7 @@ public class WpsServerManager{
      */
     private static void createWpsServerInstance(){
         wpsServer = new WpsServerImpl(System.getProperty("java.io.tmpdir"), ds);
+        wpsServer.setDatabase(WpsServer.Database.H2GIS);
         WpsScriptPlugin scriptPlugin = new WpsScriptPlugin();
         scriptPlugin.setWpsServer(wpsServer);
         scriptPlugin.activate();

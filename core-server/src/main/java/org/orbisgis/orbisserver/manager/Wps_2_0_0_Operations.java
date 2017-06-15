@@ -52,6 +52,7 @@ import javax.xml.bind.Unmarshaller;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Class managing all the operations implemented by a WPS 2.0.0 server.
@@ -143,68 +144,56 @@ public class Wps_2_0_0_Operations {
      * @param id Unambiguous identifier of the process that shall be executed.
      * @param response Desired response format, i.e. a response document or raw data.
      * @param mode Desired execution mode.
-     * @param input Data inputs provided to this process execution.
-     * @param output Specification of outputs expected from the process execution, including the desired format and
+     * @param inputData Map of the inputs provided to this process execution.
+     * @param outputData Specification of outputs expected from the process execution, including the desired format and
      * transmission mode for each output.
      * @return a StatusInfo object
      * @throws JAXBException JAXB Exception.
      * @throws IOException IOException.
      */
-    public static Object getResponseFromExecute(String id, String response, String mode, String input, String output)
+    public static Object getResponseFromExecute(String id, String response, String mode, Map<String, String> inputData,
+                                                Map<String, String> outputData)
             throws JAXBException, IOException {
+
         getProcessIdList();
+        ExecuteRequestType execute = new ExecuteRequestType();
 
-        ProcessOffering processOffering = ((ProcessOfferings) getResponseFromDescribeProcess(id)).getProcessOffering().get(0);
-        ExecuteRequestType ert = new ExecuteRequestType();
-
-        String[] inputParts = new String[]{};
-        if (input != null) {
-            inputParts = input.split("&");
+        for (Map.Entry<String, String> entry : inputData.entrySet()) {
+            DataInputType dataInputType = new DataInputType();
+            Data data = new Data();
+            data.getContent().add(entry.getValue());
+            data.setEncoding("simple");
+            data.setMimeType("text/plain");
+            dataInputType.setData(data);
+            dataInputType.setId(entry.getKey());
+            execute.getInput().add(dataInputType);
         }
-        if (processOffering.getProcess().getIdentifier().getValue().equals(id)) {
-            for (int i = 0; i < inputParts.length; i++) {
-                DataInputType dataInputType = new DataInputType();
-                Data data = new Data();
-                if (!inputParts[i].contains(";")) {
-                    data.getContent().add(inputParts[i]);
-                    data.setEncoding("simple");
-                    data.setMimeType("text/plain");
-                    dataInputType.setData(data);
-                } else {
-                    String[] dataInput;
-                    dataInput = inputParts[i].split(";");
-                    for (String aDataInput : dataInput) {
-                        data.getContent().add(aDataInput);
-                        data.setEncoding("simple");
-                        data.setMimeType("text/plain");
-                        dataInputType.setData(data);
-                    }
-                }
-                InputDescriptionType inputDescriptionType = processOffering.getProcess().getInput().get(i);
-                dataInputType.setId(inputDescriptionType.getIdentifier().getValue());
-                ert.getInput().add(dataInputType);
-            }
+
+        for (Map.Entry<String, String> entry : outputData.entrySet()) {
             OutputDefinitionType outputDefinitionType = new OutputDefinitionType();
-            OutputDescriptionType outputDescriptionType = processOffering.getProcess().getOutput().get(0);
-            outputDefinitionType.setId(outputDescriptionType.getIdentifier().getValue());
+            outputDefinitionType.setId(entry.getKey());
             outputDefinitionType.setEncoding("simple");
             outputDefinitionType.setMimeType("text/plain");
-            ert.getOutput().add(outputDefinitionType);
+            outputDefinitionType.setTransmission(DataTransmissionModeType.REFERENCE);
+            execute.getOutput().add(outputDefinitionType);
         }
+
 
         Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
         ObjectFactory factory = new ObjectFactory();
         //Creates the ExecuteRequestType
 
-        ert.setIdentifier(getCodeTypeFromId(id));
-        ert.setResponse(response);
-        ert.setMode(mode);
+        CodeType codeType = new CodeType();
+        codeType.setValue(id);
+        execute.setIdentifier(codeType);
+        execute.setResponse(response);
+        execute.setMode(mode);
 
         //Marshall the ExecuteRequestType object into an OutputStream
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        marshaller.marshal(factory.createExecute(ert), out);
+        marshaller.marshal(factory.createExecute(execute), out);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
         InputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
         ByteArrayOutputStream xml = (ByteArrayOutputStream) WpsServerManager.getWpsServer().callOperation(in);

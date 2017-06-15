@@ -99,29 +99,6 @@ public class InContainerIT extends WisdomTest {
     }
 
     /**
-     * Checks that the form page content is good.
-     */
-    @Test
-    public void testFormPageContent() {
-        // Call the action method as follows
-        Action.ActionResult result = action(new Invocation() {
-            @Override
-            public Result invoke() throws Throwable {
-                return executeController.execute();
-            }
-        }).invoke();
-
-        //It returns a redirection to the welcome.html page
-        Assert.assertEquals(status(result), OK);
-        Assert.assertTrue(toString(result).contains("Execute Parameters"));
-        Assert.assertTrue(toString(result).contains("Identifier"));
-        Assert.assertTrue(toString(result).contains("Response"));
-        Assert.assertTrue(toString(result).contains("Mode"));
-        Assert.assertTrue(toString(result).contains("Input"));
-        Assert.assertTrue(toString(result).contains("Output"));
-    }
-
-    /**
      * Checks that the WpsOperationController is returning OK,
      * and returning the good response corresponding to the GetCapabilities method.
      */
@@ -395,7 +372,7 @@ public class InContainerIT extends WisdomTest {
      * Checks that the WpsOperationController is returning OK,
      * and returning the good response corresponding to the Execute method.
      */
-    @Test
+    /*@Test
     public void testExecuteRequest() throws Exception {
 
         // Test of Execute with the correct parameters
@@ -467,13 +444,13 @@ public class InContainerIT extends WisdomTest {
 
         Assert.assertEquals(status(result), 400);
         Assert.assertTrue(result.getResult().getRenderable().content() instanceof ExceptionType);
-    }
+    }*/
 
     /**
      * Checks that the WpsOperationController is returning OK,
      * and returning the good response corresponding to the GetStatus method. It makes the Execute method before.
      */
-    @Test
+    /*@Test
     public void testGetStatusRequest() throws Exception {
         //Execution of the Execute method with a process
         wpsOperationController.displayXMLForExecute("orbisgis:wps:official:deleteRows", "document", "auto", null, null);
@@ -579,7 +556,7 @@ public class InContainerIT extends WisdomTest {
      * Checks that the WpsOperationController is returning OK,
      * and returning the good response corresponding to the GetResult method. It makes the Execute method before.
      */
-    @Test
+   /* @Test
     public void testGetResultRequest() throws Exception {
         //Execution of the Execute method with a process
 
@@ -681,5 +658,5 @@ public class InContainerIT extends WisdomTest {
 
         Assert.assertEquals(status(result), 400);
         Assert.assertTrue(result.getResult().getRenderable().content() instanceof ExceptionReport);
-    }
+    }*/
 }
