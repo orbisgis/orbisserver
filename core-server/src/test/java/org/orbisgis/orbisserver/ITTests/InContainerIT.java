@@ -72,9 +72,6 @@ public class InContainerIT extends WisdomTest {
 
         //It returns a redirection to the index.html page
         Assert.assertEquals(status(result), OK);
-        Assert.assertTrue(toString(result).contains("OrbisServer"));
-        Assert.assertTrue(toString(result).contains("Welcome"));
-        Assert.assertTrue(toString(result).contains("Welcome to OrbisServer"));
 
         Assert.assertTrue(toString(result).contains("Variable distance buffer"));
         Assert.assertTrue(toString(result).contains("Fixed distance buffer"));
@@ -99,30 +96,6 @@ public class InContainerIT extends WisdomTest {
         Assert.assertTrue(toString(result).contains("Describe columns"));
         Assert.assertTrue(toString(result).contains("Insert values in a table"));
         Assert.assertTrue(toString(result).contains("Tables join"));
-
-        Assert.assertTrue(toString(result).contains("Please select an operation"));
-        Assert.assertTrue(toString(result).contains("GetCapabilities"));
-        Assert.assertTrue(toString(result).contains("Create an execute method"));
-    }
-
-    /**
-     * Checks that the welcome page content is good.
-     */
-    @Test
-    public void testWelcomePageContent() {
-        // Call the action method as follows
-        Action.ActionResult result = action(new Invocation() {
-            @Override
-            public Result invoke() throws Throwable {
-                return welcomeController.welcome();
-            }
-        }).invoke();
-
-        //It returns a redirection to the welcome.html page
-        Assert.assertEquals(status(result), OK);
-        Assert.assertTrue(toString(result).contains("Welcome to Orbis Server"));
-        Assert.assertTrue(toString(result).contains("Please"));
-        Assert.assertTrue(toString(result).contains("login"));
     }
 
     /**
@@ -299,6 +272,12 @@ public class InContainerIT extends WisdomTest {
 
         Assert.assertEquals(status(result), 400);
         Assert.assertTrue(result.getResult().getRenderable().content() instanceof ExceptionReport);
+        ExceptionReport report = (ExceptionReport) result.getResult().getRenderable().content();
+        Assert.assertFalse(report.getException().isEmpty());
+        Assert.assertEquals("MissingParameterValue", report.getException().get(0).getExceptionCode());
+        Assert.assertFalse(report.getException().get(0).getExceptionText().isEmpty());
+        Assert.assertEquals("The service parameter should be WPS",
+                report.getException().get(0).getExceptionText().get(0));
 
         // Test of DescribeProcess, when the service parameter is wrong
         result = action(new Invocation(){
@@ -311,6 +290,12 @@ public class InContainerIT extends WisdomTest {
 
         Assert.assertEquals(status(result), 400);
         Assert.assertTrue(result.getResult().getRenderable().content() instanceof ExceptionReport);
+        report = (ExceptionReport) result.getResult().getRenderable().content();
+        Assert.assertFalse(report.getException().isEmpty());
+        Assert.assertEquals("InvalidParameterValue", report.getException().get(0).getExceptionCode());
+        Assert.assertFalse(report.getException().get(0).getExceptionText().isEmpty());
+        Assert.assertEquals("The service parameter should be WPS",
+                report.getException().get(0).getExceptionText().get(0));
 
         // Test of DescribeProcess, when the version parameter is missing
         result = action(new Invocation(){
@@ -323,6 +308,12 @@ public class InContainerIT extends WisdomTest {
 
         Assert.assertEquals(status(result), 400);
         Assert.assertTrue(result.getResult().getRenderable().content() instanceof ExceptionReport);
+        report = (ExceptionReport) result.getResult().getRenderable().content();
+        Assert.assertFalse(report.getException().isEmpty());
+        Assert.assertEquals("MissingParameterValue", report.getException().get(0).getExceptionCode());
+        Assert.assertFalse(report.getException().get(0).getExceptionText().isEmpty());
+        Assert.assertEquals("The version parameter should set",
+                report.getException().get(0).getExceptionText().get(0));
 
         // Test of DescribeProcess, when the version parameter is wrong
         result = action(new Invocation(){
@@ -335,6 +326,12 @@ public class InContainerIT extends WisdomTest {
 
         Assert.assertEquals(status(result), 400);
         Assert.assertTrue(result.getResult().getRenderable().content() instanceof ExceptionReport);
+        report = (ExceptionReport) result.getResult().getRenderable().content();
+        Assert.assertFalse(report.getException().isEmpty());
+        Assert.assertEquals("InvalidParameterValue", report.getException().get(0).getExceptionCode());
+        Assert.assertFalse(report.getException().get(0).getExceptionText().isEmpty());
+        Assert.assertEquals("Unsupported version.",
+                report.getException().get(0).getExceptionText().get(0));
 
         // Test of DescribeProcess, when the request parameter is missing
         result = action(new Invocation(){
@@ -346,6 +343,12 @@ public class InContainerIT extends WisdomTest {
 
         Assert.assertEquals(status(result), 400);
         Assert.assertTrue(result.getResult().getRenderable().content() instanceof ExceptionReport);
+        report = (ExceptionReport) result.getResult().getRenderable().content();
+        Assert.assertFalse(report.getException().isEmpty());
+        Assert.assertEquals("MissingParameterValue", report.getException().get(0).getExceptionCode());
+        Assert.assertFalse(report.getException().get(0).getExceptionText().isEmpty());
+        Assert.assertEquals("The request parameter should set",
+                report.getException().get(0).getExceptionText().get(0));
 
         // Test of DescribeProcess, when the request parameter is wrong
         result = action(new Invocation(){
@@ -358,6 +361,12 @@ public class InContainerIT extends WisdomTest {
 
         Assert.assertEquals(status(result), 400);
         Assert.assertTrue(result.getResult().getRenderable().content() instanceof ExceptionReport);
+        report = (ExceptionReport) result.getResult().getRenderable().content();
+        Assert.assertFalse(report.getException().isEmpty());
+        Assert.assertEquals("InvalidParameterValue", report.getException().get(0).getExceptionCode());
+        Assert.assertFalse(report.getException().get(0).getExceptionText().isEmpty());
+        Assert.assertEquals("Invalid request.",
+                report.getException().get(0).getExceptionText().get(0));
 
         // Test of DescribeProcess, when the request parameter is wrong
         result = action(new Invocation(){
