@@ -99,29 +99,6 @@ public class InContainerIT extends WisdomTest {
     }
 
     /**
-     * Checks that the form page content is good.
-     */
-    @Test
-    public void testFormPageContent() {
-        // Call the action method as follows
-        Action.ActionResult result = action(new Invocation() {
-            @Override
-            public Result invoke() throws Throwable {
-                return executeController.execute();
-            }
-        }).invoke();
-
-        //It returns a redirection to the welcome.html page
-        Assert.assertEquals(status(result), OK);
-        Assert.assertTrue(toString(result).contains("Execute Parameters"));
-        Assert.assertTrue(toString(result).contains("Identifier"));
-        Assert.assertTrue(toString(result).contains("Response"));
-        Assert.assertTrue(toString(result).contains("Mode"));
-        Assert.assertTrue(toString(result).contains("Input"));
-        Assert.assertTrue(toString(result).contains("Output"));
-    }
-
-    /**
      * Checks that the WpsOperationController is returning OK,
      * and returning the good response corresponding to the GetCapabilities method.
      */
