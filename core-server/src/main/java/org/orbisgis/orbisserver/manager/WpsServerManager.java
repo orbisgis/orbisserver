@@ -48,6 +48,8 @@ import org.slf4j.LoggerFactory;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Class managing the WpsServer instances.
@@ -97,6 +99,7 @@ public class WpsServerManager{
      */
     private static void createWpsServerInstance(){
         wpsServer = new WpsServerImpl(System.getProperty("java.io.tmpdir"), ds);
+        wpsServer.setExecutorService(Executors.newFixedThreadPool(3));
         wpsServer.setDatabase(WpsServer.Database.H2GIS);
         WpsScriptPlugin scriptPlugin = new WpsScriptPlugin();
         scriptPlugin.setWpsServer(wpsServer);

@@ -276,12 +276,8 @@ public class Wps_2_0_0_Operations {
      * Return the list of jobid.
      * @return the list of jobid.
      */
-    public static List<String> getGetStatus(){
-        List<String> listId = new ArrayList<>();
-        for(GetStatus getStatus : getStatusList){
-            listId.add(getStatus.getJobID());
-        }
-        return listId;
+    public static List<GetStatus> getGetStatus(){
+        return getStatusList;
     }
 
     /**
