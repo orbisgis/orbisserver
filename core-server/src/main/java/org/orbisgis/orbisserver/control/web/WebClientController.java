@@ -42,6 +42,9 @@ import net.opengis.ows._2.RangeType;
 import net.opengis.ows._2.ValueType;
 import net.opengis.wps._2_0.*;
 import org.orbisgis.orbisserver.control.utils.InputContent;
+import org.orbisgis.orbisserver.control.utils.JobContent;
+import org.orbisgis.orbisserver.control.utils.ProcessContent;
+import org.orbisgis.orbisserver.control.utils.UserContent;
 import org.orbisgis.orbisserver.manager.Wps_2_0_0_Operations;
 import org.orbiswps.server.model.Enumeration;
 import org.orbiswps.server.model.JDBCColumn;
@@ -61,28 +64,54 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.xml.bind.JAXBException;
+import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Instance of DefaultController used to control the describeProcess page with a http request.
+ * Controller containing all the routes used by the web WPS client.
  *
  * @author Sylvain PALOMINOS
+ * @author Guillaume MANDE
  */
 @Controller
-public class DescribeProcessController extends DefaultController {
-    /** Logger */
-    private static final Logger LOGGER = LoggerFactory.getLogger(DescribeProcessController.class);
-    /** I18N object */
-    private static final I18n I18N = I18nFactory.getI18n(DescribeProcessController.class);
+public class WebClientController extends DefaultController {
 
-    /**
-     * Injects a template named 'describeProcess'.
-     */
+    /** Logger */
+    private static final Logger LOGGER = LoggerFactory.getLogger(WebClientController.class);
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(WebClientController.class);
+
+    private UserContent userContent = new UserContent();
+
+    @View("getCapabilities")
+    Template getCapabilities;
+
     @View("describeProcess")
     Template describeProcess;
+
+    @View("allStatus")
+    Template allStatus;
+
+    /**
+     * The action method returning the html page containing a list of all the OrbisWPS processes
+     * readable by a human. It handles HTTP GET request on the "/internal/getcapabilities" URL.
+     *
+     * @return The index page including the processes list.
+     */
+    @Route(method = HttpMethod.GET, uri = "/internal/wps/getcapabilities")
+    public Result getCapabilities() {
+        try {
+            userContent.setCapabilities(Wps_2_0_0_Operations.getResponseFromGetCapabilities());
+        } catch (JAXBException e) {
+            LOGGER.error(I18N.tr("Unable to get the xml file corresponding to the GetCapabilities request." +
+                    " \nCause : {0}.", e.getMessage()));
+        }
+        return ok(render(getCapabilities, "processList", userContent.getProcessContentList()));
+    }
 
     /**
      * The action method returning the html index page containing a form corresponding to a process.
@@ -90,7 +119,7 @@ public class DescribeProcessController extends DefaultController {
      *
      * @return The page including the processes form.
      */
-    @Route(method = HttpMethod.GET, uri = "/internal/describeProcess")
+    @Route(method = HttpMethod.GET, uri = "/internal/wps/describeProcess")
     public Result describeProcess(@Parameter("id") String id) {
         ProcessOfferings processOfferings = null;
         try {
@@ -200,5 +229,47 @@ public class DescribeProcessController extends DefaultController {
         return ok(render(describeProcess, "abstr", abstr, "inputList", inputList,
                 "outputList", outputList, "processId", process.getIdentifier().getValue()));
     }
-}
 
+    /**
+     * The action method returning the html welcome page containing a formulary to do an execute request.
+     * @return The execute result.
+     */
+    @Route(method = HttpMethod.POST, uri = "/internal/wps/execute")
+    public Result execute() throws IOException, JAXBException {
+        String urlContent = URLDecoder.decode(context().reader().readLine(), "UTF-8");
+        String[] split = urlContent.split("&");
+        Map<String, String> inputData = new HashMap<>();
+        String id = "";
+        for(String str : split){
+            String[] val = str.split("=");
+            if(val[0].equals("processId")){
+                id = val[1];
+            }
+            else {
+                if(val.length==1) {
+                    inputData.put(val[0], "");
+                }
+                else {
+                    inputData.put(val[0], val[1]);
+                }
+            }
+        }
+        Map<String, String> outputData = new HashMap<>();
+        Object response = Wps_2_0_0_Operations.getResponseFromExecute(id, "document", "auto", inputData, outputData);
+        if(response instanceof StatusInfo){
+            StatusInfo statusInfo = new StatusInfo();
+            JobContent jobContent = new JobContent(statusInfo.getJobID());
+            userContent.addJob(id, jobContent);
+        }
+        return ok();
+    }
+
+    /**
+     * The action method returning the html welcome page containing a formulary to do an execute request.
+     * @return The execute result.
+     */
+    @Route(method = HttpMethod.GET, uri = "/internal/wps/allStatus")
+    public Result allStatus() throws IOException, JAXBException {
+        return ok(render(allStatus, "jobList", userContent.getAllJobContent()));
+    }
+}

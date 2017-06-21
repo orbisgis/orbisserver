@@ -1,4 +1,4 @@
-/**
+/*
  * OrbisServer is an OSGI web application to expose OGC services.
  *
  * OrbisServer is part of the OrbisGIS platform
@@ -38,57 +38,54 @@
  */
 package org.orbisgis.orbisserver.control.utils;
 
+import net.opengis.wps._2_0.ProcessSummaryType;
+import net.opengis.wps._2_0.WPSCapabilitiesType;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Object containing basic information used by the HTML UI.
+ * Information linked to the user.
  *
  * @author Sylvain PALOMINOS
  */
-public class ProcessContent {
-    private String htmlId;
-    private String wpsId;
-    private String title;
-    private String version;
-    private List<JobContent> jobContentList;
+public class UserContent {
 
-    public ProcessContent(String htmlId, String wpsId){
-        this.htmlId = htmlId;
-        this.wpsId = wpsId;
-        jobContentList = new ArrayList<>();
+    private List<ProcessContent> processContentList;
+
+    public UserContent(){
+        processContentList = new ArrayList<>();
     }
 
-    public String getHtmlId() {
-        return htmlId;
+    public void setCapabilities(WPSCapabilitiesType wpsCapabilitiesType){
+        processContentList = new ArrayList<>();
+        for(ProcessSummaryType summary : wpsCapabilitiesType.getContents().getProcessSummary()){
+            String id = summary.getIdentifier().getValue();
+            ProcessContent content = new ProcessContent(id.replaceAll("([-/:,;.])", ""), id);
+            content.setTitle(summary.getTitle().get(0).getValue());
+            content.setVersion(summary.getProcessVersion());
+            processContentList.add(content);
+        }
     }
 
-    public String getWpsId() {
-        return wpsId;
+    public List<ProcessContent> getProcessContentList(){
+        return processContentList;
     }
 
-    public String getTitle() {
-        return title;
+    public void addJob(String processId, JobContent jobContent) {
+        jobContent.setProcessID(processId);
+        for(ProcessContent process : processContentList){
+            if (process.getWpsId().equals(processId)) {
+                process.addJobContent(jobContent);
+            }
+        }
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getVersion(){
-        return version;
-    }
-
-    public void setVersion(String version){
-        this.version = version;
-    }
-
-    public void addJobContent(JobContent job){
-        job.setProcessTitle(title);
-        jobContentList.add(job);
-    }
-
-    public List<JobContent> getJobContentList(){
+    public List<JobContent> getAllJobContent(){
+        List<JobContent> jobContentList = new ArrayList<>();
+        for(ProcessContent process : processContentList){
+            jobContentList.addAll(process.getJobContentList());
+        }
         return jobContentList;
     }
 }

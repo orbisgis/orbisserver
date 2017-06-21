@@ -45,58 +45,13 @@ public class InContainerIT extends WisdomTest {
      * the bundle context, controllers, services and
      * templates.
      */
-    @Inject
-    GetCapabilitiesController getCapabilitiesController;
 
     @Inject
     WelcomeController welcomeController;
 
     @Inject
-    ExecuteController executeController;
-
-    @Inject
+    private
     WpsOperationController wpsOperationController;
-
-    /**
-     * Checks that the index page content is good.
-     */
-    @Test
-    public void testIndexPageContent() {
-        // Call the action method as follows
-        Action.ActionResult result = action(new Invocation() {
-            @Override
-            public Result invoke() throws Throwable {
-                return getCapabilitiesController.getCapabilities();
-            }
-        }).invoke();
-
-        //It returns a redirection to the index.html page
-        Assert.assertEquals(status(result), OK);
-
-        Assert.assertTrue(toString(result).contains("Variable distance buffer"));
-        Assert.assertTrue(toString(result).contains("Fixed distance buffer"));
-        Assert.assertTrue(toString(result).contains("Extract center"));
-        Assert.assertTrue(toString(result).contains("Create a grid of points"));
-        Assert.assertTrue(toString(result).contains("Create a grid of polygons"));
-        Assert.assertTrue(toString(result).contains("Fixed extrude polygons"));
-        Assert.assertTrue(toString(result).contains("Variable extrude polygons"));
-        Assert.assertTrue(toString(result).contains("Geometry properties"));
-        Assert.assertTrue(toString(result).contains("Reproject geometries"));
-        Assert.assertTrue(toString(result).contains("Point table from CSV"));
-        Assert.assertTrue(toString(result).contains("Import a CSV file"));
-        Assert.assertTrue(toString(result).contains("Import a DBF file"));
-        Assert.assertTrue(toString(result).contains("Import a GPX file"));
-        Assert.assertTrue(toString(result).contains("Import a GeoJSON file"));
-        Assert.assertTrue(toString(result).contains("Import a OSM file"));
-        Assert.assertTrue(toString(result).contains("Import a shapeFile"));
-        Assert.assertTrue(toString(result).contains("Import a TSV file"));
-        Assert.assertTrue(toString(result).contains("Create a graph"));
-        Assert.assertTrue(toString(result).contains("Delete columns"));
-        Assert.assertTrue(toString(result).contains("Delete rows"));
-        Assert.assertTrue(toString(result).contains("Describe columns"));
-        Assert.assertTrue(toString(result).contains("Insert values in a table"));
-        Assert.assertTrue(toString(result).contains("Tables join"));
-    }
 
     /**
      * Checks that the WpsOperationController is returning OK,

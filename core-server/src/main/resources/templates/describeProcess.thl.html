@@ -81,7 +81,7 @@
 </style>
 
 <ul class="list-group">
-    <form action="http://localhost:8080/internal/execute" method="post" id="form">
+    <form action="http://localhost:8080/internal/wps/execute" method="post" id="form">
         <h5 th:text="${abstr}"></h5>
         <li class="list-group list-group-item" th:each="input : ${inputList}">
             <input type="hidden" name="processId" th:value="${processId}"></input>

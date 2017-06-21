@@ -101,6 +101,7 @@ public class WpsServerManager{
         wpsServer = new WpsServerImpl(System.getProperty("java.io.tmpdir"), ds);
         wpsServer.setExecutorService(Executors.newFixedThreadPool(3));
         wpsServer.setDatabase(WpsServer.Database.H2GIS);
+        wpsServer.setDataSource(ds);
         WpsScriptPlugin scriptPlugin = new WpsScriptPlugin();
         scriptPlugin.setWpsServer(wpsServer);
         scriptPlugin.activate();

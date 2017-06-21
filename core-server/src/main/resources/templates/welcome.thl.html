@@ -113,7 +113,7 @@
                     </p><br/>
                     <div style="clear: both;"></div>
                     <p class="alignleft">
-                        <a role="button" href="#">
+                        <a role="button" href="#" onclick="javascript:showStatus();">
                             <font color="white">
                                 <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> Jobs
                             </font>
@@ -142,7 +142,7 @@
     <script>
         function getCapabilities(){
             $.ajax({ type: "GET",
-                url: "http://localhost:8080/internal/getcapabilities",
+                url: "http://localhost:8080/internal/wps/getcapabilities",
                 async: false,
                 success : function(text)
                 {
@@ -156,7 +156,7 @@
         }
         function showStatus(){
             $.ajax({ type: "GET",
-                url: "http://localhost:8080/internal/allStatus",
+                url: "http://localhost:8080/internal/wps/allStatus",
                 async: false,
                 success : function(text)
                 {
