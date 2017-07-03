@@ -154,10 +154,11 @@
                     type: 'POST',
                     data: $(this).serialize(),
                     beforeSend: function() {
-                        //$("#submitText").html(' Sending data <i class="glyphicon glyphicon-refresh gly-spin"></i>');
+                        $("#submitText").html(' Sending data <i class="glyphicon glyphicon-refresh gly-spin"></i>');
                     },
                     success: function(data) {
                         $(".collapse.in").collapse('hide')
+                        showStatus()
                     }
                 });
             });

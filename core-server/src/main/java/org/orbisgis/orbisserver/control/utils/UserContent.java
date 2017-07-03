@@ -40,8 +40,17 @@ package org.orbisgis.orbisserver.control.utils;
 
 import net.opengis.wps._2_0.ProcessSummaryType;
 import net.opengis.wps._2_0.WPSCapabilitiesType;
+import org.orbiswps.server.utils.WpsServerUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.Duration;
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
@@ -50,6 +59,8 @@ import java.util.List;
  * @author Sylvain PALOMINOS
  */
 public class UserContent {
+
+    private Logger LOGGER =LoggerFactory.getLogger(UserContent.class);
 
     private List<ProcessContent> processContentList;
 
@@ -87,5 +98,22 @@ public class UserContent {
             jobContentList.addAll(process.getJobContentList());
         }
         return jobContentList;
+    }
+
+    public List<JobContent> getAllJobToRefresh() {
+        List<JobContent> allJobToRefresh = new ArrayList<>();
+        List<JobContent> list = getAllJobContent();
+        long timeMillisNow = System.currentTimeMillis();
+        for(JobContent jobContent : list){
+            long comparison = -1;
+            if(jobContent.getNextPoll() != null) {
+                long timeMillisPoll = jobContent.getNextPoll().toGregorianCalendar().getTime().getTime();
+                comparison = timeMillisPoll - timeMillisNow;
+            }
+            if(comparison < 0) {
+                allJobToRefresh.add(jobContent);
+            }
+        }
+        return allJobToRefresh;
     }
 }

@@ -79,17 +79,20 @@
         }
     }
 </style>
-
+<script th:if="${nextRefresh}>0" th:text="'setTimeout(showStatus, ' + ${nextRefresh} + ')'"></script>
 <ul class="list-group">
     <div class="panel panel-default" th:each="job : ${jobList}">
-        <div class="panel-heading" role="tab" id="headingOne">
-            <h4 class="panel-title">
-                <a th:text="${job.processTitle}">
-                    Collapsible Group Item #1
-                </a>
-            </h4>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <p th:text="${job.processTitle}">title</p>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuenow="10"
+                         aria-valuemax="100" th:style="'width: ' + ${job.percentCompleted} + '%;'"
+                         th:text="${job.status}">
+                        status
+                    </div>
+                </div>
+            </div>
         </div>
-        <script>
-        </script>
     </div>
 </ul>

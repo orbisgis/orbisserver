@@ -50,6 +50,7 @@ import org.orbiswps.server.model.Enumeration;
 import org.orbiswps.server.model.JDBCColumn;
 import org.orbiswps.server.model.JDBCTable;
 import org.orbiswps.server.model.JDBCValue;
+import org.orbiswps.server.utils.WpsServerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wisdom.api.DefaultController;
@@ -64,6 +65,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.datatype.DatatypeFactory;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -257,8 +259,18 @@ public class WebClientController extends DefaultController {
         Map<String, String> outputData = new HashMap<>();
         Object response = Wps_2_0_0_Operations.getResponseFromExecute(id, "document", "auto", inputData, outputData);
         if(response instanceof StatusInfo){
-            StatusInfo statusInfo = new StatusInfo();
+            StatusInfo statusInfo = (StatusInfo)response;
             JobContent jobContent = new JobContent(statusInfo.getJobID());
+            jobContent.setStatus(statusInfo.getStatus());
+            if(statusInfo.getPercentCompleted() != null) {
+                jobContent.setPercentCompleted(statusInfo.getPercentCompleted());
+            }
+            if(statusInfo.getNextPoll() != null) {
+                jobContent.setNextPoll(statusInfo.getNextPoll());
+            }
+            if(statusInfo.getEstimatedCompletion() != null) {
+                jobContent.setEstimatedCompletion(statusInfo.getEstimatedCompletion());
+            }
             userContent.addJob(id, jobContent);
         }
         return ok();
@@ -270,6 +282,28 @@ public class WebClientController extends DefaultController {
      */
     @Route(method = HttpMethod.GET, uri = "/internal/wps/allStatus")
     public Result allStatus() throws IOException, JAXBException {
-        return ok(render(allStatus, "jobList", userContent.getAllJobContent()));
+        long timeMillisNow = System.currentTimeMillis();
+        List<JobContent> jobList = userContent.getAllJobToRefresh();
+        long minRefresh = Long.MAX_VALUE;
+        for(JobContent jobContent : jobList){
+            Object object = Wps_2_0_0_Operations.getResponseFromGetStatus(jobContent.getJobId());
+            if (object instanceof StatusInfo) {
+                StatusInfo statusInfo = (StatusInfo) object;
+                jobContent.setStatus(statusInfo.getStatus());
+                if (statusInfo.getPercentCompleted() != null) {
+                    jobContent.setPercentCompleted(statusInfo.getPercentCompleted());
+                }
+                if(statusInfo.getNextPoll() != null) {
+                    jobContent.setNextPoll(statusInfo.getNextPoll());
+                }
+                if (statusInfo.getEstimatedCompletion() != null) {
+                    jobContent.setEstimatedCompletion(statusInfo.getEstimatedCompletion());
+                }
+                long timeMillisPoll = jobContent.getNextPoll().toGregorianCalendar().getTime().getTime();
+                jobContent.setNextRefreshMillis(timeMillisPoll - timeMillisNow);
+                minRefresh = Math.min(jobContent.getNextRefreshMillis(), minRefresh);
+            }
+        }
+        return ok(render(allStatus, "jobList", userContent.getAllJobContent(), "nextRefresh", minRefresh));
     }
 }
