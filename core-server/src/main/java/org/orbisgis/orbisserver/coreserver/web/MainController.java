@@ -1,6 +1,5 @@
 package org.orbisgis.orbisserver.coreserver.web;
 
-import org.orbisgis.orbisserver.manager.WpsServerManager;
 import org.wisdom.api.DefaultController;
 import org.wisdom.api.annotations.Controller;
 import org.wisdom.api.annotations.Route;
