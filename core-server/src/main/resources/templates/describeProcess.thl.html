@@ -37,8 +37,51 @@
 - info_at_ orbisgis.org
 -->
 
+<style type="text/css">
+    .gly-spin {
+        -webkit-animation: spin 2s infinite linear;
+        -moz-animation: spin 2s infinite linear;
+        -o-animation: spin 2s infinite linear;
+        animation: spin 2s infinite linear;
+    }
+    @-moz-keyframes spin {
+        0% {
+            -moz-transform: rotate(0deg);
+        }
+        100% {
+            -moz-transform: rotate(359deg);
+        }
+    }
+    @-webkit-keyframes spin {
+        0% {
+            -webkit-transform: rotate(0deg);
+        }
+        100% {
+            -webkit-transform: rotate(359deg);
+        }
+    }
+    @-o-keyframes spin {
+        0% {
+            -o-transform: rotate(0deg);
+        }
+        100% {
+            -o-transform: rotate(359deg);
+        }
+    }
+    @keyframes spin {
+        0% {
+            -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+        }
+        100% {
+            -webkit-transform: rotate(359deg);
+            transform: rotate(359deg);
+        }
+    }
+</style>
+
 <ul class="list-group">
-    <form action="http://localhost:8080/internal/execute" method="post">
+    <form action="http://localhost:8080/internal/wps/execute" method="post" id="form">
         <h5 th:text="${abstr}"></h5>
         <li class="list-group list-group-item" th:each="input : ${inputList}">
             <input type="hidden" name="processId" th:value="${processId}"></input>
@@ -98,6 +141,27 @@
                 <input type="text" th:name="${input.id}" value="File url"></input>
             </div>
         </li>
-        <input type="submit" value="Submit"></input>
+        <input id="submitBtn" type="submit" value="Submit">
+            <span id="submitText"></span>
+        </input>
     </form>
+    <script>
+        $(function() {
+            $("#form").on("submit", function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: $(this).attr("action"),
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    beforeSend: function() {
+                        $("#submitText").html(' Sending data <i class="glyphicon glyphicon-refresh gly-spin"></i>');
+                    },
+                    success: function(data) {
+                        $(".collapse.in").collapse('hide')
+                        showStatus()
+                    }
+                });
+            });
+        });
+    </script>
 </ul>

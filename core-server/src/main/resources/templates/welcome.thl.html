@@ -66,6 +66,11 @@
             float: left;
             background-color: #555555
         }
+        #upsidebar{
+            width: 100%;
+            height: 10%;
+            float: top;
+        }
         .nav-element {
             margin-top: 0px;
             margin-bottom: 25px;
@@ -79,16 +84,43 @@
             overflow-y: scroll;
             max-height: 100%;
         }
+        .alignleft {
+            float: left;
+            margin-left:5px
+        }
     </style>
 
     <div id="sidebar">
         <ul class="nav nav-pills nav-stacked">
-            <li class="nav-element">
-                <h3>
-                    <a class="label" id="button-local" href="#">
-                        <span class="glyphicon glyphicon-home" aria-hidden="true"></span> Local Server
-                    </a>
-                </h3>
+            <li>
+                <div class="panel-heading" role="tab" id="headingOne">
+                    <h3 class="panel-title">
+                        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#localServer"
+                           aria-expanded="true" aria-controls="collapseOne">
+                            <font color="white">
+                                <span class="glyphicon glyphicon-home" aria-hidden="true"></span> Local Server
+                            </font>
+                        </a>
+                    </h3>
+                </div>
+                <div id="localServer" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                    <p class="alignleft">
+                        <a role="button" href="#" onclick="javascript:getCapabilities();">
+                            <font color="white">
+                                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>   Processes
+                            </font>
+                        </a>
+                    </p><br/>
+                    <div style="clear: both;"></div>
+                    <p class="alignleft">
+                        <a role="button" href="#" onclick="javascript:showStatus();">
+                            <font color="white">
+                                <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> Jobs
+                            </font>
+                        </a>
+                    </p>
+                    <div style="clear: both;"></div>
+                </div>
             </li>
             <li>
                 <div class="line-separator"></div>
@@ -107,12 +139,10 @@
     </div>
 
 
-
     <script>
-        $("#button-local").click( function(e) {
-            e.preventDefault();
+        function getCapabilities(){
             $.ajax({ type: "GET",
-                url: "http://localhost:8080/internal/getcapabilities",
+                url: "http://localhost:8080/internal/wps/getcapabilities",
                 async: false,
                 success : function(text)
                 {
@@ -123,7 +153,21 @@
                     $( "#content" ).html(String(text));
                 }
             });
-        });
+        }
+        function showStatus(){
+            $.ajax({ type: "GET",
+                url: "http://localhost:8080/internal/wps/allStatus",
+                async: false,
+                success : function(text)
+                {
+                    $( "#content" ).html(String(text));
+                },
+                error : function(text)
+                {
+                    $( "#content" ).html(String(text));
+                }
+            });
+        }
     </script>
 </body>
 </html>

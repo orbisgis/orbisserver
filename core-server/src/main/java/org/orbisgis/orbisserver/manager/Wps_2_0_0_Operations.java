@@ -42,7 +42,6 @@ import net.opengis.ows._2.AcceptVersionsType;
 import net.opengis.ows._2.CodeType;
 import net.opengis.ows._2.SectionsType;
 import net.opengis.wps._2_0.*;
-import org.orbisgis.orbisserver.control.utils.ProcessContent;
 import org.orbiswps.server.model.JaxbContainer;
 
 import javax.xml.bind.JAXBElement;
@@ -155,7 +154,6 @@ public class Wps_2_0_0_Operations {
                                                 Map<String, String> outputData)
             throws JAXBException, IOException {
 
-        getProcessIdList();
         ExecuteRequestType execute = new ExecuteRequestType();
 
         for (Map.Entry<String, String> entry : inputData.entrySet()) {
@@ -270,84 +268,6 @@ public class Wps_2_0_0_Operations {
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
 
         return unmarshaller.unmarshal(resultXml);
-    }
-
-    /**
-     * Return the list of jobid.
-     * @return the list of jobid.
-     */
-    public static List<String> getGetStatus(){
-        List<String> listId = new ArrayList<>();
-        for(GetStatus getStatus : getStatusList){
-            listId.add(getStatus.getJobID());
-        }
-        return listId;
-    }
-
-    /**
-     * Return the last jobid add to the list.
-     * @return a jobid.
-     */
-    public static String getLastJobId() {
-        String JobId = "";
-        for (GetStatus getStatus : getStatusList) {
-            JobId = getStatus.getJobID();
-        }
-        return JobId;
-    }
-
-    /**
-     * Method to get the list containing the id, the html id and the title of the processes
-     *
-     * @Return The map containing the id, the html id and the title.
-     * @throws JAXBException JAXBException.
-     */
-    public static List<ProcessContent> getProcessIdList() throws JAXBException {
-        List<ProcessContent> processeIdList = new ArrayList<>();
-
-        codeTypeList = new ArrayList<>();
-
-        List<ProcessSummaryType> list = getResponseFromGetCapabilities().getContents().getProcessSummary();
-        for (ProcessSummaryType processSummaryType : list) {
-            processeIdList.add(new ProcessContent(
-                    processSummaryType.getIdentifier().getValue().replaceAll("([:/.-])", ""),
-                    processSummaryType.getIdentifier().getValue(),
-                    processSummaryType.getTitle().get(0).getValue()));
-            codeTypeList.add(processSummaryType.getIdentifier());
-        }
-        return processeIdList;
-    }
-
-    /**
-     * This method returns the list of identifiers from the CodeType's list.
-     *
-     * @return List of String.
-     * @throws JAXBException JAXBException.
-     */
-    public static List<String> getCodeTypeList() throws JAXBException {
-        getProcessIdList();
-        List<String> listId = new ArrayList<String>();
-
-        for(CodeType codeType : codeTypeList){
-            listId.add(codeType.getValue());
-        }
-        return listId;
-    }
-
-    /**
-     * This method returns the CodeType corresponding to the identifier.
-     *
-     * @return CodeType object.
-     * @throws JAXBException JAXBException.
-     */
-    public static CodeType getCodeTypeFromId(String id) throws JAXBException{
-        CodeType codeTypeFinal = new CodeType();
-        for(CodeType codeType : codeTypeList){
-            if(codeType.getValue().equals(id)){
-                codeTypeFinal = codeType;
-            }
-        }
-        return codeTypeFinal;
     }
 
 }
