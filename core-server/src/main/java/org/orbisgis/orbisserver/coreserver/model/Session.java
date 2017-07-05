@@ -36,32 +36,21 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisserver.coreserver.web;
+package org.orbisgis.orbisserver.coreserver.model;
 
-import org.wisdom.api.DefaultController;
-import org.wisdom.api.annotations.Controller;
-import org.wisdom.api.annotations.Route;
-import org.wisdom.api.annotations.View;
-import org.wisdom.api.http.HttpMethod;
-import org.wisdom.api.http.Result;
-import org.wisdom.api.templates.Template;
+import java.util.UUID;
 
 /**
- * Main orbisserver controller
+ * Session of the server usage
  *
  * @author Sylvain PALOMINOS
  */
-@Controller
-public class MainController extends DefaultController {
+public class Session {
 
-    /*
-    @View("welcome")
-    Template welcome;
+    /** Unique token associated to the session.*/
+    private UUID token;
 
-    @Route(method = HttpMethod.GET, uri = "/")
-    public Result welcome() {
-        WpsServerManager.setDataSource(ds);
-        return ok(render(welcome));
+    public Session(){
+        token = UUID.randomUUID();
     }
-    */
 }
