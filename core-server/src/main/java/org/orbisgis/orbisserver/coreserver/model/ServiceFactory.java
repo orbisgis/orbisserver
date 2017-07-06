@@ -38,58 +38,19 @@
  */
 package org.orbisgis.orbisserver.coreserver.model;
 
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.h2gis.utilities.SFSUtilities;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.sql.DataSource;
-import java.io.File;
-import java.sql.SQLException;
-import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.Map;
 
 /**
- * Session of the server usage
+ * Interface for the definition of the factory creating and configuring a service.
  *
  * @author Sylvain PALOMINOS
  */
-public class Session {
+public interface ServiceFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Session.class);
-
-    /** Unique token associated to the session.*/
-    private UUID token;
-
-    private DataSource ds;
-
-    private ExecutorService executorService;
-
-    private File workspaceFolder;
-
-    public Session(){
-        token = UUID.randomUUID();
-        workspaceFolder = new File(System.getProperty("java.io.tmpdir"), token.toString());
-        executorService = Executors.newFixedThreadPool(3);
-
-        String dataBaseLocation = new File(workspaceFolder, "h2_db.mv.db").getAbsolutePath();
-        try {
-            ds = SFSUtilities.wrapSpatialDataSource(H2GISDBFactory.createDataSource(dataBaseLocation, true));
-        } catch (SQLException e) {
-            LOGGER.error("Unable to create the database : \n"+e.getMessage());
-        }
-    }
-
-    public DataSource getDataSource(){
-        return ds;
-    }
-
-    public ExecutorService getExecutorService(){
-        return executorService;
-    }
-
-    public File getWorkspaceFolder(){
-        return workspaceFolder;
-    }
+    /**
+     * Instantiate, set and returns the service
+     * @param properties Map of the properties to set the service with a String as key and an Object as Value.
+     * @return A service instance
+     */
+    public Service createService(Map<String, Object> properties, Session session);
 }

@@ -36,60 +36,45 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisserver.coreserver.model;
+package org.orbisgis.orbisserver.coreserver.controller;
 
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.h2gis.utilities.SFSUtilities;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.sql.DataSource;
-import java.io.File;
-import java.sql.SQLException;
-import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import org.orbisgis.orbisserver.coreserver.model.ServiceFactory;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
- * Session of the server usage
+ * Controller managing services
  *
  * @author Sylvain PALOMINOS
  */
-public class Session {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Session.class);
+@Component
+public class ServiceController extends ServiceTracker<ServiceFactory, ServiceFactory> {
 
-    /** Unique token associated to the session.*/
-    private UUID token;
+    private BundleContext hostContext;
 
-    private DataSource ds;
-
-    private ExecutorService executorService;
-
-    private File workspaceFolder;
-
-    public Session(){
-        token = UUID.randomUUID();
-        workspaceFolder = new File(System.getProperty("java.io.tmpdir"), token.toString());
-        executorService = Executors.newFixedThreadPool(3);
-
-        String dataBaseLocation = new File(workspaceFolder, "h2_db.mv.db").getAbsolutePath();
-        try {
-            ds = SFSUtilities.wrapSpatialDataSource(H2GISDBFactory.createDataSource(dataBaseLocation, true));
-        } catch (SQLException e) {
-            LOGGER.error("Unable to create the database : \n"+e.getMessage());
-        }
+    /**
+     * Constructor.
+     * @param context Bundle context
+     */
+    public ServiceController(BundleContext context) {
+        super(context, ServiceFactory.class, null);
+        this.hostContext = context;
     }
 
-    public DataSource getDataSource(){
-        return ds;
+    @Override
+    public ServiceFactory addingService(ServiceReference<ServiceFactory> reference) {
+        ServiceFactory editorFactory = hostContext.getService(reference);
+        return editorFactory;
     }
 
-    public ExecutorService getExecutorService(){
-        return executorService;
+    @Override
+    public void modifiedService(ServiceReference<ServiceFactory> reference, ServiceFactory editorFactory) {
     }
 
-    public File getWorkspaceFolder(){
-        return workspaceFolder;
+    @Override
+    public void removedService(ServiceReference<ServiceFactory> reference, ServiceFactory editorFactory) {
     }
 }

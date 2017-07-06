@@ -36,60 +36,32 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisserver.coreserver.model;
+package org.orbisgis.orbisserver.wpsservice;
 
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.h2gis.utilities.SFSUtilities;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.orbisgis.orbisserver.coreserver.model.Service;
+import org.orbisgis.orbisserver.coreserver.model.ServiceFactory;
+import org.orbisgis.orbisserver.coreserver.model.Session;
+import org.osgi.service.component.annotations.Component;
 
 import javax.sql.DataSource;
 import java.io.File;
-import java.sql.SQLException;
-import java.util.UUID;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
- * Session of the server usage
+ * Service factory for the WPS.
  *
  * @author Sylvain PALOMINOS
  */
-public class Session {
+@Component
+public class WpsServiceFactory implements ServiceFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Session.class);
-
-    /** Unique token associated to the session.*/
-    private UUID token;
-
-    private DataSource ds;
-
-    private ExecutorService executorService;
-
-    private File workspaceFolder;
-
-    public Session(){
-        token = UUID.randomUUID();
-        workspaceFolder = new File(System.getProperty("java.io.tmpdir"), token.toString());
-        executorService = Executors.newFixedThreadPool(3);
-
-        String dataBaseLocation = new File(workspaceFolder, "h2_db.mv.db").getAbsolutePath();
-        try {
-            ds = SFSUtilities.wrapSpatialDataSource(H2GISDBFactory.createDataSource(dataBaseLocation, true));
-        } catch (SQLException e) {
-            LOGGER.error("Unable to create the database : \n"+e.getMessage());
-        }
-    }
-
-    public DataSource getDataSource(){
-        return ds;
-    }
-
-    public ExecutorService getExecutorService(){
-        return executorService;
-    }
-
-    public File getWorkspaceFolder(){
-        return workspaceFolder;
+    @Override
+    public Service createService(Map<String, Object> properties, Session session) {
+        DataSource ds = session.getDataSource();
+        ExecutorService executorService = session.getExecutorService();
+        File workspaceFolder = session.getWorkspaceFolder();
+        WpsService wpsService = new WpsService(ds, executorService, workspaceFolder);
+        return wpsService;
     }
 }

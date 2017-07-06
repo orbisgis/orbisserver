@@ -36,60 +36,58 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisserver.coreserver.model;
+package org.orbisgis.orbisserver.wpsservice;
 
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.h2gis.utilities.SFSUtilities;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.orbisgis.orbisserver.coreserver.model.ExecuteRequest;
+import org.orbisgis.orbisserver.coreserver.model.Service;
+import org.orbisgis.orbisserver.coreserver.model.StatusInfo;
+import org.orbisgis.orbisserver.coreserver.model.StatusRequest;
+import org.orbiswps.scripts.WpsScriptPlugin;
+import org.orbiswps.server.WpsServer;
+import org.orbiswps.server.WpsServerImpl;
 
 import javax.sql.DataSource;
 import java.io.File;
-import java.sql.SQLException;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
- * Session of the server usage
- *
- * @author Sylvain PALOMINOS
+ * Service for the core-server module managing the wps part
  */
-public class Session {
+public class WpsService implements Service {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Session.class);
-
-    /** Unique token associated to the session.*/
-    private UUID token;
-
+    private WpsServer wpsServer;
+    private ExecutorService executorService;
+    private File workspaceFolder;
     private DataSource ds;
 
-    private ExecutorService executorService;
-
-    private File workspaceFolder;
-
-    public Session(){
-        token = UUID.randomUUID();
-        workspaceFolder = new File(System.getProperty("java.io.tmpdir"), token.toString());
-        executorService = Executors.newFixedThreadPool(3);
-
-        String dataBaseLocation = new File(workspaceFolder, "h2_db.mv.db").getAbsolutePath();
-        try {
-            ds = SFSUtilities.wrapSpatialDataSource(H2GISDBFactory.createDataSource(dataBaseLocation, true));
-        } catch (SQLException e) {
-            LOGGER.error("Unable to create the database : \n"+e.getMessage());
-        }
+    public WpsService(DataSource ds, ExecutorService executorService, File workspaceFolder){
+        this.ds = ds;
+        this.executorService = executorService;
+        this.workspaceFolder = workspaceFolder;
+        createWpsServerInstance();
     }
 
-    public DataSource getDataSource(){
-        return ds;
+    @Override
+    public StatusInfo executeOperation(ExecuteRequest request) {
+        return null;
     }
 
-    public ExecutorService getExecutorService(){
-        return executorService;
+    @Override
+    public StatusInfo getStatus(StatusRequest request) {
+        return null;
     }
 
-    public File getWorkspaceFolder(){
-        return workspaceFolder;
+    /**
+     * Creates an  instance of the WpsServer.
+     */
+    private void createWpsServerInstance(){
+        wpsServer = new WpsServerImpl(workspaceFolder.getAbsolutePath(), ds);
+        wpsServer.setExecutorService(executorService);
+        wpsServer.setDatabase(WpsServer.Database.H2GIS);
+        wpsServer.setDataSource(ds);
+
+        WpsScriptPlugin scriptPlugin = new WpsScriptPlugin();
+        scriptPlugin.setWpsServer(wpsServer);
+        scriptPlugin.activate();
     }
 }
