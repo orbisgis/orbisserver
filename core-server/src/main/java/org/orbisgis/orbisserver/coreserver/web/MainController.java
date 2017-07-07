@@ -16,14 +16,19 @@ import org.wisdom.api.templates.Template;
 @Controller
 public class MainController extends DefaultController {
 
-    /*
-    @View("welcome")
-    Template welcome;
+    @View("Home")
+    Template home;
 
     @Route(method = HttpMethod.GET, uri = "/")
-    public Result welcome() {
-        WpsServerManager.setDataSource(ds);
-        return ok(render(welcome));
+    public Result Home() {
+        return ok(render(home));
     }
-    */
+
+    @View("signIn")
+    Template signIn;
+
+    @Route(method = HttpMethod.GET, uri = "/signIn")
+    public Result signIn() {
+        return ok(render(signIn));
+    }
 }
