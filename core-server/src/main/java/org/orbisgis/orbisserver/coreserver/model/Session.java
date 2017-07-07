@@ -68,10 +68,13 @@ public class Session {
 
     private File workspaceFolder;
 
-    public Session(){
+    private String username;
+
+    public Session(String username){
         token = UUID.randomUUID();
         workspaceFolder = new File(System.getProperty("java.io.tmpdir"), token.toString());
         executorService = Executors.newFixedThreadPool(3);
+        this.username = username;
 
         String dataBaseLocation = new File(workspaceFolder, "h2_db.mv.db").getAbsolutePath();
         try {
@@ -91,5 +94,9 @@ public class Session {
 
     public File getWorkspaceFolder(){
         return workspaceFolder;
+    }
+
+    public String getUsername(){
+        return username;
     }
 }

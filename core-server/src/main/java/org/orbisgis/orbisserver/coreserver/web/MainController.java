@@ -38,6 +38,8 @@
  */
 package org.orbisgis.orbisserver.coreserver.web;
 
+import org.orbisgis.orbisserver.coreserver.controller.CoreServerController;
+import org.orbisgis.orbisserver.coreserver.model.Session;
 import org.wisdom.api.DefaultController;
 import org.wisdom.api.annotations.Controller;
 import org.wisdom.api.annotations.Route;
@@ -45,6 +47,9 @@ import org.wisdom.api.annotations.View;
 import org.wisdom.api.http.HttpMethod;
 import org.wisdom.api.http.Result;
 import org.wisdom.api.templates.Template;
+
+import java.io.IOException;
+import java.net.URLDecoder;
 
 /**
  * Main orbisserver controller
@@ -68,13 +73,22 @@ public class MainController extends DefaultController {
         return ok(render(home));
     }
 
-    @Route(method = HttpMethod.GET, uri = "/login")
-    public Result logIn() {
-        return ok(render(logIn));
-    }
-
     @Route(method = HttpMethod.GET, uri = "/logout")
     public Result logOut() {
         return ok(render(logOut));
+    }
+
+    @Route(method = HttpMethod.POST, uri = "/login")
+    public Result login() throws IOException {
+        String urlContent = URLDecoder.decode(context().reader().readLine(), "UTF-8");
+        String[] split = urlContent.split("&");
+        Session session = CoreServerController.getSession(split[0].replaceAll(".*=", ""),
+                split[1].replaceAll(".*=", ""));
+        if(session != null) {
+            return ok(render(home));
+        }
+        else {
+            return ok(render(home));
+        }
     }
 }
