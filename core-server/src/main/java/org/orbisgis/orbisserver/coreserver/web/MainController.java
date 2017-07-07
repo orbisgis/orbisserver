@@ -63,6 +63,12 @@ public class MainController extends DefaultController {
     @View("BaseLog_Out")
     Template logOut;
 
+    @View("SignIn")
+    Template signIn;
+
+    @View("Workspace")
+    Template workspace;
+
     @Route(method = HttpMethod.GET, uri = "/")
     public Result home() {
         return ok(render(home));
@@ -76,5 +82,15 @@ public class MainController extends DefaultController {
     @Route(method = HttpMethod.GET, uri = "/logout")
     public Result logOut() {
         return ok(render(logOut));
+    }
+
+    @Route(method = HttpMethod.GET, uri = "/signIn")
+    public Result signIn() {
+        return ok(render(signIn));
+    }
+
+    @Route(method = HttpMethod.GET, uri = "/workspace")
+    public Result workspace() {
+        return ok(render(workspace));
     }
 }

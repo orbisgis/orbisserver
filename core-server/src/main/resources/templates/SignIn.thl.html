@@ -36,20 +36,46 @@
 - or contact directly:
 - info_at_ orbisgis.org
 -->
-<div class="container">
-    <form id="register-form" style="display:none;">
-        <div class="modal-body">
-            <div id="div-register-msg">
-                <div id="icon-register-msg" class="glyphicon glyphicon-chevron-right"></div>
-                <span id="text-register-msg">Register an account.</span>
-            </div>
-            <input id="register_username" class="form-control" type="text" placeholder="Username (type ERROR for error effect)" required>
-            <input id="register_email" class="form-control" type="text" placeholder="E-Mail" required>
-            <input id="register_password" class="form-control" type="password" placeholder="Password" required>
-        </div>
-        <div class="modal-footer">
+<style type="text/css">
+    #register-form {
+        margin : 25%;
+        margin-top : 10%;
+    }
+    #register_username{
+        margin-top: 10px;
+    }
+    #register_email{
+        margin-top: 10px;
+    }
+    #register_password{
+        margin-top: 10px;
+    }
+    #text-register-msg {
+        font-size: 16px;
+        paddin-left : 10px;
+    }
+    button {
+        margin-top:10px;
+    }
+    .jumbotron{
+        padding = 0%;
+    }
+
+</style>
+
+<div>
+    <form id="register-form" class="jumbotron">
+        <div>
             <div>
-                <button type="submit" class="btn btn-primary btn-lg btn-block">Register</button>
+                <span id="text-register-msg">Register an account</span>
+            </div>
+            <input id="register_username" class="form-control" type="text" placeholder="Username" />
+            <input id="register_email" class="form-control" type="text" placeholder="E-Mail" />
+            <input id="register_password" class="form-control" type="password" placeholder="Password" />
+        </div>
+        <div>
+            <div>
+                <button id="regiter-btn" type="submit" class="btn btn-primary btn-lg btn-block">Register</button>
             </div>
             <div>
                 <button id="register_login_btn" type="button" class="btn btn-link">Log In</button>
