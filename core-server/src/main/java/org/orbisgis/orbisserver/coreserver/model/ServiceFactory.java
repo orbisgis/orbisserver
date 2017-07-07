@@ -36,45 +36,21 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisserver.coreserver.web;
+package org.orbisgis.orbisserver.coreserver.model;
 
-import org.wisdom.api.DefaultController;
-import org.wisdom.api.annotations.Controller;
-import org.wisdom.api.annotations.Route;
-import org.wisdom.api.annotations.View;
-import org.wisdom.api.http.HttpMethod;
-import org.wisdom.api.http.Result;
-import org.wisdom.api.templates.Template;
+import java.util.Map;
 
 /**
- * Main orbisserver controller
+ * Interface for the definition of the factory creating and configuring a service.
  *
  * @author Sylvain PALOMINOS
  */
-@Controller
-public class MainController extends DefaultController {
+public interface ServiceFactory {
 
-    @View("Home")
-    Template home;
-
-    @View("BaseLog_In")
-    Template logIn;
-
-    @View("BaseLog_Out")
-    Template logOut;
-
-    @Route(method = HttpMethod.GET, uri = "/")
-    public Result home() {
-        return ok(render(home));
-    }
-
-    @Route(method = HttpMethod.GET, uri = "/login")
-    public Result logIn() {
-        return ok(render(logIn));
-    }
-
-    @Route(method = HttpMethod.GET, uri = "/logout")
-    public Result logOut() {
-        return ok(render(logOut));
-    }
+    /**
+     * Instantiate, set and returns the service
+     * @param properties Map of the properties to set the service with a String as key and an Object as Value.
+     * @return A service instance
+     */
+    public Service createService(Map<String, Object> properties, Session session);
 }

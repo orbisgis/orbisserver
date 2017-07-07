@@ -36,45 +36,28 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisserver.coreserver.web;
-
-import org.wisdom.api.DefaultController;
-import org.wisdom.api.annotations.Controller;
-import org.wisdom.api.annotations.Route;
-import org.wisdom.api.annotations.View;
-import org.wisdom.api.http.HttpMethod;
-import org.wisdom.api.http.Result;
-import org.wisdom.api.templates.Template;
+package org.orbisgis.orbisserver.coreserver.model;
 
 /**
- * Main orbisserver controller
- *
- * @author Sylvain PALOMINOS
+ * Interface to define a service which can be plugged to the server
  */
-@Controller
-public class MainController extends DefaultController {
+public interface Service {
 
-    @View("Home")
-    Template home;
+    /**
+     * Execute an operation with the given data
+     *
+     * @param request Request containing all the data for the execution
+     *
+     * @return A statusInfo object containing all the information about the execution
+     */
+    public StatusInfo executeOperation(ExecuteRequest request);
 
-    @View("BaseLog_In")
-    Template logIn;
-
-    @View("BaseLog_Out")
-    Template logOut;
-
-    @Route(method = HttpMethod.GET, uri = "/")
-    public Result home() {
-        return ok(render(home));
-    }
-
-    @Route(method = HttpMethod.GET, uri = "/login")
-    public Result logIn() {
-        return ok(render(logIn));
-    }
-
-    @Route(method = HttpMethod.GET, uri = "/logout")
-    public Result logOut() {
-        return ok(render(logOut));
-    }
+    /**
+     * Gets the status of an execution
+     *
+     * @param request Request containing the identifier of an execution
+     *
+     * @return A statusInfo object containing all the information about the execution
+     */
+    public StatusInfo getStatus(StatusRequest request);
 }
