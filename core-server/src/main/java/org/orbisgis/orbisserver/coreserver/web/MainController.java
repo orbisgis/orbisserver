@@ -54,14 +54,27 @@ import org.wisdom.api.templates.Template;
 @Controller
 public class MainController extends DefaultController {
 
-    /*
-    @View("welcome")
-    Template welcome;
+    @View("Home")
+    Template home;
+
+    @View("BaseLog_In")
+    Template logIn;
+
+    @View("BaseLog_Out")
+    Template logOut;
 
     @Route(method = HttpMethod.GET, uri = "/")
-    public Result welcome() {
-        WpsServerManager.setDataSource(ds);
-        return ok(render(welcome));
+    public Result home() {
+        return ok(render(home));
     }
-    */
+
+    @Route(method = HttpMethod.GET, uri = "/login")
+    public Result logIn() {
+        return ok(render(logIn));
+    }
+
+    @Route(method = HttpMethod.GET, uri = "/logout")
+    public Result logOut() {
+        return ok(render(logOut));
+    }
 }
