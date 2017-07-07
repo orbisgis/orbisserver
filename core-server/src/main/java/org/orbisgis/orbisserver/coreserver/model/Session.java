@@ -36,45 +36,60 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisserver.coreserver.web;
+package org.orbisgis.orbisserver.coreserver.model;
 
-import org.wisdom.api.DefaultController;
-import org.wisdom.api.annotations.Controller;
-import org.wisdom.api.annotations.Route;
-import org.wisdom.api.annotations.View;
-import org.wisdom.api.http.HttpMethod;
-import org.wisdom.api.http.Result;
-import org.wisdom.api.templates.Template;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.utilities.SFSUtilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.sql.DataSource;
+import java.io.File;
+import java.sql.SQLException;
+import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
- * Main orbisserver controller
+ * Session of the server usage
  *
  * @author Sylvain PALOMINOS
  */
-@Controller
-public class MainController extends DefaultController {
+public class Session {
 
-    @View("Home")
-    Template home;
+    private static final Logger LOGGER = LoggerFactory.getLogger(Session.class);
 
-    @View("BaseLog_In")
-    Template logIn;
+    /** Unique token associated to the session.*/
+    private UUID token;
 
-    @View("BaseLog_Out")
-    Template logOut;
+    private DataSource ds;
 
-    @Route(method = HttpMethod.GET, uri = "/")
-    public Result home() {
-        return ok(render(home));
+    private ExecutorService executorService;
+
+    private File workspaceFolder;
+
+    public Session(){
+        token = UUID.randomUUID();
+        workspaceFolder = new File(System.getProperty("java.io.tmpdir"), token.toString());
+        executorService = Executors.newFixedThreadPool(3);
+
+        String dataBaseLocation = new File(workspaceFolder, "h2_db.mv.db").getAbsolutePath();
+        try {
+            ds = SFSUtilities.wrapSpatialDataSource(H2GISDBFactory.createDataSource(dataBaseLocation, true));
+        } catch (SQLException e) {
+            LOGGER.error("Unable to create the database : \n"+e.getMessage());
+        }
     }
 
-    @Route(method = HttpMethod.GET, uri = "/login")
-    public Result logIn() {
-        return ok(render(logIn));
+    public DataSource getDataSource(){
+        return ds;
     }
 
-    @Route(method = HttpMethod.GET, uri = "/logout")
-    public Result logOut() {
-        return ok(render(logOut));
+    public ExecutorService getExecutorService(){
+        return executorService;
+    }
+
+    public File getWorkspaceFolder(){
+        return workspaceFolder;
     }
 }

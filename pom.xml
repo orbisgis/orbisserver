@@ -25,6 +25,7 @@
         </parent>
         <modules>
                 <module>core-server</module>
+                <module>wpsservice</module>
         </modules>
         <profiles>
                 <profile>

@@ -36,45 +36,45 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisserver.coreserver.web;
+package org.orbisgis.orbisserver.coreserver.controller;
 
-import org.wisdom.api.DefaultController;
-import org.wisdom.api.annotations.Controller;
-import org.wisdom.api.annotations.Route;
-import org.wisdom.api.annotations.View;
-import org.wisdom.api.http.HttpMethod;
-import org.wisdom.api.http.Result;
-import org.wisdom.api.templates.Template;
+import org.orbisgis.orbisserver.coreserver.model.ServiceFactory;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
- * Main orbisserver controller
+ * Controller managing services
  *
  * @author Sylvain PALOMINOS
  */
-@Controller
-public class MainController extends DefaultController {
 
-    @View("Home")
-    Template home;
+@Component
+public class ServiceController extends ServiceTracker<ServiceFactory, ServiceFactory> {
 
-    @View("BaseLog_In")
-    Template logIn;
+    private BundleContext hostContext;
 
-    @View("BaseLog_Out")
-    Template logOut;
-
-    @Route(method = HttpMethod.GET, uri = "/")
-    public Result home() {
-        return ok(render(home));
+    /**
+     * Constructor.
+     * @param context Bundle context
+     */
+    public ServiceController(BundleContext context) {
+        super(context, ServiceFactory.class, null);
+        this.hostContext = context;
     }
 
-    @Route(method = HttpMethod.GET, uri = "/login")
-    public Result logIn() {
-        return ok(render(logIn));
+    @Override
+    public ServiceFactory addingService(ServiceReference<ServiceFactory> reference) {
+        ServiceFactory editorFactory = hostContext.getService(reference);
+        return editorFactory;
     }
 
-    @Route(method = HttpMethod.GET, uri = "/logout")
-    public Result logOut() {
-        return ok(render(logOut));
+    @Override
+    public void modifiedService(ServiceReference<ServiceFactory> reference, ServiceFactory editorFactory) {
+    }
+
+    @Override
+    public void removedService(ServiceReference<ServiceFactory> reference, ServiceFactory editorFactory) {
     }
 }

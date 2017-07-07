@@ -36,45 +36,32 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisserver.coreserver.web;
+package org.orbisgis.orbisserver.wpsservice;
 
-import org.wisdom.api.DefaultController;
-import org.wisdom.api.annotations.Controller;
-import org.wisdom.api.annotations.Route;
-import org.wisdom.api.annotations.View;
-import org.wisdom.api.http.HttpMethod;
-import org.wisdom.api.http.Result;
-import org.wisdom.api.templates.Template;
+import org.orbisgis.orbisserver.coreserver.model.Service;
+import org.orbisgis.orbisserver.coreserver.model.ServiceFactory;
+import org.orbisgis.orbisserver.coreserver.model.Session;
+import org.osgi.service.component.annotations.Component;
+
+import javax.sql.DataSource;
+import java.io.File;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
 
 /**
- * Main orbisserver controller
+ * Service factory for the WPS.
  *
  * @author Sylvain PALOMINOS
  */
-@Controller
-public class MainController extends DefaultController {
+@Component
+public class WpsServiceFactory implements ServiceFactory {
 
-    @View("Home")
-    Template home;
-
-    @View("BaseLog_In")
-    Template logIn;
-
-    @View("BaseLog_Out")
-    Template logOut;
-
-    @Route(method = HttpMethod.GET, uri = "/")
-    public Result home() {
-        return ok(render(home));
-    }
-
-    @Route(method = HttpMethod.GET, uri = "/login")
-    public Result logIn() {
-        return ok(render(logIn));
-    }
-
-    @Route(method = HttpMethod.GET, uri = "/logout")
-    public Result logOut() {
-        return ok(render(logOut));
+    @Override
+    public Service createService(Map<String, Object> properties, Session session) {
+        DataSource ds = session.getDataSource();
+        ExecutorService executorService = session.getExecutorService();
+        File workspaceFolder = session.getWorkspaceFolder();
+        WpsService wpsService = new WpsService(ds, executorService, workspaceFolder);
+        return wpsService;
     }
 }
