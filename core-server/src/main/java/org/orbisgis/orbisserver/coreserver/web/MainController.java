@@ -157,6 +157,9 @@ public class MainController extends DefaultController {
         long timeMillisNow = System.currentTimeMillis();
         List<StatusInfo> statusInfoList = session.getAllStatusInfoToRefresh();
         long minRefresh = Long.MAX_VALUE;
+        if(statusInfoList.isEmpty()){
+            minRefresh = -1;
+        }
         for(StatusInfo statusInfo : statusInfoList){
             StatusInfo info = session.refreshStatus(statusInfo.getJobId());
             statusInfo.setStatus(info.getStatus());
