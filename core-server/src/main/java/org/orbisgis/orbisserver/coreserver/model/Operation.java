@@ -38,8 +38,64 @@
  */
 package org.orbisgis.orbisserver.coreserver.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Operation performed throw the server
  */
 public class Operation {
+
+    private String title;
+    private String id;
+    private String abstr;
+    private List<Input> inputList;
+    private List<Output> outputList;
+
+    public Operation(String title, String id){
+        this.title = title;
+        this.id = id;
+        inputList = new ArrayList<>();
+        outputList = new ArrayList<>();
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getAbstr() {
+        return abstr;
+    }
+
+    public void setAbstr(String abstr) {
+        this.abstr = abstr;
+    }
+
+    public List<Input> getInputList() {
+        return inputList;
+    }
+
+    public void addInput(Input input) {
+        this.inputList.add(input);
+    }
+
+    public List<Output> getOutputList() {
+        return outputList;
+    }
+
+    public void addOutput(Output output) {
+        this.outputList.add(output);
+    }
 }

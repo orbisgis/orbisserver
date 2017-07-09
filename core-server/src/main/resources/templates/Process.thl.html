@@ -1,0 +1,89 @@
+
+<style type="text/css">
+      body,html {
+          height: 100%;
+      }
+      .list-group-item{
+        background:#222;
+        font-size: 20px;
+        border-style: none;
+      }
+      .list-group-item:first-child{
+        border-top: solid #aaa;
+      }
+      .list-group-item:last-child{
+        border-bottom: solid #aaa;
+      }
+      #item_sidebar {
+        color: #aaa;
+        border-radius: 0px;
+      }
+      .scrollable {
+          overflow-y: scroll;
+          max-height: 100%;
+      }
+</style>
+
+<div class="container-fluid" style="padding-left: 0px">
+    <div class="row row-offcanvas row-offcanvas-right">
+        <div id="processContent" class="col-xs-12 col-sm-8 col-sm-push-2">
+        </div>
+        <div class="col-xs-6 col-sm-2 col-sm-pull-8 sidebar-offcanvas navbar-static-top" id="sidebar">
+            <div class="list-group" style="min-height: 175vh; max-width=100; background:#222">
+                <a id="item_sidebar" class="list-group-item" href="#" onclick="showListProcess()"><span class="glyphicon glyphicon-list"></span> Process</a>
+                <a id="item_sidebar" class="list-group-item" href="#"  onclick="showJobs()"><span class="glyphicon glyphicon-tasks"></span> Jobs</a>
+                <ul id="list" class="list-group scrollable" style="min-height: 175vh; max-width=100; background:#222; color:#BBB"></ul>
+            </div>
+        </div><!--/.sidebar-offcanvas-->
+    </div><!--/row-->
+</div><!--/.container-->
+
+
+<script>
+    function showListProcess(){
+        $.ajax({ type: "GET",
+            url: "http://localhost:8080/processList",
+            async: false,
+            success : function(text)
+            {
+                $( "#list" ).html(String(text));
+            },
+            error : function(text)
+            {
+                $( "#list" ).html(String(text));
+            }
+        });
+    }
+    function showProcess(id){
+        $.ajax({ type: "GET",
+            url: "http://localhost:8080/describeProcess",
+            data: {
+                "id": id
+            },
+            async: false,
+            success : function(text)
+            {
+                $( "#processContent" ).html(String(text));
+            },
+            error : function(text)
+            {
+                $( "#processContent" ).html(String(text));
+            }
+        });
+    }
+    function showJobs(){
+        $.ajax({ type: "GET",
+            url: "http://localhost:8080/jobs",
+            async: false,
+            success : function(text)
+            {
+                $( "#list" ).html("");
+                $( "#processContent" ).html(String(text));
+            },
+            error : function(text)
+            {
+                $( "#processContent" ).html(String(text));
+            }
+        });
+    }
+</script>

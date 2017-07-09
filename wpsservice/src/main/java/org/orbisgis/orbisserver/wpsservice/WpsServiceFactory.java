@@ -38,6 +38,7 @@
  */
 package org.orbisgis.orbisserver.wpsservice;
 
+import org.orbisgis.orbisserver.coreserver.controller.WpsService;
 import org.orbisgis.orbisserver.coreserver.model.Service;
 import org.orbisgis.orbisserver.coreserver.model.ServiceFactory;
 import org.orbisgis.orbisserver.coreserver.model.Session;

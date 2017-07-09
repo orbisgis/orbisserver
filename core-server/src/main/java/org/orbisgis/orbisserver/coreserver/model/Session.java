@@ -40,13 +40,14 @@ package org.orbisgis.orbisserver.coreserver.model;
 
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.SFSUtilities;
+import org.orbisgis.orbisserver.coreserver.controller.WpsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.io.File;
 import java.sql.SQLException;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -70,7 +71,16 @@ public class Session {
 
     private String username;
 
+    private List<Service> serviceList;
+
+    private List<StatusInfo> statusInfoList;
+
+    private Map<String, Service> jobIdServiceMap;
+
     public Session(String username){
+        jobIdServiceMap = new HashMap<>();
+        serviceList = new ArrayList<>();
+        statusInfoList = new ArrayList<>();
         token = UUID.randomUUID();
         workspaceFolder = new File(System.getProperty("java.io.tmpdir"), token.toString());
         executorService = Executors.newFixedThreadPool(3);
@@ -82,6 +92,7 @@ public class Session {
         } catch (SQLException e) {
             LOGGER.error("Unable to create the database : \n"+e.getMessage());
         }
+        serviceList.add(new WpsService(ds, executorService, workspaceFolder));
     }
 
     public DataSource getDataSource(){
@@ -98,5 +109,81 @@ public class Session {
 
     public String getUsername(){
         return username;
+    }
+
+    public List<Operation> getOperationList(){
+        List<Operation> operationList = new ArrayList<>();
+        for(Service service : serviceList) {
+            operationList.addAll(service.getAllOperation());
+        }
+        return operationList;
+    }
+
+    public Operation getOperation(String id) {
+        Service serv = null;
+        for(Service service : serviceList){
+            if(service.hasOperation(id)){
+                serv = service;
+            }
+        }
+        if(serv == null) {
+            return null;
+        }
+        return serv.getOperation(id);
+    }
+
+    public void executeOperation(String id, Map<String, String> inputData) {
+        ExecuteRequest executeRequest = new ExecuteRequest(id, inputData);
+        Service serv = null;
+        for(Service service : serviceList){
+            if(service.hasOperation(id)){
+                serv = service;
+            }
+        }
+        if(serv != null) {
+            StatusInfo statusInfo = serv.executeOperation(executeRequest);
+            statusInfo.setProcessID(id);
+            statusInfo.setProcessTitle(getTitle(id));
+            statusInfoList.add(statusInfo);
+            jobIdServiceMap.put(statusInfo.getJobId(), serv);
+        }
+    }
+
+    private String getTitle(String id){
+        for(Service service : serviceList){
+            if(service.hasOperation(id)){
+                return service.getOperation(id).getTitle();
+            }
+        }
+        return "";
+    }
+
+    public List<StatusInfo> getAllStatusInfo(){
+        return statusInfoList;
+    }
+
+    public List<StatusInfo> getAllStatusInfoToRefresh() {
+        List<StatusInfo> allStatusInfoToRefresh = new ArrayList<>();
+        List<StatusInfo> list = getAllStatusInfo();
+        long timeMillisNow = System.currentTimeMillis();
+        for(StatusInfo statusInfo : list){
+            long comparison = -1;
+            if(statusInfo.getNextPoll() != null) {
+                long timeMillisPoll = statusInfo.getNextPoll().toGregorianCalendar().getTime().getTime();
+                comparison = timeMillisPoll - timeMillisNow;
+            }
+            if(comparison < 0) {
+                allStatusInfoToRefresh.add(statusInfo);
+            }
+        }
+        return allStatusInfoToRefresh;
+    }
+
+    public StatusInfo refreshStatus(String jobId) {
+        Service service = jobIdServiceMap.get(jobId);
+        StatusRequest statusRequest = new StatusRequest(jobId);
+
+        StatusInfo info = service.getStatus(statusRequest);
+        return info;
     }
 }

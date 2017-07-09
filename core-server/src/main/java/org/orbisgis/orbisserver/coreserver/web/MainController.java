@@ -39,9 +39,12 @@
 package org.orbisgis.orbisserver.coreserver.web;
 
 import org.orbisgis.orbisserver.coreserver.controller.CoreServerController;
+import org.orbisgis.orbisserver.coreserver.model.Operation;
 import org.orbisgis.orbisserver.coreserver.model.Session;
+import org.orbisgis.orbisserver.coreserver.model.StatusInfo;
 import org.wisdom.api.DefaultController;
 import org.wisdom.api.annotations.Controller;
+import org.wisdom.api.annotations.Parameter;
 import org.wisdom.api.annotations.Route;
 import org.wisdom.api.annotations.View;
 import org.wisdom.api.http.HttpMethod;
@@ -50,6 +53,9 @@ import org.wisdom.api.templates.Template;
 
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Main orbisserver controller
@@ -59,6 +65,8 @@ import java.net.URLDecoder;
 @Controller
 public class MainController extends DefaultController {
 
+    private Session session;
+
     @View("Home")
     Template home;
 
@@ -67,6 +75,18 @@ public class MainController extends DefaultController {
 
     @View("BaseLog_Out")
     Template logOut;
+
+    @View("Process")
+    Template process;
+
+    @View("ProcessList")
+    Template processList;
+
+    @View("Describe")
+    Template describeProcess;
+
+    @View("Jobs")
+    Template jobs;
 
     @Route(method = HttpMethod.GET, uri = "/")
     public Result home() {
@@ -82,13 +102,80 @@ public class MainController extends DefaultController {
     public Result login() throws IOException {
         String urlContent = URLDecoder.decode(context().reader().readLine(), "UTF-8");
         String[] split = urlContent.split("&");
-        Session session = CoreServerController.getSession(split[0].replaceAll(".*=", ""),
+        session = CoreServerController.getSession(split[0].replaceAll(".*=", ""),
                 split[1].replaceAll(".*=", ""));
         if(session != null) {
-            return ok(render(home));
+            return ok(render(home, "userName", session.getUsername()));
         }
         else {
             return ok(render(home));
         }
+    }
+
+    @Route(method = HttpMethod.GET, uri = "/process")
+    public Result process() throws IOException {
+        return ok(render(process));
+    }
+
+    @Route(method = HttpMethod.GET, uri = "/processList")
+    public Result processList() throws IOException {
+        return ok(render(processList, "processList", session.getOperationList()));
+    }
+
+    @Route(method = HttpMethod.GET, uri = "/describeProcess")
+    public Result describeProcess(@Parameter("id") String id) throws IOException {
+        Operation op = session.getOperation(id);
+        return ok(render(describeProcess, "operation", op));
+    }
+
+    @Route(method = HttpMethod.POST, uri = "/execute")
+    public Result execute() throws IOException {
+        String urlContent = URLDecoder.decode(context().reader().readLine(), "UTF-8");
+        String[] split = urlContent.split("&");
+        Map<String, String> inputData = new HashMap<>();
+        String id = "";
+        for(String str : split){
+            String[] val = str.split("=");
+            if(val[0].equals("processId")){
+                id = val[1];
+            }
+            else {
+                if(val.length==1) {
+                    inputData.put(val[0], "");
+                }
+                else {
+                    inputData.put(val[0], val[1]);
+                }
+            }
+        }
+        session.executeOperation(id, inputData);
+        return ok();
+    }
+
+    @Route(method = HttpMethod.GET, uri = "/jobs")
+    public Result jobs() throws IOException {
+        long timeMillisNow = System.currentTimeMillis();
+        List<StatusInfo> statusInfoList = session.getAllStatusInfoToRefresh();
+        long minRefresh = Long.MAX_VALUE;
+        for(StatusInfo statusInfo : statusInfoList){
+            StatusInfo info = session.refreshStatus(statusInfo.getJobId());
+            statusInfo.setStatus(info.getStatus());
+            if (info.getPercentCompleted() != null) {
+                statusInfo.setPercentCompleted(info.getPercentCompleted());
+            }
+            if(info.getNextPoll() != null) {
+                statusInfo.setNextPoll(info.getNextPoll());
+            }
+            if (info.getEstimatedCompletion() != null) {
+                statusInfo.setEstimatedCompletion(info.getEstimatedCompletion());
+            }
+            long timeMillisPoll = statusInfo.getNextPoll().toGregorianCalendar().getTime().getTime();
+            statusInfo.setNextRefreshMillis(timeMillisPoll - timeMillisNow);
+            if(statusInfo.getNextRefreshMillis() >= 0) {
+                minRefresh = Math.min(statusInfo.getNextRefreshMillis(), minRefresh);
+            }
+        }
+
+        return ok(render(jobs, "jobList", session.getAllStatusInfo(), "nextRefresh", minRefresh));
     }
 }

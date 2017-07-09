@@ -86,70 +86,74 @@
                         </li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a id="sign_in" href="#"><span class="glyphicon glyphicon-user">
+                        <li th:if="${userName == null}"><a id="sign_in" href="#"><span class="glyphicon glyphicon-user">
                                 </span>Sign Up</a></li>
-                        <li><a  id="log_in" data-toggle="modal" data-target="#myModal" href="#">
+                        <li th:if="${userName == null}"><a  id="log_in" data-toggle="modal" data-target="#myModal" href="#">
                             <span class="glyphicon 	glyphicon-log-in"></span>Login</a></li>
+                        <li th:if="${userName != null}"><a  id="user_icon" href="#">
+                            <span class="glyphicon 	glyphicon-user"></span><span th:text="${userName}" ></span></a></li>
                     </ul>
                 </div>
             </nav>
         </div>
 
-        <div class="container-fluid" style="padding-left: 0px">
-            <div class="row row-offcanvas row-offcanvas-right">
-                <div class="col-xs-12 col-sm-10 col-sm-push-1">
-                    <p class="pull-right visible-xs">
-                        <button type="button" class="btn btn-primary btn-xs"
-                                title="Toggle sidebar"><i class="fa fa-chevron-right"></i></button>
-                    </p>
-                    <div class="jumbotron">
-                        <h1>OrbisServer</h1>
-                        <p>OSGI web server plugin for OrbisGIS based on wisdom-framework.</p>
-                        <h3>Start the server</h3>
-                            <p>Clone the repository. Go to core-server and execute</p>
-                            <p>mvn wisdom:run
-                                Then, open your browser to: <a>http://localhost:8080</a>
-                            </p>
-                            <h3>Configuration Ports</h3>
-                            <p>
-                                In the src/main/configuration/application.conf file, use these
-                                properties to configure the ports:
+        <div id="content">
+            <div class="container-fluid" style="padding-left: 0px">
+                <div class="row row-offcanvas row-offcanvas-right">
+                    <div class="col-xs-12 col-sm-10 col-sm-push-1">
+                        <p class="pull-right visible-xs">
+                            <button type="button" class="btn btn-primary btn-xs"
+                                    title="Toggle sidebar"><i class="fa fa-chevron-right"></i></button>
+                        </p>
+                            <div class="jumbotron">
+                                <h1>OrbisServer</h1>
+                                <p>OSGI web server plugin for OrbisGIS based on wisdom-framework.</p>
+                                <h3>Start the server</h3>
+                                    <p>Clone the repository. Go to core-server and execute</p>
+                                    <p>mvn wisdom:run
+                                        Then, open your browser to: <a>http://localhost:8080</a>
+                                    </p>
+                                    <h3>Configuration Ports</h3>
+                                    <p>
+                                        In the src/main/configuration/application.conf file, use these
+                                        properties to configure the ports:
 
-                                http.port = HTTP port, 9000 by default
-                                https.port = HTTPS port, disabled by default
+                                        http.port = HTTP port, 9000 by default
+                                        https.port = HTTPS port, disabled by default
 
-                                You can use 0 to use a random port.</p>
+                                        You can use 0 to use a random port.</p>
 
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-6 col-xs-6 col-lg-4">
-                            <h2>Data</h2>
-                            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus,
-                                tellus ac cursus commodo, tortor mauris condimentum nibh, ut
-                                fermentum massa justo sit amet risus. Etiam porta sem malesuada
-                                magna mollis euismod. Donec sed odio dui. </p>
-                            <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-                        </div><!--/.col-xs-6.col-lg-3-->
-                        <div class="col-sm-6 col-xs-6 col-lg-4">
-                            <h2>Process</h2>
-                            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus,
-                                tellus ac cursus commodo, tortor mauris condimentum nibh, ut
-                                fermentum massa justo sit amet risus. Etiam porta sem malesuada
-                                magna mollis euismod. Donec sed odio dui. </p>
-                            <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-                        </div><!--/.col-sm-6 col-xs-6 col-lg-4-->
-                        <div class="col-sm-6 col-xs-6 col-lg-4">
-                            <h2>Share</h2>
-                            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus,
-                                tellus ac cursus commodo, tortor mauris condimentum nibh, ut
-                                fermentum massa justo sit amet risus. Etiam porta sem malesuada
-                                magna mollis euismod. Donec sed odio dui. </p>
-                            <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-                        </div><!--/.col-sm-6 col-xs-6 col-lg-4-->
-                    </div><!--/row-->
-                </div><!--/.col-xs-12.col-sm-10-->
-            </div><!--/row-->
-        </div><!--/.container-->
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-6 col-xs-6 col-lg-4">
+                                    <h2>Data</h2>
+                                    <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus,
+                                        tellus ac cursus commodo, tortor mauris condimentum nibh, ut
+                                        fermentum massa justo sit amet risus. Etiam porta sem malesuada
+                                        magna mollis euismod. Donec sed odio dui. </p>
+                                    <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+                                </div><!--/.col-xs-6.col-lg-3-->
+                                <div class="col-sm-6 col-xs-6 col-lg-4">
+                                    <h2>Process</h2>
+                                    <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus,
+                                        tellus ac cursus commodo, tortor mauris condimentum nibh, ut
+                                        fermentum massa justo sit amet risus. Etiam porta sem malesuada
+                                        magna mollis euismod. Donec sed odio dui. </p>
+                                    <p><a class="btn btn-default" onclick="showProcess()" role="button">View details &raquo;</a></p>
+                                </div><!--/.col-sm-6 col-xs-6 col-lg-4-->
+                                <div class="col-sm-6 col-xs-6 col-lg-4">
+                                    <h2>Share</h2>
+                                    <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus,
+                                        tellus ac cursus commodo, tortor mauris condimentum nibh, ut
+                                        fermentum massa justo sit amet risus. Etiam porta sem malesuada
+                                        magna mollis euismod. Donec sed odio dui. </p>
+                                    <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+                                </div><!--/.col-sm-6 col-xs-6 col-lg-4-->
+                            </div><!--/row-->
+                        </div>
+                    </div><!--/.col-xs-12.col-sm-10-->
+                </div><!--/row-->
+            </div><!--/.container-->
         <!-- Modal -->
         <div class="modal fade" id="myModal" role="dialog">
             <div class="modal-dialog">
@@ -188,6 +192,20 @@
         </div>
         <script>
             $('#Mymodal').on('shown.bs.modal', function () {$('#sign in').focus()})
+            function showProcess(){
+                $.ajax({ type: "GET",
+                    url: "http://localhost:8080/process",
+                    async: false,
+                    success : function(text)
+                    {
+                        $( "#content" ).html(String(text));
+                    },
+                    error : function(text)
+                    {
+                        $( "#content" ).html(String(text));
+                    }
+                });
+            }
         </script>
 
     </body>

@@ -44,4 +44,32 @@ package org.orbisgis.orbisserver.coreserver.model;
  * @author Sylvain PALOMINOS
  */
 public class StatusRequest {
+
+    private String id;
+    private String processTitle;
+    private String processId;
+
+    public StatusRequest(String id){
+        this.id = id;
+    }
+
+    public String getId(){
+        return id;
+    }
+
+    public String getProcessTitle() {
+        return processTitle;
+    }
+
+    public void setProcessTitle(String processTitle) {
+        this.processTitle = processTitle;
+    }
+
+    public String getProcessId() {
+        return processId;
+    }
+
+    public void setProcessId(String processId) {
+        this.processId = processId;
+    }
 }
