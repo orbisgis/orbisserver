@@ -1,0 +1,146 @@
+<style type="text/css">
+      .list-group-item-process{
+        background:#FFF;
+        font-size: 15px;
+        border-style: solid;
+        border-bottom: none;
+      }
+</style>
+<style type="text/css">
+    .gly-spin {
+        -webkit-animation: spin 2s infinite linear;
+        -moz-animation: spin 2s infinite linear;
+        -o-animation: spin 2s infinite linear;
+        animation: spin 2s infinite linear;
+    }
+    @-moz-keyframes spin {
+        0% {
+            -moz-transform: rotate(0deg);
+        }
+        100% {
+            -moz-transform: rotate(359deg);
+        }
+    }
+    @-webkit-keyframes spin {
+        0% {
+            -webkit-transform: rotate(0deg);
+        }
+        100% {
+            -webkit-transform: rotate(359deg);
+        }
+    }
+    @-o-keyframes spin {
+        0% {
+            -o-transform: rotate(0deg);
+        }
+        100% {
+            -o-transform: rotate(359deg);
+        }
+    }
+    @keyframes spin {
+        0% {
+            -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+        }
+        100% {
+            -webkit-transform: rotate(359deg);
+            transform: rotate(359deg);
+        }
+    }
+</style>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 th:text="${operation.title}">title</h3>
+    </div>
+    <div class="panel-body">
+        <p th:text="${operation.abstr}">abstract</p>
+    </div>
+    <form action="/execute" method="post" id="form">
+        <ul class="list-group">
+            <input type="hidden" name="processId" th:value="${operation.id}" />
+            <li class="list-group-item list-group-item-process" th:each="input : ${operation.inputList}">
+                <div th:if="${input.name.equalsIgnoreCase('LiteralDataType')}">
+                    <div th:if="${input.type.equalsIgnoreCase('String')}">
+                        <span th:text="${input.title}">title</span>
+                        <input type="text" th:name="${input.id}" value="String value" />
+                    </div>
+                    <div th:if="${input.type.equalsIgnoreCase('Number')}">
+                        <span th:text="${input.title}">title</span>
+                        <input type="number" th:step="${input.attributes.get('spacing')}" th:name="${input.id}"
+                               th:min="${input.attributes.get('min')}" th:max="${input.attributes.get('max')}"
+                               th:value="${input.attributes.get('value')}" />
+                    </div>
+                    <div th:if="${input.type.equalsIgnoreCase('Boolean')}">
+                        <span th:text="${input.title}">title</span><br />
+                        <input type="radio" th:name="${input.id}" value="true"
+                               th:checked="${input.attributes.get('value').equals('true')}"> true </input><br />
+                        <input type="radio" th:name="${input.id}" value="false"
+                               th:checked="${input.attributes.get('value').equals('false')}"> false </input>
+                    </div>
+                </div>
+                <div th:if="${input.name.equalsIgnoreCase('JDBCTable')}">
+                    <span th:text="${input.title}">title</span>
+                    <input type="text" th:name="${input.id}" value="Table name" />
+                </div>
+                <div th:if="${input.name.equalsIgnoreCase('JDBCColumn')}">
+                    <span th:text="${input.title}">title</span>
+                    <input type="text" th:name="${input.id}" value="Table column"></input>
+                </div>
+                <div th:if="${input.name.equalsIgnoreCase('JDBCValue')}">
+                    <span th:text="${input.title}">title</span>
+                    <input type="text" th:name="${input.id}" value="Table value" />
+                </div>
+                <div th:if="${input.name.equalsIgnoreCase('Enumeration')}">
+                    <span th:text="${input.title}">title</span><br th:if="${input.attributes.get('multiSelection')}" />
+                    <select th:multiple="${input.attributes.get('multiSelection')}" th:name="${input.id}">
+                        <option th:each="value : ${input.attributes.get('valueList')}" th:value="${value}" th:text="${value}">
+                            none
+                        </option>
+                    </select>
+                </div>
+                <div th:if="${input.name.equalsIgnoreCase('BoundingBoxData')}">
+                    <span th:text="${input.title}">title</span>
+                    <input type="text" th:name="${input.id}" value="BoundingBox" />
+                </div>
+                <div th:if="${input.name.equalsIgnoreCase('GeometryData')}">
+                    <span th:text="${input.title}">title</span>
+                    <input type="text" th:name="${input.id}" value="Table name" />
+                </div>
+                <div th:if="${input.name.equalsIgnoreCase('Password')}">
+                    <span th:text="${input.title}">title</span>
+                    <input type="password" th:name="${input.id}" value="Password" />
+                </div>
+                <div th:if="${input.name.equalsIgnoreCase('RawData')}">
+                    <span th:text="${input.title}">title</span>
+                    <input type="text" th:name="${input.id}" value="File url" />
+                </div>
+            </li>
+            <li class="list-group-item list-group-item-process" th:each="output : operation.outputList">
+
+            </li>
+
+            <input id="submitBtn" type="submit" value="Submit">
+                <span id="submitText"></span>
+            </input>
+        </ul>
+    </form>
+
+    <script>
+        $(function() {
+            $("#form").on("submit", function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: $(this).attr("action"),
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    beforeSend: function() {
+                        $("#submitText").html(' Sending data <i class="glyphicon glyphicon-refresh gly-spin"></i>');
+                    },
+                    success: function(data) {
+                        showJobs()
+                    }
+                });
+            });
+        });
+    </script>
+</div>

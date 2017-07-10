@@ -38,6 +38,8 @@
  */
 package org.orbisgis.orbisserver.coreserver.model;
 
+import java.util.List;
+
 /**
  * Interface to define a service which can be plugged to the server
  */
@@ -60,4 +62,10 @@ public interface Service {
      * @return A statusInfo object containing all the information about the execution
      */
     public StatusInfo getStatus(StatusRequest request);
+
+    public List<Operation> getAllOperation();
+
+    boolean hasOperation(String id);
+
+    Operation getOperation(String id);
 }

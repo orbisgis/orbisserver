@@ -1,0 +1,74 @@
+<style type="text/css">
+    .gly-spin {
+        -webkit-animation: spin 2s infinite linear;
+        -moz-animation: spin 2s infinite linear;
+        -o-animation: spin 2s infinite linear;
+        animation: spin 2s infinite linear;
+    }
+    @-moz-keyframes spin {
+        0% {
+            -moz-transform: rotate(0deg);
+        }
+        100% {
+            -moz-transform: rotate(359deg);
+        }
+    }
+    @-webkit-keyframes spin {
+        0% {
+            -webkit-transform: rotate(0deg);
+        }
+        100% {
+            -webkit-transform: rotate(359deg);
+        }
+    }
+    @-o-keyframes spin {
+        0% {
+            -o-transform: rotate(0deg);
+        }
+        100% {
+            -o-transform: rotate(359deg);
+        }
+    }
+    @keyframes spin {
+        0% {
+            -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+        }
+        100% {
+            -webkit-transform: rotate(359deg);
+            transform: rotate(359deg);
+        }
+    }
+</style>
+<script th:if="${nextRefresh}>=0" th:text="'setTimeout(showJobs, ' + ${nextRefresh} + ')'"></script>
+<ul class="list-group">
+    <div class="panel panel-default" th:each="job : ${jobList}">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <h3 th:text="${job.processTitle}">title</h3>
+                <div class="progress">
+                    <div th:if="${job.status.equalsIgnoreCase('ACCEPTED')}" class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuenow="10"
+                         aria-valuemax="100" th:style="'width: ' + ${job.percentCompleted} + '%;'"
+                         th:text="${job.status}">
+                        status
+                    </div>
+                    <div th:if="${job.status.equalsIgnoreCase('RUNNING')}" class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuenow="10"
+                         aria-valuemax="100" th:style="'width: ' + ${job.percentCompleted} + '%;'"
+                         th:text="${job.status}">
+                        status
+                    </div>
+                    <div th:if="${job.status.equalsIgnoreCase('FAILED')}" class="progress-bar  progress-bar-danger" role="progressbar" aria-valuemin="0" aria-valuenow="10"
+                         aria-valuemax="100" th:style="'width: ' + ${job.percentCompleted} + '%;'"
+                         th:text="${job.status}">
+                        status
+                    </div>
+                    <div th:if="${job.status.equalsIgnoreCase('SUCCEEDED')}" class="progress-bar  progress-bar-success" role="progressbar" aria-valuemin="0" aria-valuenow="100"
+                         aria-valuemax="100" style="width: 100%;"
+                         th:text="${job.status}">
+                        status
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</ul>
