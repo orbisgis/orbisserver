@@ -53,6 +53,7 @@ import org.osgi.util.tracker.ServiceTracker;
 @Component
 public class ServiceController extends ServiceTracker<ServiceFactory, ServiceFactory> {
 
+    /** Bundle context */
     private BundleContext hostContext;
 
     /**

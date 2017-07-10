@@ -34,6 +34,21 @@
                 font-size: 16px;
                 line-height: 28px;
               }
+              .list-group-item{
+                background:#222;
+                font-size: 20px;
+                border-style: none;
+              }
+              .list-group-item:first-child{
+                border-top: solid #aaa;
+              }
+              .list-group-item:last-child{
+                border-bottom: solid #aaa;
+              }
+              #item_sidebar {
+                color: #aaa;
+                border-radius: 0px;
+              }
               .modal-header {
                   min-height: 16.43px;
                   padding: 15px 15px 15px 15px;
@@ -76,27 +91,41 @@
                     </div>
                     <ul class="nav navbar-nav">
                         <li>
-                            <a class="navbar-brand" href="#">Data</a>
+                            <a id="Data" onclick="javascript:Data();" class="navbar-brand" href="#">Data</a>
                         </li>
                         <li>
+<<<<<<< HEAD
                             <a class="navbar-brand" onclick="showProcess()" href="#">Process</a>
+=======
+                            <a id="Process" onclick="javascript:Process();" class="navbar-brand" href="#">Process</a>
+>>>>>>> 221cd5097ff53e1483fe0c17577c5ddeb87069fd
                         </li>
                         <li>
-                            <a class="navbar-brand" href="#">Share</a>
+                            <a id="Share" onclick="javascript:Share();" class="navbar-brand" href="#">Share</a>
                         </li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
+<<<<<<< HEAD
                         <li th:if="${userName == null}"><a id="sign_in" href="#"><span class="glyphicon glyphicon-user">
                                 </span>Sign Up</a></li>
                         <li th:if="${userName == null}"><a  id="log_in" data-toggle="modal" data-target="#myModal" href="#">
                             <span class="glyphicon 	glyphicon-log-in"></span>Login</a></li>
                         <li th:if="${userName != null}"><a  id="user_icon" href="#">
                             <span class="glyphicon 	glyphicon-user"></span><span th:text="${userName}" ></span></a></li>
+=======
+                        <li><a id="sign_in" onclick="javascript:signIn();" href="#">
+                            <span class="glyphicon glyphicon-user"></span>Sign Up</a>
+                        </li>
+                        <li><a  id="log_in" data-toggle="modal" data-target="#myModal" href="#">
+                            <span class="glyphicon 	glyphicon-log-in"></span>Login</a>
+                        </li>
+>>>>>>> 221cd5097ff53e1483fe0c17577c5ddeb87069fd
                     </ul>
                 </div>
             </nav>
         </div>
 
+<<<<<<< HEAD
         <div id="content">
             <div class="container-fluid" style="padding-left: 0px">
                 <div class="row row-offcanvas row-offcanvas-right">
@@ -117,12 +146,38 @@
                                     <p>
                                         In the src/main/configuration/application.conf file, use these
                                         properties to configure the ports:
+=======
+
+        <div>
+            <div  class="container-fluid" style="padding-left: 0px">
+                <div class="row row-offcanvas row-offcanvas-right">
+                    <div class="col-xs-12 col-sm-2 navbar-static-top" id="sidebar">
+                        <div class="list-group" style="min-height: 110vh; background:#222">
+                            <a id="item_sidebar" class="list-group-item" href="#"><span class="glyphicon glyphicon-tasks"></span> Jobs</a>
+                            <a id="item_sidebar" class="list-group-item" href="#"><span class="glyphicon glyphicon-list"></span> Process</a>
+                        </div>
+                    </div><!--/.sidebar-offcanvas-->
+                    <div id="content" class="col-xs-12 col-sm-8 col-sm-push-1">
+                        <div class="jumbotron">
+                            <h1>OrbisServer</h1>
+                            <p>OSGI web server plugin for OrbisGIS based on wisdom-framework.</p>
+                            <h3>Start the server</h3>
+                            <p>Clone the repository. Go to core-server and execute</p>
+                            <p>mvn wisdom:run
+                                Then, open your browser to: <a>http://localhost:8080</a>
+                            </p>
+                            <h3>Configuration Ports</h3>
+                            <p>
+                                In the src/main/configuration/application.conf file, use these
+                                properties to configure the ports:
+>>>>>>> 221cd5097ff53e1483fe0c17577c5ddeb87069fd
 
                                         http.port = HTTP port, 9000 by default
                                         https.port = HTTPS port, disabled by default
 
                                         You can use 0 to use a random port.</p>
 
+<<<<<<< HEAD
                             </div>
                             <div class="row">
                                 <div class="col-sm-6 col-xs-6 col-lg-4">
@@ -154,6 +209,41 @@
                     </div><!--/.col-xs-12.col-sm-10-->
                 </div><!--/row-->
             </div><!--/.container-->
+=======
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6 col-xs-12 col-lg-4">
+                                <h2>Data</h2>
+                                <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus,
+                                    tellus ac cursus commodo, tortor mauris condimentum nibh, ut
+                                    fermentum massa justo sit amet risus. Etiam porta sem malesuada
+                                    magna mollis euismod. Donec sed odio dui. </p>
+                                <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+                            </div>
+                            <div class="col-sm-6 col-xs-12 col-lg-4">
+                                <h2>Process</h2>
+                                <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus,
+                                    tellus ac cursus commodo, tortor mauris condimentum nibh, ut
+                                    fermentum massa justo sit amet risus. Etiam porta sem malesuada
+                                    magna mollis euismod. Donec sed odio dui. </p>
+                                <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+                            </div>
+                            <div class="col-sm-6 col-xs-12 col-lg-4">
+                                <h2>Share</h2>
+                                <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus,
+                                    tellus ac cursus commodo, tortor mauris condimentum nibh, ut
+                                    fermentum massa justo sit amet risus. Etiam porta sem malesuada
+                                    magna mollis euismod. Donec sed odio dui. </p>
+                                <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+                            </div>
+                        </div><!--/row-->
+                    </div><!--/.col-xs-12.col-sm-10-->
+
+                </div><!--/row-->
+            </div><!--/.container-->
+        </div>
+
+>>>>>>> 221cd5097ff53e1483fe0c17577c5ddeb87069fd
         <!-- Modal -->
         <div class="modal fade" id="myModal" role="dialog">
             <div class="modal-dialog">
@@ -162,7 +252,8 @@
                 <div class="modal-content">
                     <div class="modal-header" align="center">
                         <img class="img" id="img_logo"
-                             src="http://store.orbisgis.org/documentation/online/2-1/fr/files/img_1.png" width="350" height="100"/>
+                             src="http://store.orbisgis.org/documentation/online/2-1/fr/files/img_1.png"
+                             width="350" height="100"/>
                     </div>
                     <div id="div-forms">
                         <!-- Begin # Login Form -->
@@ -178,7 +269,11 @@
                             </div>
                             <div class="modal-footer">
                                 <div>
+<<<<<<< HEAD
                                     <button id="submitBtn" type="submit" class="btn btn-primary btn-lg btn-block">Login</button>
+=======
+                                    <button id="log_in_btn" onclick="javascript:LoginOk();" type="submit" class="btn btn-primary btn-lg btn-block">Login</button>
+>>>>>>> 221cd5097ff53e1483fe0c17577c5ddeb87069fd
                                 </div>
                                 <div>
                                     <button id="login_lost_btn" type="button" class="btn btn-link">Lost Password?</button>
@@ -191,10 +286,19 @@
             </div>
         </div>
         <script>
+<<<<<<< HEAD
             $('#Mymodal').on('shown.bs.modal', function () {$('#sign in').focus()})
             function showProcess(){
                 $.ajax({ type: "GET",
                     url: "http://localhost:8080/process",
+=======
+            $('#myModal').on('shown.bs.modal', function () {$('#sign_in').focus()})
+
+            function signIn(){
+                $.ajax({
+                    type: "GET",
+                    url: "http://localhost:8080/signIn",
+>>>>>>> 221cd5097ff53e1483fe0c17577c5ddeb87069fd
                     async: false,
                     success : function(text)
                     {
@@ -202,11 +306,53 @@
                     },
                     error : function(text)
                     {
+<<<<<<< HEAD
                         $( "#content" ).html(String(text));
                     }
                 });
             }
         </script>
+=======
+                        $( "#content" ).html(String("Error"));
+>>>>>>> 221cd5097ff53e1483fe0c17577c5ddeb87069fd
 
+                    }
+                });
+            }
+
+            function LoginOk(){
+                $.ajax({
+                    type: "GET",
+                    url: "http://localhost:8080/workspace",
+                    async: false,
+                    success : function(text)
+                    {
+                        $( "#content" ).html(String(text));
+                    },
+                    error : function(text)
+                    {
+                        $( "#content" ).html(String("Error"));
+
+                    }
+                });
+            }
+
+            function Data(){
+                $.ajax({
+                    type: "GET",
+                    url: "http://localhost:8080/data",
+                    async: false,
+                    success : function(text)
+                    {
+                        $( "#content" ).html(String(text));
+                    },
+                    error : function(text)
+                    {
+                        $( "#content" ).html(String("Error"));
+
+                    }
+                });
+            }
+        </script>
     </body>
 </html>
