@@ -45,7 +45,7 @@
               .list-group-item:last-child{
                 border-bottom: solid #aaa;
               }
-              #item_sidebar {
+              .item_sidebar {
                 color: #aaa;
                 border-radius: 0px;
               }
@@ -81,6 +81,7 @@
                 background-color: #eee;
               }
         </style>
+
         <div id="navbar">
             <nav class="nav navbar-inverse navbar-static-top">
                 <div class="container-fluid ">
@@ -118,8 +119,8 @@
                 <div class="row row-offcanvas row-offcanvas-right">
                     <div class="col-xs-12 col-sm-2 navbar-static-top" id="sidebar">
                         <div class="list-group" style="min-height: 110vh; background:#222">
-                            <a id="item_sidebar" class="list-group-item" href="#"><span class="glyphicon glyphicon-tasks"></span> Jobs</a>
-                            <a id="item_sidebar" class="list-group-item" href="#"><span class="glyphicon glyphicon-list"></span> Process</a>
+                            <a id="jobs" class="list-group-item item_sidebar" href="#"><span class="glyphicon glyphicon-tasks"></span> Jobs</a>
+                            <a id="process" class="list-group-item item_sidebar" href="#"><span class="glyphicon glyphicon-list"></span> Process</a>
                         </div>
                     </div><!--/.sidebar-offcanvas-->
                     <div id="content" class="col-xs-12 col-sm-8 col-sm-push-1">
@@ -250,6 +251,23 @@
                 $.ajax({
                     type: "GET",
                     url: "http://localhost:8080/data",
+                    async: false,
+                    success : function(text)
+                    {
+                        $( "#content" ).html(String(text));
+                    },
+                    error : function(text)
+                    {
+                        $( "#content" ).html(String("Error"));
+
+                    }
+                });
+            }
+
+            function Jobs(){
+                $.ajax({
+                    type: "GET",
+                    url: "http://localhost:8080/jobs",
                     async: false,
                     success : function(text)
                     {

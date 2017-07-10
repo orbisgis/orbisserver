@@ -78,6 +78,9 @@ public class MainController extends DefaultController {
     @View("Export")
     Template export;
 
+    @View("Jobs")
+    Template jobs;
+
     @Route(method = HttpMethod.GET, uri = "/")
     public Result home() {
         return ok(render(home));
@@ -109,4 +112,7 @@ public class MainController extends DefaultController {
 
     @Route(method = HttpMethod.GET, uri = "/data/export")
     public Result export() {return ok(render(export));}
+
+    @Route(method = HttpMethod.GET, uri = "/jobs")
+    public Result jobs() {return ok(render(jobs));}
 }
