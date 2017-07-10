@@ -91,13 +91,13 @@
                     </div>
                     <ul class="nav navbar-nav">
                         <li>
-                            <a class="navbar-brand" href="#">Data</a>
+                            <a id="Data" onclick="javascript:Data();" class="navbar-brand" href="#">Data</a>
                         </li>
                         <li>
-                            <a class="navbar-brand" href="#">Process</a>
+                            <a id="Process" onclick="javascript:Process();" class="navbar-brand" href="#">Process</a>
                         </li>
                         <li>
-                            <a class="navbar-brand" href="#">Share</a>
+                            <a id="Share" onclick="javascript:Share();" class="navbar-brand" href="#">Share</a>
                         </li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
@@ -246,10 +246,10 @@
                 });
             }
 
-            function DataOk(){
+            function Data(){
                 $.ajax({
                     type: "GET",
-                    url: "http://localhost:8080/workspace",
+                    url: "http://localhost:8080/data",
                     async: false,
                     success : function(text)
                     {

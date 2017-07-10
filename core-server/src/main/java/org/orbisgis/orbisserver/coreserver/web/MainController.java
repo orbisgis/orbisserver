@@ -69,6 +69,15 @@ public class MainController extends DefaultController {
     @View("Workspace")
     Template workspace;
 
+    @View("Data")
+    Template data;
+
+    @View("Import")
+    Template tImport;
+
+    @View("Export")
+    Template export;
+
     @Route(method = HttpMethod.GET, uri = "/")
     public Result home() {
         return ok(render(home));
@@ -85,12 +94,19 @@ public class MainController extends DefaultController {
     }
 
     @Route(method = HttpMethod.GET, uri = "/signIn")
-    public Result signIn() {
-        return ok(render(signIn));
-    }
+    public Result signIn() {return ok(render(signIn));}
 
     @Route(method = HttpMethod.GET, uri = "/workspace")
     public Result workspace() {
         return ok(render(workspace));
     }
+
+    @Route(method = HttpMethod.GET, uri = "/data")
+    public Result data() {return ok(render(data));}
+
+    @Route(method = HttpMethod.GET, uri = "/data/import")
+    public Result tImport() {return ok(render(tImport));}
+
+    @Route(method = HttpMethod.GET, uri = "/data/export")
+    public Result export() {return ok(render(export));}
 }
