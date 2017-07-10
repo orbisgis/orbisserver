@@ -24,19 +24,11 @@
       }
 </style>
 
-<div class="container-fluid" style="padding-left: 0px">
-    <div class="row row-offcanvas row-offcanvas-right">
-        <div id="processContent" class="col-xs-12 col-sm-8 col-sm-push-2">
-        </div>
-        <div class="col-xs-6 col-sm-2 col-sm-pull-8 sidebar-offcanvas navbar-static-top" id="sidebar">
-            <div class="list-group" style="min-height: 175vh; max-width=100; background:#222">
-                <a id="item_sidebar" class="list-group-item" href="#" onclick="showListProcess()"><span class="glyphicon glyphicon-list"></span> Process</a>
-                <a id="item_sidebar" class="list-group-item" href="#"  onclick="showJobs()"><span class="glyphicon glyphicon-tasks"></span> Jobs</a>
-                <ul id="list" class="list-group scrollable" style="min-height: 175vh; max-width=100; background:#222; color:#BBB"></ul>
-            </div>
-        </div><!--/.sidebar-offcanvas-->
-    </div><!--/row-->
-</div><!--/.container-->
+<div class="list-group" style="min-height: 175vh; max-width=100; background:#222">
+    <a id="item_sidebar" class="list-group-item" href="#"  onclick="showJobs()"><span class="glyphicon glyphicon-tasks"></span> Jobs</a>
+    <a id="item_sidebar" class="list-group-item" href="#" onclick="showListProcess()"><span class="glyphicon glyphicon-list"></span> Process</a>
+    <ul id="list" class="list-group scrollable" style="min-height: 175vh; max-width=100; background:#222; color:#BBB"></ul>
+</div>
 
 
 <script>
@@ -63,11 +55,11 @@
             async: false,
             success : function(text)
             {
-                $( "#processContent" ).html(String(text));
+                $( "#content" ).html(String(text));
             },
             error : function(text)
             {
-                $( "#processContent" ).html(String(text));
+                $( "#content" ).html(String(text));
             }
         });
     }
@@ -78,11 +70,11 @@
             success : function(text)
             {
                 $( "#list" ).html("");
-                $( "#processContent" ).html(String(text));
+                $( "#content" ).html(String(text));
             },
             error : function(text)
             {
-                $( "#processContent" ).html(String(text));
+                $( "#content" ).html(String(text));
             }
         });
     }

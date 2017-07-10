@@ -40,7 +40,7 @@
         }
     }
 </style>
-<script th:if="${nextRefresh}>0" th:text="'setTimeout(showJobs, ' + ${nextRefresh} + ')'"></script>
+<script th:if="${nextRefresh}>=0" th:text="'setTimeout(showJobs, ' + ${nextRefresh} + ')'"></script>
 <ul class="list-group">
     <div class="panel panel-default" th:each="job : ${jobList}">
         <div class="panel panel-default">

@@ -86,7 +86,8 @@ public class CoreServerController extends DefaultController {
         //Read the resource sql script and execute it
         try {
             Statement st = ds.getConnection().createStatement();
-            BufferedReader br = new BufferedReader(new FileReader("file.txt"));
+            InputStream inStream = this.getClass().getResourceAsStream("db_script.sql");
+            BufferedReader br = new BufferedReader(new InputStreamReader(inStream));
             String line = br.readLine();
             int queryCount = 1;
             while(line != null) {

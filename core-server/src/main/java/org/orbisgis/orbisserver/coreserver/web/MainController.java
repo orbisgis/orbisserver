@@ -170,30 +170,39 @@ public class MainController extends DefaultController {
     @Route(method = HttpMethod.GET, uri = "/jobs")
     public Result jobs() throws IOException {
         long timeMillisNow = System.currentTimeMillis();
-        List<StatusInfo> statusInfoList = session.getAllStatusInfoToRefresh();
+        List<StatusInfo> statusInfoToRefreshList = session.getAllStatusInfoToRefresh();
+        List<StatusInfo> statusInfoList = session.getAllStatusInfo();
         long minRefresh = Long.MAX_VALUE;
-        if(statusInfoList.isEmpty()){
-            minRefresh = -1;
-        }
-        for(StatusInfo statusInfo : statusInfoList){
+
+        for(StatusInfo statusInfo : statusInfoToRefreshList){
             StatusInfo info = session.refreshStatus(statusInfo.getJobId());
             statusInfo.setStatus(info.getStatus());
             if (info.getPercentCompleted() != null) {
                 statusInfo.setPercentCompleted(info.getPercentCompleted());
             }
-            if(info.getNextPoll() != null) {
-                statusInfo.setNextPoll(info.getNextPoll());
-            }
+            statusInfo.setNextPoll(info.getNextPoll());
             if (info.getEstimatedCompletion() != null) {
                 statusInfo.setEstimatedCompletion(info.getEstimatedCompletion());
             }
-            long timeMillisPoll = statusInfo.getNextPoll().toGregorianCalendar().getTime().getTime();
-            statusInfo.setNextRefreshMillis(timeMillisPoll - timeMillisNow);
+            statusInfo.setNextRefreshMillis(-1);
+            if(statusInfo.getNextPoll() != null){
+                long timeMillisPoll = statusInfo.getNextPoll().toGregorianCalendar().getTime().getTime();
+                statusInfo.setNextRefreshMillis(timeMillisPoll - timeMillisNow);
+            }
             if(statusInfo.getNextRefreshMillis() >= 0) {
                 minRefresh = Math.min(statusInfo.getNextRefreshMillis(), minRefresh);
             }
         }
 
+        for(StatusInfo statusInfo : statusInfoList){
+            if(statusInfo.getNextRefreshMillis() >= 0) {
+                minRefresh = Math.min(statusInfo.getNextRefreshMillis(), minRefresh);
+            }
+        }
+
+        if(minRefresh == Long.MAX_VALUE){
+            minRefresh = -1;
+        }
         return ok(render(jobs, "jobList", session.getAllStatusInfo(), "nextRefresh", minRefresh));
     }
 
