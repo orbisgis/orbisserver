@@ -45,7 +45,11 @@
               .list-group-item:last-child{
                 border-bottom: solid #aaa;
               }
-              .item_sidebar {
+              #jobs {
+                color: #aaa;
+                border-radius: 0px;
+              }
+              #process {
                 color: #aaa;
                 border-radius: 0px;
               }
@@ -92,21 +96,20 @@
                     </div>
                     <ul class="nav navbar-nav">
                         <li>
-                            <a id="Data" onclick="javascript:data();" class="navbar-brand" href="#">Data</a>
+                            <a id="Data" onclick="javascript:Data();" class="navbar-brand" href="#">Data</a>
                         </li>
                         <li>
-                            <a id="Process" onclick="javascript:process();" class="navbar-brand" href="#">Process</a>
-
+                            <a id="Process" onclick="javascript:Process('${session}');" class="navbar-brand" href="#">Process</a>
                         </li>
                         <li>
-                            <a id="Share" onclick="javascript:share();" class="navbar-brand" href="#">Share</a>
+                            <a id="Share" onclick="javascript:Share();" class="navbar-brand" href="#">Share</a>
                         </li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
 
-                        <li th:if="${userName == null}"><a id="sign_in" href="#"><span class="glyphicon glyphicon-user">
+                        <li th:if="${userName == null}"><a id="signIn" onclick="javascript:SignIn();" href="#"><span class="glyphicon glyphicon-user">
                                 </span>Sign Up</a></li>
-                        <li th:if="${userName == null}"><a  id="log_in" data-toggle="modal" data-target="#myModal" href="#">
+                        <li th:if="${userName == null}"><a  id="logIn" data-toggle="modal" data-target="#myModal" href="#">
                             <span class="glyphicon 	glyphicon-log-in"></span>Login</a></li>
                         <li th:if="${userName != null}"><a  id="user_icon" href="#">
                             <span class="glyphicon 	glyphicon-user"></span><span th:text="${userName}" ></span></a></li>
@@ -118,14 +121,14 @@
 
 
         <div>
-            <div  class="container-fluid" style="padding-left: 0px">
+            <div  class="container-fluid" style="padding-left: 0px; padding-right: 0px">
                 <div class="row row-offcanvas row-offcanvas-right">
                     <div class="col-xs-12 col-sm-2 navbar-static-top" id="sidebar">
                         <div class="list-group" style="min-height: 110vh; background:#222">
-                            <a id="jobs" class="list-group-item item_sidebar" href="#"><span class="glyphicon glyphicon-tasks"></span> Jobs</a>
-                            <a id="process" class="list-group-item item_sidebar" href="#"><span class="glyphicon glyphicon-list"></span> Process</a>
+                            <a id="jobs" onclick="javascript:Jobs();" class="list-group-item " href="#"><span class="glyphicon glyphicon-tasks"></span> Jobs</a>
+                            <a id="process" onclick="javascript:Process('${session}');" class="list-group-item" href="#"><span class="glyphicon glyphicon-list"></span> Process</a>
                         </div>
-                    </div><!--/.sidebar-offcanvas-->
+                    </div><!--/.sidebar-offcanvas                       \'' + ${process.htmlId} + '\'-->
                     <div id="content" class="col-xs-12 col-sm-8 col-sm-push-1">
                         <div class="jumbotron">
                             <h1>OrbisServer</h1>
@@ -154,7 +157,7 @@
                                     tellus ac cursus commodo, tortor mauris condimentum nibh, ut
                                     fermentum massa justo sit amet risus. Etiam porta sem malesuada
                                     magna mollis euismod. Donec sed odio dui. </p>
-                                <p><a class="btn btn-default" href="#" role="button" onclick="javascript:data();">View details &raquo;</a></p>
+                                <p><a class="btn btn-default" href="#" role="button" onclick="javascript:Data();">View details &raquo;</a></p>
                             </div>
                             <div class="col-sm-6 col-xs-12 col-lg-4">
                                 <h2>Process</h2>
@@ -162,7 +165,7 @@
                                     tellus ac cursus commodo, tortor mauris condimentum nibh, ut
                                     fermentum massa justo sit amet risus. Etiam porta sem malesuada
                                     magna mollis euismod. Donec sed odio dui. </p>
-                                <p><a class="btn btn-default" href="#" role="button" onclick="javascript:process();">View details &raquo;</a></p>
+                                <p><a class="btn btn-default" href="#" role="button" onclick="javascript:Process('${session}');">View details &raquo;</a></p>
                             </div>
                             <div class="col-sm-6 col-xs-12 col-lg-4">
                                 <h2>Share</h2>
@@ -170,7 +173,7 @@
                                     tellus ac cursus commodo, tortor mauris condimentum nibh, ut
                                     fermentum massa justo sit amet risus. Etiam porta sem malesuada
                                     magna mollis euismod. Donec sed odio dui. </p>
-                                <p><a class="btn btn-default" href="#" role="button" onclick="javascript:share();">View details &raquo;</a></p>
+                                <p><a class="btn btn-default" href="#" role="button" onclick="javascript:Share();">View details &raquo;</a></p>
                             </div>
                         </div><!--/row-->
                     </div><!--/.col-xs-12.col-sm-10-->
@@ -217,24 +220,31 @@
             </div>
         </div>
         <script>
-            $('#Mymodal').on('shown.bs.modal', function () {$('#sign in').focus()})
+            $('#Mymodal').on('shown.bs.modal', function () {$('#logIn').focus()})
 
-            function process(){
+            function Process(session){
                 $.ajax({ type: "GET",
                     url: "http://localhost:8080/process",
                     async: false,
                     success : function(text)
                     {
-                        $( "#sidebar" ).html(String(text));
+                        if(session==null){
+                            alert("la session n'existe pas");
+                            $( "#content" ).html(String(text));
+                        }
+                        else if(session!=null){
+                            alert("la session existe");
+                            $( "#sidebar" ).html(String(text));
+                        }
                     },
                     error : function(text)
                     {
-                        $( "#sidebar" ).html(String("Error"));
+                        $( "#sidebar" ).html(String(text));
                     }
                 });
             }
 
-            function signIn(){
+            function SignIn(){
                 $.ajax({
                     type: "GET",
                     url: "http://localhost:8080/signIn",
@@ -245,7 +255,7 @@
                     },
                     error : function(text)
                     {
-                        $( "#content" ).html(String("Error"));
+                        $( "#content" ).html(String(text));
                     }
                 });
             }
@@ -261,7 +271,7 @@
                     },
                     error : function(text)
                     {
-                        $( "#content" ).html(String("Error"));
+                        $( "#content" ).html(String(text));
 
                     }
                 });
@@ -294,11 +304,11 @@
                     },
                     error : function(text)
                     {
-                        $( "#content" ).html(String("Error"));
-
+                        $( "#content" ).html(String(text));
                     }
                 });
             }
+
         </script>
     </body>
 </html>

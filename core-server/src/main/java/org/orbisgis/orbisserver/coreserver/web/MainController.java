@@ -105,7 +105,7 @@ public class MainController extends DefaultController {
 
     @Route(method = HttpMethod.GET, uri = "/")
     public Result home() {
-        return ok(render(home));
+        return ok(render(home, "session", session));
     }
 
     @Route(method = HttpMethod.GET, uri = "/logout")
@@ -129,7 +129,7 @@ public class MainController extends DefaultController {
 
     @Route(method = HttpMethod.GET, uri = "/process")
     public Result process() throws IOException {
-        return ok(render(process));
+        return ok(render(process,"session", session));
     }
 
     @Route(method = HttpMethod.GET, uri = "/processList")
@@ -215,7 +215,7 @@ public class MainController extends DefaultController {
     }
 
     @Route(method = HttpMethod.GET, uri = "/data")
-    public Result data() {return ok(render(data));}
+    public Result data() {return ok(render(data,"session",session));}
 
     @Route(method = HttpMethod.GET, uri = "/data/import")
     public Result tImport() {return ok(render(tImport));}

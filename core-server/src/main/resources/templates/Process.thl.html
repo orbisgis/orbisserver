@@ -1,4 +1,3 @@
-
 <style type="text/css">
       body,html {
           height: 100%;
@@ -14,22 +13,39 @@
       .list-group-item:last-child{
         border-bottom: solid #aaa;
       }
-      #item_sidebar {
+      #jobs {
+        color: #aaa;
+        border-radius: 0px;
+      }
+      #process {
+        color: #aaa;
+        border-radius: 0px;
+        border-bottom: solid #aaa;
+      }
+      #list{
         color: #aaa;
         border-radius: 0px;
       }
       .scrollable {
-          overflow-y: scroll;
           max-height: 100%;
       }
 </style>
 
-<div class="list-group" style="min-height: 175vh; max-width=100; background:#222">
-    <a id="item_sidebar" class="list-group-item" href="#"  onclick="showJobs()"><span class="glyphicon glyphicon-tasks"></span> Jobs</a>
-    <a id="item_sidebar" class="list-group-item" href="#" onclick="showListProcess()"><span class="glyphicon glyphicon-list"></span> Process</a>
-    <ul id="list" class="list-group scrollable" style="min-height: 175vh; max-width=100; background:#222; color:#BBB"></ul>
+<div th:if="${session}!= null" class="list-group" style="min-height: 175vh; max-width=100; background:#222">
+    <h1 th:if="${sesion}!=null">La session de precess existe</h1>
+    <a id="jobs" class="list-group-item" href="#"  onclick="showJobs()"><span class="glyphicon glyphicon-tasks"></span> Jobs</a>
+    <a id="process" class="list-group-item" href="#" onclick="showListProcess()"><span class="glyphicon glyphicon-list"></span> Process</a>
+    <ul id="list" class="list-group scrollable"></ul>
 </div>
-
+<div th:if="${session}==null">
+    <div id="Process-div-content" class="jumbotron" >
+        <h1 th:if="${sesion}==null">La session de process est null</h1>
+        <p>Presentation : Donec id elit non mi porta gravida at eget metus. Fusce dapibus,
+            tellus ac cursus commodo, tortor mauris condimentum nibh, ut
+            fermentum massa justo sit amet risus. Etiam porta sem malesuada
+            magna mollis euismod. Donec sed odio dui.</p>
+    </div>
+</div>
 
 <script>
     function showListProcess(){
@@ -78,4 +94,5 @@
             }
         });
     }
+
 </script>
