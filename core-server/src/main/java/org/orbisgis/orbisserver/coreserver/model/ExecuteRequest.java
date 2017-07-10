@@ -38,10 +38,27 @@
  */
 package org.orbisgis.orbisserver.coreserver.model;
 
+import java.util.Map;
+
 /**
  * Execute request containing all the information for the execution of an operation
  *
  * @author Sylvain Palominos
  */
 public class ExecuteRequest {
+    private String id;
+    private Map<String, String> dataMap;
+
+    public ExecuteRequest(String id, Map<String, String> dataMap){
+        this.id = id;
+        this.dataMap = dataMap;
+    }
+
+    public String getId(){
+        return id;
+    }
+
+    public Map<String, String> getDataMap(){
+        return dataMap;
+    }
 }

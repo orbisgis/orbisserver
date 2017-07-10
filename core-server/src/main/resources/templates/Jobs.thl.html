@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!--
 - OrbisServer is an OSGI web application to expose OGC services.
 -
@@ -37,6 +38,8 @@
 - info_at_ orbisgis.org
 -->
 
+=======
+>>>>>>> de8707f37086c1e184d50d013a5e4ac0250212c9
 <style type="text/css">
     .gly-spin {
         -webkit-animation: spin 2s infinite linear;
@@ -79,26 +82,13 @@
         }
     }
 </style>
-<script th:if="${nextRefresh}>0" th:text="'setTimeout(showStatus, ' + ${nextRefresh} + ')'"></script>
-<table class="table">
-    <thead>
-    <tr>
-        <th>ProcessTitle</th>
-        <th>Status</th>
-        <th>Estimated Completion</th>
-        <th>Time before deletion</th>
-    </tr>
-    </thead>
-    <tbody>
-        <tr class="table" th:each="job : ${jobList}">
-            <tr>
-                <td><p th:text="${job.processTitle}"/></td>
-                <td><p th:text="${job.status}"/></td>
-                <td><p th:text="${job.estimatedCompletion}"/></td>
-                <td><p>24h00</p></td>
-            </tr>
-            <tr>
-                <td class="progress">
+<script th:if="${nextRefresh}>=0" th:text="'setTimeout(showJobs, ' + ${nextRefresh} + ')'"></script>
+<ul class="list-group">
+    <div class="panel panel-default" th:each="job : ${jobList}">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <h3 th:text="${job.processTitle}">title</h3>
+                <div class="progress">
                     <div th:if="${job.status.equalsIgnoreCase('ACCEPTED')}" class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuenow="10"
                          aria-valuemax="100" th:style="'width: ' + ${job.percentCompleted} + '%;'"
                          th:text="${job.status}">
@@ -119,8 +109,8 @@
                          th:text="${job.status}">
                         status
                     </div>
-                </td>
-            </tr>
-        </tr>
-    </tbody>
-</table>
+                </div>
+            </div>
+        </div>
+    </div>
+</ul>
