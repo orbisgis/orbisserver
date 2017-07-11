@@ -18,7 +18,6 @@
                 width: 100%;
                 z-index:10;
             }
-
             #left-nav {
                 margin-top: 50px;
                 position: fixed;
@@ -178,6 +177,12 @@
                 -webkit-transform-style: preserve-3d;
                 transform-style: preserve-3d;
             }
+
+            /** dopdown user*/
+            #span-user {
+                font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-size: 16px;
+            }
         </style>
 
         <div id="navbar">
@@ -204,8 +209,18 @@
                                 </span>Sign Up</a></li>
                         <li th:if="${userName == null}"><a  id="log_in" data-toggle="modal" data-target="#myModal" href="#">
                             <span class="glyphicon 	glyphicon-log-in"></span>Login</a></li>
-                        <li th:if="${userName != null}"><a  id="user_icon" href="#">
-                            <span class="glyphicon 	glyphicon-user"></span><span th:text="${userName}" ></span></a></li>
+                        <li th:if="${userName != null}" id="user_icon" role="presentation" class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                                <span class="glyphicon glyphicon-user"><span id="span-user" th:text="${userName}"></span></span><span class="caret" ></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Action</a></li>
+                                <li><a href="#">Another action</a></li>
+                                <li><a href="#">Something else here</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="#">Separated link</a></li>
+                            </ul>
+                        </li>
                     </ul>
                 </div>
             </nav>
@@ -226,7 +241,7 @@
             <div class="container-fluid">
                 <div class="main-body">
                     <div class="row row-offcanvas row-offcanvas-right">
-                        <div id="content" class="col-xs-12 col-sm-8 col-sm-push-1">
+                        <div id="content" class="col-xs-12 col-sm-9">
                             <div class="jumbotron">
                                 <h1>OrbisServer</h1>
                                 <p>OSGI web server plugin for OrbisGIS based on wisdom-framework.</p>
@@ -342,6 +357,7 @@
                     }
                 });
             }
+
 
             function showProcess(id){
                 $.ajax({ type: "GET",
