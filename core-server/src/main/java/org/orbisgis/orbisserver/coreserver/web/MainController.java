@@ -76,9 +76,6 @@ public class MainController extends DefaultController {
     @View("BaseLog_Out")
     Template logOut;
 
-    @View("Process")
-    Template process;
-
     @View("ProcessList")
     Template processList;
 
@@ -102,6 +99,9 @@ public class MainController extends DefaultController {
 
     @View("Export")
     Template export;
+
+    @View("ProcessLeftNav")
+    Template leftNavContent;
 
     @Route(method = HttpMethod.GET, uri = "/")
     public Result home() {
@@ -127,12 +127,7 @@ public class MainController extends DefaultController {
         }
     }
 
-    @Route(method = HttpMethod.GET, uri = "/process")
-    public Result process() throws IOException {
-        return ok(render(process));
-    }
-
-    @Route(method = HttpMethod.GET, uri = "/processList")
+    @Route(method = HttpMethod.GET, uri = "/process/processList")
     public Result processList() throws IOException {
         return ok(render(processList, "processList", session.getOperationList()));
     }
@@ -222,4 +217,7 @@ public class MainController extends DefaultController {
 
     @Route(method = HttpMethod.GET, uri = "/data/export")
     public Result export() {return ok(render(export));}
+
+    @Route(method = HttpMethod.GET, uri = "/process/leftNavContent")
+    public Result leftNavContent() {return ok(render(leftNavContent));}
 }

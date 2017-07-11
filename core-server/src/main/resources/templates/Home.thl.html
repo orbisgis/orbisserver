@@ -15,83 +15,90 @@
     <body>
 
         <style type="text/css">
-              body,html {
+            body,html {
                   height: 100%;
-              }
+            }
 
-              #login_lost_btn{
+            #login_lost_btn{
                 margin-top: 10px;
-              }
+            }
 
-              #login_register_btn{
+            #login_register_btn{
                 margin-top: 10px;
-              }
+            }
 
-              #login-modal input[type=text], input[type=password]{
+            #login-modal input[type=text], input[type=password]{
                 margin-top: 10px;
-              }
+            }
 
-              #div-login-msg{
+            #div-login-msg{
                 margin: auto;
                 padding: 10px;
                 width: 50%;
                 font-size: 16px;
                 line-height: 28px;
-              }
+            }
 
-              .list-group-item{
+            .list-group-item{
                 background:#222;
                 font-size: 20px;
                 border-style: none;
-              }
+            }
 
-              .list-group-item:first-child{
+            .list-group-item:first-child{
                 border-top: solid #aaa;
-              }
+            }
 
-              .list-group-item:last-child{
+            .list-group-item:last-child{
                 border-bottom: solid #aaa;
-              }
+            }
 
-              #item_sidebar {
+            #item_sidebar {
                 color: #aaa;
                 border-radius: 0px;
-              }
+            }
 
-              .modal-header {
+            .modal-header {
                   min-height: 16.43px;
                   padding: 15px 15px 15px 15px;
                   border-bottom: 0px;
-              }
+            }
 
-              .modal-body {
+            .modal-body {
                   position: relative;
                   padding: 5px 15px 5px 15px;
-              }
+            }
 
-              .modal-footer {
+            .modal-footer {
                   padding: 15px 15px 15px 15px;
                   text-align: left;
                   border-top: 0px;
-              }
-              .modal-backdrop.in {
+            }
+            .modal-backdrop.in {
                   filter: alpha(opacity=50);
                   opacity: .8;
-              }
+            }
 
-              .modal-content {
+            .modal-content {
                   background-color: #ececec;
                   border: 1px solid #bdc3c7;
                   border-radius: 0px;
                   outline: 0;
-              }
-              .jumbotron {
+            }
+            .jumbotron {
                 margin-top: 30px;
                 background-color: #eee;
-              }
+            }
+
         </style>
         <style>
+            #navbar {
+                width: 100%;
+                z-index:10;
+            }
+
             #left-nav {
+                margin-top: 50px;
                 position: fixed;
                 height: 100%;
                 width: 300px;
@@ -155,6 +162,7 @@
             /** Search element */
             #left-nav #search .panel-body {
                 padding: 0;
+                border-bottom: 1px solid #e7e7e7;
             }
             #left-nav #search .panel-body .navbar-form {
                 padding: 0;
@@ -172,6 +180,9 @@
             #left-nav #search .panel-body .navbar-form .form-group {
                 width: 100%;
             }
+            #left-nav #search .panel-body .navbar-form .form-control {
+                box-shadow: none;
+            }
             #left-nav #search .panel-body .navbar-form .btn {
                 position: absolute;
                 right: 0;
@@ -181,9 +192,9 @@
                 background-color: #f3f3f3;
                 padding: 15px 18px;
             }
-
             /** Body */
             .main-body {
+                margin-top: 50px;
                 margin-left: 310px;
             }
 
@@ -285,31 +296,7 @@
                 <nav class="navbar navbar-default" role="navigation">
                     <!-- Main Menu -->
                     <div class="left-nav-container">
-                        <ul class="nav navbar-nav">
-                            <li><a href="#"><span class="glyphicon glyphicon-tasks"></span> Jobs</a></li>
-
-                            <li class="panel panel-default" id="dropdown">
-                                <a data-toggle="collapse" href="#dropdown-lvl1">
-                                    <span class="glyphicon glyphicon-list"></span> Process
-                                </a>
-
-                                <div id="dropdown-lvl1" class="panel-collapse collapse">
-                                    <div class="panel-body">
-                                        <div id="search">
-                                            <div class="panel-body">
-                                                <form class="navbar-form" role="search">
-                                                    <div class="form-group">
-                                                        <input type="text" class="form-control" placeholder="Search" />
-                                                    </div>
-                                                    <button type="submit" class="btn btn-default "><span class="glyphicon glyphicon-ok"></span></button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                        <ul class="nav navbar-nav" id="process-list" style="overflow:auto">
-                                        </ul>
-                                    </div>
-                                </div>
-                            </li>
+                        <ul class="nav navbar-nav" id="left-nav-content">
 
                         </ul>
                     </div>
@@ -413,20 +400,61 @@
             </div>
         </div>
         <script>
+            $('#navbar').affix({
+                offset: {
+                    top: $('header').height()
+                }
+            });
+
             $('#Mymodal').on('shown.bs.modal', function () {$('#sign in').focus()})
 
             function process(){
                 $.ajax({ type: "GET",
-                    url: "http://localhost:8080/processList",
+                    url: "http://localhost:8080/process/leftNavContent",
                     async: false,
                     success : function(text)
                     {
                         $('#left-nav').addClass('slide-in');
-                        $( "#process-list" ).html(String(text));
+                        $( "#left-nav-content" ).html(String(text));
                     },
                     error : function(text)
                     {
-                        $( "#process-list" ).html(String("Error"));
+                        $('#left-nav').addClass('slide-in');
+                        $( "#left-nav-content" ).html(String("Error"));
+                    }
+                });
+            }
+
+            function showProcess(id){
+                $.ajax({ type: "GET",
+                    url: "http://localhost:8080/describeProcess",
+                    data: {
+                        "id": id
+                    },
+                    async: false,
+                    success : function(text)
+                    {
+                        $( "#content" ).html(String(text));
+                    },
+                    error : function(text)
+                    {
+                        $( "#content" ).html(String(text));
+                    }
+                });
+            }
+
+            function showJobs(){
+                $.ajax({ type: "GET",
+                    url: "http://localhost:8080/jobs",
+                    async: false,
+                    success : function(text)
+                    {
+                        $( "#list" ).html("");
+                        $( "#content" ).html(String(text));
+                    },
+                    error : function(text)
+                    {
+                        $( "#content" ).html(String(text));
                     }
                 });
             }
