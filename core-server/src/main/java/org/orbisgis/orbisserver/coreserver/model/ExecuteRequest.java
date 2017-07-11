@@ -46,18 +46,33 @@ import java.util.Map;
  * @author Sylvain Palominos
  */
 public class ExecuteRequest {
+    /** Id of the operation to execute. */
     private String id;
+    /** Map containing the data (the id as key, the value as value) for the operation execution. */
     private Map<String, String> dataMap;
 
+    /**
+     * Main Constructor.
+     * @param id Id of the operation to execute.
+     * @param dataMap Map containing the data (the id as key, the value as value) for the operation execution.
+     */
     public ExecuteRequest(String id, Map<String, String> dataMap){
         this.id = id;
         this.dataMap = dataMap;
     }
 
+    /**
+     * Returns the id of the operation to execute.
+     * @return The id of the operation to execute.
+     */
     public String getId(){
         return id;
     }
 
+    /**
+     * Returns the map containing the data (the id as key, the value as value) for the operation execution.
+     * @return The map containing the data (the id as key, the value as value) for the operation execution.
+     */
     public Map<String, String> getDataMap(){
         return dataMap;
     }

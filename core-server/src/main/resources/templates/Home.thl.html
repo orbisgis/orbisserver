@@ -15,72 +15,249 @@
     <body>
 
         <style type="text/css">
-              body,html {
+            body,html {
                   height: 100%;
-              }
-              #login_lost_btn{
+            }
+
+            #login_lost_btn{
                 margin-top: 10px;
-              }
-              #login_register_btn{
+            }
+
+            #login_register_btn{
                 margin-top: 10px;
-              }
-              #login-modal input[type=text], input[type=password]{
+            }
+
+            #login-modal input[type=text], input[type=password]{
                 margin-top: 10px;
-              }
-              #div-login-msg{
+            }
+
+            #div-login-msg{
                 margin: auto;
                 padding: 10px;
                 width: 50%;
                 font-size: 16px;
                 line-height: 28px;
-              }
-              .list-group-item{
+            }
+
+            .list-group-item{
                 background:#222;
                 font-size: 20px;
                 border-style: none;
-              }
-              .list-group-item:first-child{
+            }
+
+            .list-group-item:first-child{
                 border-top: solid #aaa;
-              }
-              .list-group-item:last-child{
+            }
+
+            .list-group-item:last-child{
                 border-bottom: solid #aaa;
-              }
-              #item_sidebar {
+            }
+
+            #item_sidebar {
                 color: #aaa;
                 border-radius: 0px;
-              }
-              .modal-header {
+            }
+
+            .modal-header {
                   min-height: 16.43px;
                   padding: 15px 15px 15px 15px;
                   border-bottom: 0px;
-              }
+            }
 
-              .modal-body {
+            .modal-body {
                   position: relative;
                   padding: 5px 15px 5px 15px;
-              }
+            }
 
-              .modal-footer {
+            .modal-footer {
                   padding: 15px 15px 15px 15px;
                   text-align: left;
                   border-top: 0px;
-              }
-              .modal-backdrop.in {
+            }
+            .modal-backdrop.in {
                   filter: alpha(opacity=50);
                   opacity: .8;
-              }
+            }
 
-              .modal-content {
+            .modal-content {
                   background-color: #ececec;
                   border: 1px solid #bdc3c7;
                   border-radius: 0px;
                   outline: 0;
-              }
-              .jumbotron {
+            }
+            .jumbotron {
                 margin-top: 30px;
                 background-color: #eee;
-              }
+            }
+
         </style>
+        <style>
+            #navbar {
+                width: 100%;
+                z-index:10;
+            }
+
+            #left-nav {
+                margin-top: 50px;
+                position: fixed;
+                height: 100%;
+                width: 300px;
+                border-right: 1px solid #e7e7e7;
+                background-color: #f8f8f8;
+                -moz-animation: slideout 300ms forwards;
+                -o-animation: slideout 300ms forwards;
+                -webkit-animation: slideout 300ms forwards;
+                animation: slideout 300ms forwards;
+                -webkit-transform-style: preserve-3d;
+                transform-style: preserve-3d;
+            }
+            
+            #left-nav .navbar {
+                border: none;
+            }
+
+            #left-nav .navbar-nav {
+                width: 100%;
+            }
+
+            #left-nav .navbar-nav li {
+                width: 100%;
+                border-bottom: 1px solid #e7e7e7;
+            }
+
+            #left-nav .navbar-nav li a .glyphicon {
+                padding-right: 10px;
+            }
+
+            #left-nav .navbar-nav .active a {
+                border-right: 5px solid #e7e7e7;
+                background-color: transparent;
+            }
+
+            /** Dropdown */
+            #left-nav #dropdown {
+                border: none;
+                margin-bottom: 0;
+                background-color: transparent;
+            }
+
+            #left-nav #dropdown .caret {
+                float: right;
+                margin: 9px 5px 0;
+            }
+
+            #left-nav #dropdown > a {
+                border-bottom: 1px solid #e7e7e7;
+            }
+
+            #left-nav #dropdown .panel-body {
+                padding: 0;
+            }
+
+            #left-nav #dropdown .panel-body .navbar-nav li {
+                padding-left: 15px;
+                border-bottom: 1px solid #e7e7e7;
+            }
+
+            /** Search element */
+            #left-nav #search .panel-body {
+                padding: 0;
+                border-bottom: 1px solid #e7e7e7;
+            }
+            #left-nav #search .panel-body .navbar-form {
+                padding: 0;
+                padding-right: 50px;
+                margin: 0;
+                width: 100%;
+                position: relative;
+            }
+            #left-nav #search .panel-body .navbar-form input {
+                width: 100%;
+                height: 50px;
+                border: 0;
+                border-radius: 0;
+            }
+            #left-nav #search .panel-body .navbar-form .form-group {
+                width: 100%;
+            }
+            #left-nav #search .panel-body .navbar-form .form-control {
+                box-shadow: none;
+            }
+            #left-nav #search .panel-body .navbar-form .btn {
+                position: absolute;
+                right: 0;
+                top: 0;
+                border: 0;
+                border-radius: 0;
+                background-color: #f3f3f3;
+                padding: 15px 18px;
+            }
+            /** Body */
+            .main-body {
+                margin-top: 50px;
+                margin-left: 310px;
+            }
+
+            /** Left bar slide in animation */
+            @-moz-keyframes slidein {
+                0% {
+                    left: -300px;
+                }
+                100% {
+                    left: 0px;
+                }
+            }
+            @-webkit-keyframes slidein {
+                0% {
+                    left: -300px;
+                }
+                100% {
+                    left: 0px;
+                }
+            }
+            @keyframes slidein {
+                0% {
+                    left: -300px;
+                }
+                100% {
+                    left: 0px;
+                }
+            }
+            @-moz-keyframes slideout {
+                0% {
+                    left: 0;
+                }
+                100% {
+                    left: -300px;
+                }
+            }
+            @-webkit-keyframes slideout {
+                0% {
+                    left: 0;
+                }
+                100% {
+                    left: -300px;
+                }
+            }
+            @keyframes slideout {
+                0% {
+                    left: 0;
+                }
+                100% {
+                    left: -300px;
+                }
+            }
+
+            #left-nav.slide-in {
+                -moz-animation: slidein 300ms forwards;
+                -o-animation: slidein 300ms forwards;
+                -webkit-animation: slidein 300ms forwards;
+                animation: slidein 300ms forwards;
+                -webkit-transform-style: preserve-3d;
+                transform-style: preserve-3d;
+            }
+        </style>
+        <!-- Top navbar -->
         <div id="navbar">
             <nav class="nav navbar-inverse navbar-static-top">
                 <div class="container-fluid ">
@@ -109,126 +286,175 @@
                             <span class="glyphicon 	glyphicon-log-in"></span>Login</a></li>
                         <li th:if="${userName != null}"><a  id="user_icon" href="#">
                             <span class="glyphicon 	glyphicon-user"></span><span th:text="${userName}" ></span></a></li>
-
                     </ul>
                 </div>
             </nav>
         </div>
 
-
         <div>
-            <div  class="container-fluid" style="padding-left: 0px">
-                <div class="row row-offcanvas row-offcanvas-right">
-                    <div class="col-xs-12 col-sm-2 navbar-static-top" id="sidebar">
-                        <div class="list-group" style="min-height: 110vh; background:#222">
-                            <a id="item_sidebar" class="list-group-item" href="#"><span class="glyphicon glyphicon-tasks"></span> Jobs</a>
-                            <a id="item_sidebar" class="list-group-item" href="#"><span class="glyphicon glyphicon-list"></span> Process</a>
-                        </div>
-                    </div><!--/.sidebar-offcanvas-->
-                    <div id="content" class="col-xs-12 col-sm-8 col-sm-push-1">
-                        <div class="jumbotron">
-                            <h1>OrbisServer</h1>
-                            <p>OSGI web server plugin for OrbisGIS based on wisdom-framework.</p>
-                            <h3>Start the server</h3>
-                            <p>Clone the repository. Go to core-server and execute</p>
-                            <p>mvn wisdom:run
-                                Then, open your browser to: <a>http://localhost:8080</a>
-                            </p>
-                            <h3>Configuration Ports</h3>
-                            <p>
-                                In the src/main/configuration/application.conf file, use these
-                                properties to configure the ports:
+            <div id="left-nav">
+                <nav class="navbar navbar-default" role="navigation">
+                    <!-- Main Menu -->
+                    <div class="left-nav-container">
+                        <ul class="nav navbar-nav" id="left-nav-content">
 
-
-                                        http.port = HTTP port, 9000 by default
-                                        https.port = HTTPS port, disabled by default
-
-                                        You can use 0 to use a random port.</p>
-
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-6 col-xs-12 col-lg-4">
-                                <h2>Data</h2>
-                                <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus,
-                                    tellus ac cursus commodo, tortor mauris condimentum nibh, ut
-                                    fermentum massa justo sit amet risus. Etiam porta sem malesuada
-                                    magna mollis euismod. Donec sed odio dui. </p>
-                                <p><a class="btn btn-default" href="#" role="button" onclick="javascript:data();">View details &raquo;</a></p>
-                            </div>
-                            <div class="col-sm-6 col-xs-12 col-lg-4">
-                                <h2>Process</h2>
-                                <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus,
-                                    tellus ac cursus commodo, tortor mauris condimentum nibh, ut
-                                    fermentum massa justo sit amet risus. Etiam porta sem malesuada
-                                    magna mollis euismod. Donec sed odio dui. </p>
-                                <p><a class="btn btn-default" href="#" role="button" onclick="javascript:process();">View details &raquo;</a></p>
-                            </div>
-                            <div class="col-sm-6 col-xs-12 col-lg-4">
-                                <h2>Share</h2>
-                                <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus,
-                                    tellus ac cursus commodo, tortor mauris condimentum nibh, ut
-                                    fermentum massa justo sit amet risus. Etiam porta sem malesuada
-                                    magna mollis euismod. Donec sed odio dui. </p>
-                                <p><a class="btn btn-default" href="#" role="button" onclick="javascript:share();">View details &raquo;</a></p>
-                            </div>
-                        </div><!--/row-->
-                    </div><!--/.col-xs-12.col-sm-10-->
-
-                </div><!--/row-->
-            </div><!--/.container-->
-        </div>
-
-        <!-- Modal -->
-        <div class="modal fade" id="myModal" role="dialog">
-            <div class="modal-dialog">
-
-                <!-- Modal content-->
-                <div class="modal-content">
-                    <div class="modal-header" align="center">
-                        <img class="img" id="img_logo"
-                             src="http://store.orbisgis.org/documentation/online/2-1/fr/files/img_1.png"
-                             width="350" height="100"/>
+                        </ul>
                     </div>
-                    <div id="div-forms">
-                        <!-- Begin # Login Form -->
-                        <form id="login-form" action="http://localhost:8080/login" method="post">
-                            <div class="modal-body">
-                                <div id="div-login-msg">
-                                    <span id="text-login-msg">Type your username and password</span>
-                                </div>
-                                <input id="login_username" name="username" class="form-control" type="text"
-                                       placeholder="Username" required="true"/>
-                                <input id="login_password" name="password" class="form-control" type="password"
-                                       placeholder="Password" required="true"/>
+                </nav>
+
+            </div>
+
+            <!-- Main Content -->
+            <div class="container-fluid">
+                <div class="main-body">
+                    <div class="row row-offcanvas row-offcanvas-right">
+                        <div id="content" class="col-xs-12 col-sm-8 col-sm-push-1">
+                            <div class="jumbotron">
+                                <h1>OrbisServer</h1>
+                                <p>OSGI web server plugin for OrbisGIS based on wisdom-framework.</p>
+                                <h3>Start the server</h3>
+                                <p>Clone the repository. Go to core-server and execute</p>
+                                <p>mvn wisdom:run
+                                    Then, open your browser to: <a>http://localhost:8080</a>
+                                </p>
+                                <h3>Configuration Ports</h3>
+                                <p>
+                                    In the src/main/configuration/application.conf file, use these
+                                    properties to configure the ports:
+
+
+                                            http.port = HTTP port, 9000 by default
+                                            https.port = HTTPS port, disabled by default
+
+                                            You can use 0 to use a random port.</p>
+
                             </div>
-                            <div class="modal-footer">
-                                <div>
-                                    <button id="log_in_btn" onclick="javascript:LoginOk();" type="submit" class="btn btn-primary btn-lg btn-block">Login</button>
+                            <div class="row">
+                                <div class="col-sm-6 col-xs-12 col-lg-4">
+                                    <h2>Data</h2>
+                                    <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus,
+                                        tellus ac cursus commodo, tortor mauris condimentum nibh, ut
+                                        fermentum massa justo sit amet risus. Etiam porta sem malesuada
+                                        magna mollis euismod. Donec sed odio dui. </p>
+                                    <p><a class="btn btn-default" href="#" role="button" onclick="javascript:data();">View details &raquo;</a></p>
                                 </div>
-                                <div>
-                                    <button id="login_lost_btn" type="button" class="btn btn-link">Lost Password?</button>
-                                    <button id="login_register_btn" type="button" class="btn btn-link">Register</button>
+                                <div class="col-sm-6 col-xs-12 col-lg-4">
+                                    <h2>Process</h2>
+                                    <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus,
+                                        tellus ac cursus commodo, tortor mauris condimentum nibh, ut
+                                        fermentum massa justo sit amet risus. Etiam porta sem malesuada
+                                        magna mollis euismod. Donec sed odio dui. </p>
+                                    <p><a class="btn btn-default" href="#" role="button" onclick="javascript:process();">View details &raquo;</a></p>
                                 </div>
-                            </div>
-                        </form>
+                                <div class="col-sm-6 col-xs-12 col-lg-4">
+                                    <h2>Share</h2>
+                                    <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus,
+                                        tellus ac cursus commodo, tortor mauris condimentum nibh, ut
+                                        fermentum massa justo sit amet risus. Etiam porta sem malesuada
+                                        magna mollis euismod. Donec sed odio dui. </p>
+                                    <p><a class="btn btn-default" href="#" role="button" onclick="javascript:share();">View details &raquo;</a></p>
+                                </div>
+                            </div><!--/row-->
+                        </div><!--/.col-xs-12.col-sm-10-->
+
+                    </div><!--/row-->
+                </div><!--/.container-->
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="myModal" role="dialog">
+                <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header" align="center">
+                            <img class="img" id="img_logo"
+                                 src="http://store.orbisgis.org/documentation/online/2-1/fr/files/img_1.png"
+                                 width="350" height="100"/>
+                        </div>
+                        <div id="div-forms">
+                            <!-- Begin # Login Form -->
+                            <form id="login-form" action="http://localhost:8080/login" method="post">
+                                <div class="modal-body">
+                                    <div id="div-login-msg">
+                                        <span id="text-login-msg">Type your username and password</span>
+                                    </div>
+                                    <input id="login_username" name="username" class="form-control" type="text"
+                                           placeholder="Username" required="true"/>
+                                    <input id="login_password" name="password" class="form-control" type="password"
+                                           placeholder="Password" required="true"/>
+                                </div>
+                                <div class="modal-footer">
+                                    <div>
+                                        <button id="log_in_btn" onclick="javascript:LoginOk();" type="submit" class="btn btn-primary btn-lg btn-block">Login</button>
+                                    </div>
+                                    <div>
+                                        <button id="login_lost_btn" type="button" class="btn btn-link">Lost Password?</button>
+                                        <button id="login_register_btn" type="button" class="btn btn-link">Register</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         <script>
+            $('#navbar').affix({
+                offset: {
+                    top: $('header').height()
+                }
+            });
+
             $('#Mymodal').on('shown.bs.modal', function () {$('#sign in').focus()})
 
             function process(){
                 $.ajax({ type: "GET",
-                    url: "http://localhost:8080/process",
+                    url: "http://localhost:8080/process/leftNavContent",
                     async: false,
                     success : function(text)
                     {
-                        $( "#sidebar" ).html(String(text));
+                        $('#left-nav').addClass('slide-in');
+                        $( "#left-nav-content" ).html(String(text));
                     },
                     error : function(text)
                     {
-                        $( "#sidebar" ).html(String("Error"));
+                        $('#left-nav').addClass('slide-in');
+                        $( "#left-nav-content" ).html(String("Error"));
+                    }
+                });
+            }
+
+            function showProcess(id){
+                $.ajax({ type: "GET",
+                    url: "http://localhost:8080/describeProcess",
+                    data: {
+                        "id": id
+                    },
+                    async: false,
+                    success : function(text)
+                    {
+                        $( "#content" ).html(String(text));
+                    },
+                    error : function(text)
+                    {
+                        $( "#content" ).html(String(text));
+                    }
+                });
+            }
+
+            function showJobs(){
+                $.ajax({ type: "GET",
+                    url: "http://localhost:8080/jobs",
+                    async: false,
+                    success : function(text)
+                    {
+                        $( "#list" ).html("");
+                        $( "#content" ).html(String(text));
+                    },
+                    error : function(text)
+                    {
+                        $( "#content" ).html(String(text));
                     }
                 });
             }
@@ -273,6 +499,7 @@
                     async: false,
                     success : function(text)
                     {
+                        $('#left-nav').removeClass('slide-in');
                         $( "#content" ).html(String(text));
                     },
                     error : function(text)
