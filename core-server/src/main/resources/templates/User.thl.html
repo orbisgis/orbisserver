@@ -1,0 +1,6 @@
+<li th:if="${session == null}"><a id="sign_in" href="#"><span class="glyphicon glyphicon-user">
+        </span>Sign Up</a></li>
+<li th:if="${session == null}"><a  id="log_in" data-toggle="modal" data-target="#myModal" href="#">
+    <span class="glyphicon 	glyphicon-log-in"></span>Login</a></li>
+<li th:if="${session != null}"><a  id="user_icon" href="#">
+    <span class="glyphicon 	glyphicon-user"></span><span th:text="${session.username}" ></span></a></li>

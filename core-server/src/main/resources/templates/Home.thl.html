@@ -278,14 +278,12 @@
                             <a id="Share" onclick="javascript:share();" class="navbar-brand" href="#">Share</a>
                         </li>
                     </ul>
-                    <ul class="nav navbar-nav navbar-right">
+                    <ul class="nav navbar-nav navbar-right" id="user_ul">
 
-                        <li th:if="${userName == null}"><a id="sign_in" href="#"><span class="glyphicon glyphicon-user">
+                        <li><a id="sign_in" href="#"><span class="glyphicon glyphicon-user">
                                 </span>Sign Up</a></li>
-                        <li th:if="${userName == null}"><a  id="log_in" data-toggle="modal" data-target="#myModal" href="#">
+                        <li><a  id="log_in" data-toggle="modal" data-target="#myModal" href="#">
                             <span class="glyphicon 	glyphicon-log-in"></span>Login</a></li>
-                        <li th:if="${userName != null}"><a  id="user_icon" href="#">
-                            <span class="glyphicon 	glyphicon-user"></span><span th:text="${userName}" ></span></a></li>
                     </ul>
                 </div>
             </nav>
@@ -386,7 +384,7 @@
                                 </div>
                                 <div class="modal-footer">
                                     <div>
-                                        <button id="log_in_btn" onclick="javascript:LoginOk();" type="submit" class="btn btn-primary btn-lg btn-block">Login</button>
+                                        <button id="log_in_btn" type="submit" class="btn btn-primary btn-lg btn-block">Login</button>
                                     </div>
                                     <div>
                                         <button id="login_lost_btn" type="button" class="btn btn-link">Lost Password?</button>
@@ -400,16 +398,18 @@
             </div>
         </div>
         <script>
+        // <![CDATA[
             $('#navbar').affix({
                 offset: {
                     top: $('header').height()
                 }
             });
 
-            $('#Mymodal').on('shown.bs.modal', function () {$('#sign in').focus()})
-
             function process(){
                 $.ajax({ type: "GET",
+                    data: {
+                        "token": readCookie("token")
+                    },
                     url: "http://localhost:8080/process/leftNavContent",
                     async: false,
                     success : function(text)
@@ -429,7 +429,8 @@
                 $.ajax({ type: "GET",
                     url: "http://localhost:8080/describeProcess",
                     data: {
-                        "id": id
+                        "id": id,
+                        "token": readCookie("token")
                     },
                     async: false,
                     success : function(text)
@@ -446,6 +447,9 @@
             function showJobs(){
                 $.ajax({ type: "GET",
                     url: "http://localhost:8080/jobs",
+                    data: {
+                        "token": readCookie("token")
+                    },
                     async: false,
                     success : function(text)
                     {
@@ -475,26 +479,12 @@
                 });
             }
 
-            function LoginOk(){
-                $.ajax({
-                    type: "GET",
-                    url: "http://localhost:8080/workspace",
-                    async: false,
-                    success : function(text)
-                    {
-                        $( "#content" ).html(String(text));
-                    },
-                    error : function(text)
-                    {
-                        $( "#content" ).html(String("Error"));
-
-                    }
-                });
-            }
-
             function Data(){
                 $.ajax({
                     type: "GET",
+                    data: {
+                        "token": readCookie("token")
+                    },
                     url: "http://localhost:8080/data",
                     async: false,
                     success : function(text)
@@ -508,6 +498,64 @@
                     }
                 });
             }
+
+            function showUser(){
+                $.ajax({
+                    type: "GET",
+                    data: {
+                        "token": readCookie("token")
+                    },
+                    url: "http://localhost:8080/user",
+                    async: false,
+                    success : function(text)
+                    {
+                        $( "#user_ul" ).html(String(text));
+                    },
+                    error : function(text)
+                    {
+                        $( "#user_ul" ).html(String("Error"));
+                    }
+                });
+            }
+            /** Login form submit */
+
+            $(function() {
+                $("#login-form").on("submit", function(e) {
+                    e.preventDefault();
+                    $.ajax({
+                        url: $(this).attr("action"),
+                        type: 'POST',
+                        data: $(this).serialize(),
+                        success: function(data) {
+                            writeCookie("token",data);
+                            $('#myModal').modal('hide');
+                            showUser();
+                        }
+                    });
+                });
+            });
+
+            /** cookies functions */
+
+            function writeCookie(name, value) {
+                document.cookie = name + "=" + value;
+            }
+
+            function readCookie(name) {
+                var i, cookie, cookies, nameEq = name + "=";
+                cookies = document.cookie.split(';');
+                for(i=0;i<cookies.length;i++) {
+                    cookie = cookies[i];
+                    while (cookie.charAt(0)==' ') {
+                        cookie = cookie.substring(1,cookie.length);
+                    }
+                    if (cookie.indexOf(nameEq) == 0) {
+                        return cookie.substring(nameEq.length,cookie.length);
+                    }
+                }
+                return '';
+            }
+        // ]]>
         </script>
     </body>
 </html>

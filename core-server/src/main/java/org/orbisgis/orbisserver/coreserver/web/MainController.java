@@ -53,6 +53,7 @@ import org.wisdom.api.templates.Template;
 
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +66,7 @@ import java.util.Map;
 @Controller
 public class MainController extends DefaultController {
 
-    private Session session;
+    private List<Session> sessionList = new ArrayList<>();
 
     @View("Home")
     Template home;
@@ -103,6 +104,9 @@ public class MainController extends DefaultController {
     @View("ProcessLeftNav")
     Template leftNavContent;
 
+    @View("User")
+    Template user;
+
     @Route(method = HttpMethod.GET, uri = "/")
     public Result home() {
         return ok(render(home));
@@ -117,88 +121,107 @@ public class MainController extends DefaultController {
     public Result login() throws IOException {
         String urlContent = URLDecoder.decode(context().reader().readLine(), "UTF-8");
         String[] split = urlContent.split("&");
-        session = CoreServerController.getSession(split[0].replaceAll(".*=", ""),
+        Session session = CoreServerController.getSession(split[0].replaceAll(".*=", ""),
                 split[1].replaceAll(".*=", ""));
         if(session != null) {
-            return ok(render(home, "userName", session.getUsername()));
+            sessionList.add(session);
+            return ok(session.getToken().toString());
         }
         else {
-            return ok(render(home));
+            return badRequest();
         }
     }
 
     @Route(method = HttpMethod.GET, uri = "/process/processList")
-    public Result processList() throws IOException {
-        return ok(render(processList, "processList", session.getOperationList()));
+    public Result processList(@Parameter("token") String token) throws IOException {
+        for(Session session : sessionList) {
+            if (session.getToken().toString().equals(token)) {
+                return ok(render(processList, "processList", session.getOperationList()));
+            }
+        }
+        return badRequest(render(processList));
     }
 
     @Route(method = HttpMethod.GET, uri = "/describeProcess")
-    public Result describeProcess(@Parameter("id") String id) throws IOException {
-        Operation op = session.getOperation(id);
-        return ok(render(describeProcess, "operation", op));
+    public Result describeProcess(@Parameter("id") String id, @Parameter("token") String token) throws IOException {
+        for(Session session : sessionList) {
+            if (session.getToken().toString().equals(token)) {
+                Operation op = session.getOperation(id);
+                return ok(render(describeProcess, "operation", op));
+            }
+        }
+        return badRequest(render(describeProcess));
     }
 
     @Route(method = HttpMethod.POST, uri = "/execute")
-    public Result execute() throws IOException {
-        String urlContent = URLDecoder.decode(context().reader().readLine(), "UTF-8");
-        String[] split = urlContent.split("&");
-        Map<String, String> inputData = new HashMap<>();
-        String id = "";
-        for(String str : split){
-            String[] val = str.split("=");
-            if(val[0].equals("processId")){
-                id = val[1];
-            }
-            else {
-                if(val.length==1) {
-                    inputData.put(val[0], "");
+    public Result execute(@Parameter("token") String token) throws IOException {
+        for(Session session : sessionList) {
+            if (session.getToken().toString().equals(token)) {
+                String urlContent = URLDecoder.decode(context().reader().readLine(), "UTF-8");
+                String[] split = urlContent.split("&");
+                Map<String, String> inputData = new HashMap<>();
+                String id = "";
+                for (String str : split) {
+                    String[] val = str.split("=");
+                    if (val[0].equals("processId")) {
+                        id = val[1];
+                    } else {
+                        if (val.length == 1) {
+                            inputData.put(val[0], "");
+                        } else {
+                            inputData.put(val[0], val[1]);
+                        }
+                    }
                 }
-                else {
-                    inputData.put(val[0], val[1]);
-                }
+                session.executeOperation(id, inputData);
+                return ok();
             }
         }
-        session.executeOperation(id, inputData);
-        return ok();
+        return badRequest();
     }
 
     @Route(method = HttpMethod.GET, uri = "/jobs")
-    public Result jobs() throws IOException {
-        long timeMillisNow = System.currentTimeMillis();
-        List<StatusInfo> statusInfoToRefreshList = session.getAllStatusInfoToRefresh();
-        List<StatusInfo> statusInfoList = session.getAllStatusInfo();
-        long minRefresh = Long.MAX_VALUE;
+    public Result jobs(@Parameter("token") String token) throws IOException {
+        for(Session session : sessionList) {
+            if (session.getToken().toString().equals(token)) {
+                long timeMillisNow = System.currentTimeMillis();
+                List<StatusInfo> statusInfoToRefreshList = session.getAllStatusInfoToRefresh();
+                List<StatusInfo> statusInfoList = session.getAllStatusInfo();
+                long minRefresh = Long.MAX_VALUE;
 
-        for(StatusInfo statusInfo : statusInfoToRefreshList){
-            StatusInfo info = session.refreshStatus(statusInfo.getJobId());
-            statusInfo.setStatus(info.getStatus());
-            if (info.getPercentCompleted() != null) {
-                statusInfo.setPercentCompleted(info.getPercentCompleted());
-            }
-            statusInfo.setNextPoll(info.getNextPoll());
-            if (info.getEstimatedCompletion() != null) {
-                statusInfo.setEstimatedCompletion(info.getEstimatedCompletion());
-            }
-            statusInfo.setNextRefreshMillis(-1);
-            if(statusInfo.getNextPoll() != null){
-                long timeMillisPoll = statusInfo.getNextPoll().toGregorianCalendar().getTime().getTime();
-                statusInfo.setNextRefreshMillis(timeMillisPoll - timeMillisNow);
-            }
-            if(statusInfo.getNextRefreshMillis() >= 0) {
-                minRefresh = Math.min(statusInfo.getNextRefreshMillis(), minRefresh);
+                for (StatusInfo statusInfo : statusInfoToRefreshList) {
+                    StatusInfo info = session.refreshStatus(statusInfo.getJobId());
+                    statusInfo.setStatus(info.getStatus());
+                    if (info.getPercentCompleted() != null) {
+                        statusInfo.setPercentCompleted(info.getPercentCompleted());
+                    }
+                    statusInfo.setNextPoll(info.getNextPoll());
+                    if (info.getEstimatedCompletion() != null) {
+                        statusInfo.setEstimatedCompletion(info.getEstimatedCompletion());
+                    }
+                    statusInfo.setNextRefreshMillis(-1);
+                    if (statusInfo.getNextPoll() != null) {
+                        long timeMillisPoll = statusInfo.getNextPoll().toGregorianCalendar().getTime().getTime();
+                        statusInfo.setNextRefreshMillis(timeMillisPoll - timeMillisNow);
+                    }
+                    if (statusInfo.getNextRefreshMillis() >= 0) {
+                        minRefresh = Math.min(statusInfo.getNextRefreshMillis(), minRefresh);
+                    }
+                }
+
+                for (StatusInfo statusInfo : statusInfoList) {
+                    if (statusInfo.getNextRefreshMillis() >= 0) {
+                        minRefresh = Math.min(statusInfo.getNextRefreshMillis(), minRefresh);
+                    }
+                }
+
+                if (minRefresh == Long.MAX_VALUE) {
+                    minRefresh = -1;
+                }
+                return ok(render(jobs, "jobList", session.getAllStatusInfo(), "nextRefresh", minRefresh));
             }
         }
-
-        for(StatusInfo statusInfo : statusInfoList){
-            if(statusInfo.getNextRefreshMillis() >= 0) {
-                minRefresh = Math.min(statusInfo.getNextRefreshMillis(), minRefresh);
-            }
-        }
-
-        if(minRefresh == Long.MAX_VALUE){
-            minRefresh = -1;
-        }
-        return ok(render(jobs, "jobList", session.getAllStatusInfo(), "nextRefresh", minRefresh));
+        return badRequest(render(jobs));
     }
 
     @Route(method = HttpMethod.GET, uri = "/signIn")
@@ -210,14 +233,31 @@ public class MainController extends DefaultController {
     }
 
     @Route(method = HttpMethod.GET, uri = "/data")
-    public Result data() {return ok(render(data));}
+    public Result data(@Parameter("token") String token) {
+        for(Session session : sessionList) {
+            if (session.getToken().toString().equals(token)) {
+                return ok(render(data));
+            }
+        }
+        return badRequest(render(data));
+    }
 
     @Route(method = HttpMethod.GET, uri = "/data/import")
-    public Result tImport() {return ok(render(tImport));}
+    public Result Import() {return ok(render(tImport));}
 
     @Route(method = HttpMethod.GET, uri = "/data/export")
     public Result export() {return ok(render(export));}
 
     @Route(method = HttpMethod.GET, uri = "/process/leftNavContent")
     public Result leftNavContent() {return ok(render(leftNavContent));}
+
+    @Route(method = HttpMethod.GET, uri = "/user")
+    public Result user(@Parameter("token") String token) {
+        for(Session session : sessionList) {
+            if (session.getToken().toString().equals(token)) {
+                return ok(render(user, "session", session));
+            }
+        }
+        return badRequest(render(user));
+    }
 }
