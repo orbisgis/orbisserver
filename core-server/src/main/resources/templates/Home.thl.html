@@ -45,6 +45,10 @@
               .list-group-item:last-child{
                 border-bottom: solid #aaa;
               }
+              #span-user{
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-size:16px;
+              }
               #jobs {
                 color: #aaa;
                 border-radius: 0px;
@@ -96,24 +100,32 @@
                     </div>
                     <ul class="nav navbar-nav">
                         <li>
-                            <a id="Data" onclick="javascript:Data();" class="navbar-brand" href="#">Data</a>
+                            <a id="Data" th:onclick="'javascript:Data(\'' + ${session} + '\');'" class="navbar-brand" href="#">Data</a>
                         </li>
                         <li>
-                            <a id="Process" onclick="javascript:Process('${session}');" class="navbar-brand" href="#">Process</a>
+                            <a id="Process" th:onclick="'javascript:Process(\'' + ${session} + '\');'" class="navbar-brand" href="#">Process</a>
                         </li>
                         <li>
                             <a id="Share" onclick="javascript:Share();" class="navbar-brand" href="#">Share</a>
                         </li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
-
-                        <li th:if="${userName == null}"><a id="signIn" onclick="javascript:SignIn();" href="#"><span class="glyphicon glyphicon-user">
+                        <li th:if="${userName == null}"><a id="sign_in" href="#"><span class="glyphicon glyphicon-user">
                                 </span>Sign Up</a></li>
-                        <li th:if="${userName == null}"><a  id="logIn" data-toggle="modal" data-target="#myModal" href="#">
+                        <li th:if="${userName == null}"><a  id="log_in" data-toggle="modal" data-target="#myModal" href="#">
                             <span class="glyphicon 	glyphicon-log-in"></span>Login</a></li>
-                        <li th:if="${userName != null}"><a  id="user_icon" href="#">
-                            <span class="glyphicon 	glyphicon-user"></span><span th:text="${userName}" ></span></a></li>
-
+                        <li th:if="${userName != null}" id="user_icon" role="presentation" class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                                <span class="glyphicon 	glyphicon-user"><span id="span-user" th:text="${userName}"></span></span><span class="caret" ></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Action</a></li>
+                                <li><a href="#">Another action</a></li>
+                                <li><a href="#">Something else here</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="#">Separated link</a></li>
+                            </ul>
+                        </li>
                     </ul>
                 </div>
             </nav>
@@ -126,12 +138,12 @@
                     <div class="col-xs-12 col-sm-2 navbar-static-top" id="sidebar">
                         <div class="list-group" style="min-height: 110vh; background:#222">
                             <a id="jobs" onclick="javascript:Jobs();" class="list-group-item " href="#"><span class="glyphicon glyphicon-tasks"></span> Jobs</a>
-                            <a id="process" onclick="javascript:Process('${session}');" class="list-group-item" href="#"><span class="glyphicon glyphicon-list"></span> Process</a>
+                            <a id="process" th:onclick="'javascript:Process(\'' + ${session} + '\');'" class="list-group-item" href="#"><span class="glyphicon glyphicon-list"></span> Process</a>
                         </div>
-                    </div><!--/.sidebar-offcanvas                       \'' + ${process.htmlId} + '\'-->
+                    </div><!--/.sidebar-offcanvas -->
                     <div id="content" class="col-xs-12 col-sm-8 col-sm-push-1">
                         <div class="jumbotron">
-                            <h1>OrbisServer</h1>
+                            <h1 th:if="${session}==null">La session de orbisserveur est null</h1>
                             <p>OSGI web server plugin for OrbisGIS based on wisdom-framework.</p>
                             <h3>Start the server</h3>
                             <p>Clone the repository. Go to core-server and execute</p>
@@ -165,7 +177,7 @@
                                     tellus ac cursus commodo, tortor mauris condimentum nibh, ut
                                     fermentum massa justo sit amet risus. Etiam porta sem malesuada
                                     magna mollis euismod. Donec sed odio dui. </p>
-                                <p><a class="btn btn-default" href="#" role="button" onclick="javascript:Process('${session}');">View details &raquo;</a></p>
+                                <p><a class="btn btn-default" href="#" role="button" th:onclick="'javascript:Process(\'' + ${session} + '\');'">View details &raquo;</a></p>
                             </div>
                             <div class="col-sm-6 col-xs-12 col-lg-4">
                                 <h2>Share</h2>
@@ -228,18 +240,18 @@
                     async: false,
                     success : function(text)
                     {
-                        if(session==null){
-                            alert("la session n'existe pas");
-                            $( "#content" ).html(String(text));
-                        }
-                        else if(session!=null){
-                            alert("la session existe");
+                        console.log(session);
+                        alert(session);
+                        if(session != "null"){
                             $( "#sidebar" ).html(String(text));
+                        }
+                        else{
+                            $( "#content" ).html(String(text));
                         }
                     },
                     error : function(text)
                     {
-                        $( "#sidebar" ).html(String(text));
+                        $( "#content" ).html(String(text));
                     }
                 });
             }
@@ -277,13 +289,14 @@
                 });
             }
 
-            function Data(){
+            function Data(session){
                 $.ajax({
                     type: "GET",
                     url: "http://localhost:8080/data",
                     async: false,
                     success : function(text)
                     {
+                        alert(session);
                         $( "#content" ).html(String(text));
                     },
                     error : function(text)
