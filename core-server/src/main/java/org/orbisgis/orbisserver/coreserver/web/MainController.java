@@ -53,6 +53,7 @@ import org.wisdom.api.templates.Template;
 
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -129,7 +130,19 @@ public class MainController extends DefaultController {
 
     @Route(method = HttpMethod.GET, uri = "/process/processList")
     public Result processList() throws IOException {
-        return ok(render(processList, "processList", session.getOperationList()));
+        List<Operation> opList = session.getOperationList();
+        List<Operation> importExportList = new ArrayList<Operation>();
+
+        for(Operation op : opList){
+            for(String keyword :  op.getKeyWord()){
+                int index = 0;
+                if(keyword.equals("Export") || keyword.equals("Import")){
+                    importExportList.add(op);
+                }
+            }
+        }
+        opList.removeAll(importExportList);
+        return ok(render(processList, "processList", opList));
     }
 
     @Route(method = HttpMethod.GET, uri = "/describeProcess")
