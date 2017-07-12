@@ -195,31 +195,25 @@
                     </div>
                     <ul class="nav navbar-nav">
                         <li>
-                            <a id="Data" th:onclick="'javascript:Data(\'' + ${session} + '\');'" class="navbar-brand" href="#">Data</a>
+                            <a id="Data" th:onclick="'javascript:data(\'' + ${session} + '\');'" class="navbar-brand" href="#">Data</a>
                         </li>
                         <li>
-                            <a id="Process" th:onclick="'javascript:Process(\'' + ${session} + '\');'" class="navbar-brand" href="#">Process</a>
+                            <a id="Process" th:onclick="'javascript:process(\'' + ${session} + '\');'" class="navbar-brand" href="#">Process</a>
                         </li>
                         <li>
-                            <a id="Share" onclick="javascript:Share();" class="navbar-brand" href="#">Share</a>
+                            <a id="Share" onclick="javascript:share();" class="navbar-brand" href="#">Share</a>
                         </li>
                     </ul>
-                    <ul class="nav navbar-nav navbar-right">
-                        <li th:if="${userName == null}"><a id="sign_in" href="#"><span class="glyphicon glyphicon-user">
-                                </span>Sign Up</a></li>
-                        <li th:if="${userName == null}"><a  id="log_in" data-toggle="modal" data-target="#myModal" href="#">
-                            <span class="glyphicon 	glyphicon-log-in"></span>Login</a></li>
-                        <li th:if="${userName != null}" id="user_icon" role="presentation" class="dropdown">
-                            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                                <span class="glyphicon glyphicon-user"><span id="span-user" th:text="${userName}"></span></span><span class="caret" ></span>
+                    <ul class="nav navbar-nav navbar-right" id="user_ul">
+                        <li>
+                            <a id="sign_in" href="#">
+                                <span class="glyphicon glyphicon-user"></span>Sign Up
                             </a>
-                            <ul class="dropdown-menu">
-                                <li><a href="#">Action</a></li>
-                                <li><a href="#">Another action</a></li>
-                                <li><a href="#">Something else here</a></li>
-                                <li role="separator" class="divider"></li>
-                                <li><a href="#">Separated link</a></li>
-                            </ul>
+                        </li>
+                        <li>
+                            <a  id="log_in" data-toggle="modal" data-target="#myModal" href="#">
+                                <span class="glyphicon 	glyphicon-log-in"></span>Login
+                            </a>
                         </li>
                     </ul>
                 </div>
@@ -319,7 +313,7 @@
                                 </div>
                                 <div class="modal-footer">
                                     <div>
-                                        <button id="log_in_btn" onclick="javascript:LoginOk();" type="submit" class="btn btn-primary btn-lg btn-block">Login</button>
+                                        <button id="log_in_btn" type="submit" class="btn btn-primary btn-lg btn-block">Login</button>
                                     </div>
                                     <div>
                                         <button id="login_lost_btn" type="button" class="btn btn-link">Lost Password?</button>
@@ -333,6 +327,7 @@
             </div>
         </div>
         <script>
+        // <![CDATA[
             $('#navbar').affix({
                 offset: {
                     top: $('header').height()
@@ -341,8 +336,11 @@
 
             $('#Mymodal').on('shown.bs.modal', function () {$('#sign in').focus()})
 
-            function Process(session){
+            function process(){
                 $.ajax({ type: "GET",
+                    data: {
+                        "token": readCookie("token")
+                    },
                     url: "http://localhost:8080/process/leftNavContent",
                     async: false,
                     success : function(text)
@@ -358,12 +356,12 @@
                 });
             }
 
-
             function showProcess(id){
                 $.ajax({ type: "GET",
                     url: "http://localhost:8080/describeProcess",
                     data: {
-                        "id": id
+                        "id": id,
+                        "token": readCookie("token")
                     },
                     async: false,
                     success : function(text)
@@ -377,9 +375,12 @@
                 });
             }
 
-            function showJobs(){
+            function jobs(){
                 $.ajax({ type: "GET",
                     url: "http://localhost:8080/jobs",
+                    data: {
+                        "token": readCookie("token")
+                    },
                     async: false,
                     success : function(text)
                     {
@@ -393,7 +394,7 @@
                 });
             }
 
-            function SignIn(){
+            function signIn(){
                 $.ajax({
                     type: "GET",
                     url: "http://localhost:8080/signIn",
@@ -404,31 +405,17 @@
                     },
                     error : function(text)
                     {
-                        $( "#content" ).html(String(text));
+                        $( "#content" ).html(String("Error"));
                     }
                 });
             }
 
-            function LoginOk(){
+            function data(){
                 $.ajax({
                     type: "GET",
-                    url: "http://localhost:8080/workspace",
-                    async: false,
-                    success : function(text)
-                    {
-                        $( "#content" ).html(String(text));
+                    data: {
+                        "token": readCookie("token")
                     },
-                    error : function(text)
-                    {
-                        $( "#content" ).html(String(text));
-
-                    }
-                });
-            }
-
-            function Data(session){
-                $.ajax({
-                    type: "GET",
                     url: "http://localhost:8080/data",
                     async: false,
                     success : function(text)
@@ -443,22 +430,64 @@
                 });
             }
 
-            function Jobs(){
+            function showUser(){
                 $.ajax({
                     type: "GET",
-                    url: "http://localhost:8080/jobs",
+                    data: {
+                        "token": readCookie("token")
+                    },
+                    url: "http://localhost:8080/user",
                     async: false,
                     success : function(text)
                     {
-                        $( "#content" ).html(String(text));
+                        $( "#user_ul" ).html(String(text));
                     },
                     error : function(text)
                     {
-                        $( "#content" ).html(String(text));
+                        $( "#user_ul" ).html(String("Error"));
                     }
                 });
             }
 
+            /** Login form submit */
+
+            $(function() {
+                $("#login-form").on("submit", function(e) {
+                    e.preventDefault();
+                    $.ajax({
+                        url: $(this).attr("action"),
+                        type: 'POST',
+                        data: $(this).serialize(),
+                        success: function(data) {
+                            writeCookie("token",data);
+                            $('#myModal').modal('hide');
+                            showUser();
+                        }
+                    });
+                });
+            });
+
+            /** cookies functions */
+
+            function writeCookie(name, value) {
+                document.cookie = name + "=" + value;
+            }
+
+            function readCookie(name) {
+                var i, cookie, cookies, nameEq = name + "=";
+                cookies = document.cookie.split(';');
+                for(i=0;i<cookies.length;i++) {
+                    cookie = cookies[i];
+                    while (cookie.charAt(0)==' ') {
+                        cookie = cookie.substring(1,cookie.length);
+                    }
+                    if (cookie.indexOf(nameEq) == 0) {
+                        return cookie.substring(nameEq.length,cookie.length);
+                    }
+                }
+                return '';
+            }
+        // ]]>
         </script>
     </body>
 </html>
