@@ -29,6 +29,9 @@
 
     function listProcess(){
         $.ajax({ type: "GET",
+            data: {
+                "token": readCookie("token")
+            },
             url: "http://localhost:8080/process/processList",
             async: false,
             success : function(text)

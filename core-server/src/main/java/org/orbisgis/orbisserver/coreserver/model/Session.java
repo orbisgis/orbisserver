@@ -60,7 +60,6 @@ public class Session {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Session.class);
 
-    /** Unique token associated to the session.*/
     private UUID token;
 
     private DataSource ds;
@@ -185,5 +184,10 @@ public class Session {
 
         StatusInfo info = service.getStatus(statusRequest);
         return info;
+    }
+
+    /** Unique token associated to the session.*/
+    public UUID getToken() {
+        return token;
     }
 }
