@@ -38,6 +38,9 @@
  */
 package org.orbisgis.orbisserver.coreserver.model;
 
+import net.opengis.wms.Keyword;
+import net.opengis.wms.KeywordList;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,12 +54,14 @@ public class Operation {
     private String abstr;
     private List<Input> inputList;
     private List<Output> outputList;
+    private List<Keyword> listWord;
 
     public Operation(String title, String id){
         this.title = title;
         this.id = id;
         inputList = new ArrayList<>();
         outputList = new ArrayList<>();
+        listWord = new KeywordList().getKeyword();
     }
 
     public String getTitle() {
