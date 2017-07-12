@@ -57,7 +57,7 @@
         }
 </style>
 
-<div th:if="${session!=null}">
+<div >
     <div id="div-data" class="container-fluid">
         <nav>
             <ul class="nav nav-tabs nav-justified">
@@ -69,7 +69,7 @@
     <div id="content-data">
         <div id="import-div-content" >
             <!-- the parameters-->
-            <h1 th:if="${session==null}">La session de data est null</h1>
+            <h1 >Import</h1>
             <p>les parametres</p>
         </div>
         <div id="BDD">
@@ -80,24 +80,14 @@
     </div>
 </div>
 
-
-<div th:if="${session==null}">
-    <div id="div-data-presentation" class="jumbotron">
-        <div id="Process-div-content" >
-            <h1 th:if="${session==null}">La session de data est null</h1>
-            <p>Presentation : Donec id elit non mi porta gravida at eget metus. Fusce dapibus,
-                tellus ac cursus commodo, tortor mauris condimentum nibh, ut
-                fermentum massa justo sit amet risus. Etiam porta sem malesuada
-                magna mollis euismod. Donec sed odio dui.</p>
-        </div>
-    </div>
-</div>
-
 <script>
-
+    /**
     function Import(){
         $.ajax({
             type: "GET",
+            data: {
+                "token": readCookie("token")
+            }
             url: "http://localhost:8080/data/import",
             async: false,
             success : function(text)
@@ -115,6 +105,9 @@
     function Export(){
         $.ajax({
             type: "GET",
+            data: {
+                "token": readCookie("token")
+            }
             url: "http://localhost:8080/data/export",
             async: false,
             success : function(text)
@@ -127,7 +120,7 @@
 
             }
         });
-    }
+    }*/
 </script>
 
 

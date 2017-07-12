@@ -1,4 +1,4 @@
-<li><a href="#"><span class="glyphicon glyphicon-tasks"></span> Jobs</a></li>
+<li><a onclick="javascript:jobs()" href="#"><span class="glyphicon glyphicon-tasks"></span> Jobs</a></li>
 
 <li class="panel panel-default" id="dropdown">
     <a data-toggle="collapse" href="#dropdown-lvl1" onclick="javascript:listProcess()">
@@ -26,6 +26,24 @@
 </li>
 
 <script>
+    function jobs(){
+        $.ajax({ type: "GET",
+            url: "http://localhost:8080/jobs",
+            data: {
+                "token": readCookie("token")
+            },
+            async: false,
+            success : function(text)
+            {
+                $( "#list" ).html("");
+                $( "#content" ).html(String(text));
+            },
+            error : function(text)
+            {
+                $( "#content" ).html(String(text));
+            }
+        });
+    }
 
     function listProcess(){
         $.ajax({ type: "GET",
