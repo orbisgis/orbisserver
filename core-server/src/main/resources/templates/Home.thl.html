@@ -10,6 +10,8 @@
         <link rel="stylesheet" href="/assets/main.css"/>
         <link rel="stylesheet" href="/assets/css/mainbody.css"/>
         <link rel="stylesheet" href="/assets/css/navbar.css"/>
+        <link rel="stylesheet" href="/assets/css/login_modal.css"/>
+        <link rel="stylesheet" href="/assets/css/spinning_anim.css"/>
 
         <script src="/libs/jquery.min.js"></script>
         <script src="/libs/js/bootstrap.min.js"></script>
@@ -182,11 +184,11 @@
                         </div>
                         <div id="div-forms">
                             <!-- Begin # Login Form -->
-                            <form id="login-form" action="http://localhost:8080/login" method="post">
-                                <div class="modal-body">
-                                    <div id="div-login-msg">
-                                        <span id="text-login-msg">Type your username and password</span>
-                                    </div>
+                            <form id="login-form" action="/login" method="post">
+                                <div id="login-modal-body" class="modal-body form-group">
+                                    <label id="text-login-msg" class="control-label">
+                                        Type your username and password
+                                    </label>
                                     <input id="login_username" name="username" class="form-control" type="text"
                                            placeholder="Username" required="true"/>
                                     <input id="login_password" name="password" class="form-control" type="password"
@@ -194,11 +196,20 @@
                                 </div>
                                 <div class="modal-footer">
                                     <div>
-                                        <button id="log_in_btn" type="submit" class="btn btn-primary btn-lg btn-block">Login</button>
+                                        <button id="login_btn" type="submit" class="btn btn-primary btn-lg btn-block">
+                                            Login<i id="login-refresh" class="glyphicongly-spin"></i>
+                                        </button>
                                     </div>
                                     <div>
-                                        <button id="login_lost_btn" type="button" class="btn btn-link">Lost Password?</button>
-                                        <button id="login_register_btn" type="button" class="btn btn-link">Register</button>
+                                        <span id="login-footer-text"></span>
+                                        <button id="login_lost_btn" type="button" class="btn btn-link"
+                                                onclick="javascript:pwdLost()">
+                                            Lost Password?
+                                        </button>
+                                        <button id="login_register_btn" type="button" class="btn btn-link"
+                                                onclick="javascript:register()">
+                                            Register
+                                        </button>
                                     </div>
                                 </div>
                             </form>
