@@ -78,7 +78,7 @@ public class MainController extends DefaultController {
     Template logOut;
 
     @View("ProcessList")
-    Template processList;
+    Template processListTemplate;
 
     @View("Describe")
     Template describeProcess;
@@ -136,22 +136,21 @@ public class MainController extends DefaultController {
     public Result processList(@Parameter("token") String token) throws IOException {
         for(Session session : sessionList) {
             if (session.getToken().toString().equals(token)) {
-                List<Operation> opList = session.getOperationList();
+                List<Operation> processList = session.getOperationList();
                 List<Operation> importExportList = new ArrayList<Operation>();
 
-                for(Operation op : opList){
+                for(Operation op : processList){
                     for(String keyword :  op.getKeyWord()){
-                        int index = 0;
                         if(keyword.equals("Export") || keyword.equals("Import")){
                             importExportList.add(op);
                         }
                     }
                 }
-                opList.removeAll(importExportList);
-                return ok(render(processList, "processList", opList));
+                processList.removeAll(importExportList);
+                return ok(render(processListTemplate, "processList", processList));
             }
         }
-        return badRequest(render(processList));
+        return badRequest(render(processListTemplate));
     }
 
     @Route(method = HttpMethod.GET, uri = "/describeProcess")
@@ -248,7 +247,17 @@ public class MainController extends DefaultController {
     public Result data(@Parameter("token") String token) {
         for(Session session : sessionList) {
             if (session.getToken().toString().equals(token)) {
-                return ok(render(data));
+                List<Operation> opList = session.getOperationList();
+                List<Operation> importList = new ArrayList<Operation>();
+
+                for(Operation op : opList){
+                    for(String keyword :  op.getKeyWord()){
+                        if(keyword.equals("Import")){
+                            importList.add(op);
+                        }
+                    }
+                }
+                return ok(render(data, "processList", importList));
             }
         }
         return badRequest(render(data));
@@ -263,17 +272,16 @@ public class MainController extends DefaultController {
 
                 for(Operation op : opList){
                     for(String keyword :  op.getKeyWord()){
-                        int index = 0;
-                        if(keyword.equals("Export")){
+                        if(keyword.equals("Import")){
                             importList.add(op);
                         }
                     }
                 }
-                return ok(render(export, "processList", importList));
+                return ok(render(tImport, "processList", importList));
             }
         }
 
-        return badRequest(render(data));
+        return badRequest(render(tImport));
     }
 
     @Route(method = HttpMethod.GET, uri = "/data/export")
@@ -285,7 +293,6 @@ public class MainController extends DefaultController {
 
                 for(Operation op : opList){
                     for(String keyword :  op.getKeyWord()){
-                        int index = 0;
                         if(keyword.equals("Export")){
                             exportList.add(op);
                         }
@@ -295,7 +302,7 @@ public class MainController extends DefaultController {
             }
         }
 
-        return badRequest(render(data));
+        return badRequest(render(export));
     }
 
     @Route(method = HttpMethod.GET, uri = "/process/leftNavContent")

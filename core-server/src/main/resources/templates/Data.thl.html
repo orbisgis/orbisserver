@@ -39,55 +39,85 @@
 
 <style type="text/css">
         #div-data {
-        width: 60%;
-        border-top: 0;
-        border-bottom: solid medium;
-        border-left: solid medium;
-        border-right: solid medium;
-        border-bottom-right-radius: 4px;
-        border-bottom-left-radius: 4px;
-        background-color: #ddd;
+            width: 60%;
+            border-top: 0;
+            border-bottom: solid medium;
+            border-left: solid medium;
+            border-right: solid medium;
+            border-bottom-right-radius: 4px;
+            border-bottom-left-radius: 4px;
+            background-color: #ddd;
         }
         .a-div-data{
-        color:#222;
-        font-size: 16px;
+            color:#222;
+            font-size: 16px;
         }
         #BDD{
             border-top: solid medium;
         }
+        #btn-dropdown{
+            margin: 20px;
+            width: 70%;
+        }
+        #btn-parcourir{
+            margin: 20px;
+            width: 70%;
+        }
+        #btnParc{
+            padding-right : 58px;
+        }
 </style>
 
-<div >
-    <div id="div-data" class="container-fluid">
-        <nav>
-            <ul class="nav nav-tabs nav-justified">
-                <li><a id="Import" onclick="javascript:Import();" class="a-div-data">Import</a></li>
-                <li><a id="Export" onclick="javascript:Export();" class="a-div-data">Export</a></li>
-            </ul>
-        </nav>
+<div id="div-data" class="container-fluid">
+    <nav>
+        <ul class="nav nav-tabs nav-justified">
+            <li><a id="Import" onclick="javascript:Import();" class="a-div-data">Import</a></li>
+            <li><a id="Export" onclick="javascript:Export();" class="a-div-data">Export</a></li>
+        </ul>
+    </nav>
+</div>
+<div id="content-data">
+    <div id="Data-div-content">
+        <h1 >Import</h1>
+        <div id="btn-dropdown" class="dropdown input-group">
+            <div class="input-group-btn">
+                <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                    Select the form<span class="caret"></span></button>
+                <ul class="dropdown-menu pre-scrollable">
+                    <li th:each="operation : ${processList}">
+                        <a href="#" th:text="${operation.title}" onclick="javascript:dataForm();" />
+                    </li>
+                </ul>
+            </div>
+            <input id="in-dropdown" type="text" class="form-control" aria-label="..."/>
+        </div>
+        <div id="btn-parcourir" class="input-group">
+            <div class="input-group-btn">
+                <button id="btnParc" class="btn btn-default" type="button" >Parcourir</button>
+            </div>
+            <input id="in-parcourir" type="text" class="form-control" aria-label="..."/>
+        </div>
     </div>
-    <div id="content-data">
-        <div id="import-div-content" >
-            <!-- the parameters-->
-            <h1 >Import</h1>
-            <p>les parametres</p>
-        </div>
-        <div id="BDD">
-            <!-- the tables-->
-            <h1>Table</h1>
-            <p>les parametres</p>
-        </div>
+    <div id="BDD">
+        <!-- the tables-->
+        <h1>Table</h1>
+        <p>les parametres</p>
     </div>
 </div>
 
 <script>
-    /**
+
+    function dataForm(){
+        var titleProcess = $('#a').text();
+        $("#in-dropdown").text(($('#a').text()));
+    }
+
     function Import(){
         $.ajax({
             type: "GET",
             data: {
                 "token": readCookie("token")
-            }
+            },
             url: "http://localhost:8080/data/import",
             async: false,
             success : function(text)
@@ -107,7 +137,7 @@
             type: "GET",
             data: {
                 "token": readCookie("token")
-            }
+            },
             url: "http://localhost:8080/data/export",
             async: false,
             success : function(text)
@@ -120,7 +150,5 @@
 
             }
         });
-    }*/
+    }
 </script>
-
-
