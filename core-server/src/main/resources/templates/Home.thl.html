@@ -195,10 +195,10 @@
                     </div>
                     <ul class="nav navbar-nav">
                         <li>
-                            <a id="Data" th:onclick="'javascript:data(\'' + ${session} + '\');'" class="navbar-brand" href="#">Data</a>
+                            <a id="Data" onclick="javascript:data();" class="navbar-brand" href="#">Data</a>
                         </li>
                         <li>
-                            <a id="Process" th:onclick="'javascript:process(\'' + ${session} + '\');'" class="navbar-brand" href="#">Process</a>
+                            <a id="Process" onclick="javascript:process();" class="navbar-brand" href="#">Process</a>
                         </li>
                         <li>
                             <a id="Share" onclick="javascript:share();" class="navbar-brand" href="#">Share</a>
@@ -235,7 +235,7 @@
             <div class="container-fluid">
                 <div class="main-body">
                     <div class="row row-offcanvas row-offcanvas-right">
-                        <div id="content" class="col-xs-12 col-sm-9">
+                        <div id="content" class="col-xs-12 col-sm-11 col-sm-pull-1">
                             <div class="jumbotron">
                                 <h1>OrbisServer</h1>
                                 <p>OSGI web server plugin for OrbisGIS based on wisdom-framework.</p>
@@ -250,10 +250,10 @@
                                     properties to configure the ports:
 
 
-                                            http.port = HTTP port, 9000 by default
-                                            https.port = HTTPS port, disabled by default
+                                    http.port = HTTP port, 9000 by default
+                                    https.port = HTTPS port, disabled by default
 
-                                            You can use 0 to use a random port.</p>
+                                    You can use 0 to use a random port.</p>
 
                             </div>
                             <div class="row">
@@ -346,6 +346,7 @@
                     success : function(text)
                     {
                         $('#left-nav').addClass('slide-in');
+                        $('#content').addClass('col-xs-12 col-sm-11 col-sm-pull-0');
                         $( "#left-nav-content" ).html(String(text));
                     },
                     error : function(text)
@@ -366,25 +367,6 @@
                     async: false,
                     success : function(text)
                     {
-                        $( "#content" ).html(String(text));
-                    },
-                    error : function(text)
-                    {
-                        $( "#content" ).html(String(text));
-                    }
-                });
-            }
-
-            function jobs(){
-                $.ajax({ type: "GET",
-                    url: "http://localhost:8080/jobs",
-                    data: {
-                        "token": readCookie("token")
-                    },
-                    async: false,
-                    success : function(text)
-                    {
-                        $( "#list" ).html("");
                         $( "#content" ).html(String(text));
                     },
                     error : function(text)
@@ -421,6 +403,7 @@
                     success : function(text)
                     {
                         $('#left-nav').removeClass('slide-in');
+                        $('#content').attr('class', 'col-xs-12 col-sm-11 col-sm-pull-1');
                         $( "#content" ).html(String(text));
                     },
                     error : function(text)

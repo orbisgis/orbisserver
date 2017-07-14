@@ -78,7 +78,7 @@ public class MainController extends DefaultController {
     Template logOut;
 
     @View("ProcessList")
-    Template processList;
+    Template processListTemplate;
 
     @View("Describe")
     Template describeProcess;
@@ -136,10 +136,21 @@ public class MainController extends DefaultController {
     public Result processList(@Parameter("token") String token) throws IOException {
         for(Session session : sessionList) {
             if (session.getToken().toString().equals(token)) {
-                return ok(render(processList, "processList", session.getOperationList()));
+                List<Operation> processList = session.getOperationList();
+                List<Operation> importExportList = new ArrayList<Operation>();
+
+                for(Operation op : processList){
+                    for(String keyword :  op.getKeyWord()){
+                        if(keyword.equals("Export") || keyword.equals("Import")){
+                            importExportList.add(op);
+                        }
+                    }
+                }
+                processList.removeAll(importExportList);
+                return ok(render(processListTemplate, "processList", processList));
             }
         }
-        return badRequest(render(processList));
+        return badRequest(render(processListTemplate));
     }
 
     @Route(method = HttpMethod.GET, uri = "/describeProcess")
@@ -236,17 +247,63 @@ public class MainController extends DefaultController {
     public Result data(@Parameter("token") String token) {
         for(Session session : sessionList) {
             if (session.getToken().toString().equals(token)) {
-                return ok(render(data));
+                List<Operation> opList = session.getOperationList();
+                List<Operation> importList = new ArrayList<Operation>();
+
+                for(Operation op : opList){
+                    for(String keyword :  op.getKeyWord()){
+                        if(keyword.equals("Import")){
+                            importList.add(op);
+                        }
+                    }
+                }
+                return ok(render(data, "processList", importList));
             }
         }
         return badRequest(render(data));
     }
 
     @Route(method = HttpMethod.GET, uri = "/data/import")
-    public Result Import() {return ok(render(tImport));}
+    public Result Import(@Parameter("token") String token) {
+        for(Session session : sessionList) {
+            if (session.getToken().toString().equals(token)) {
+                List<Operation> opList = session.getOperationList();
+                List<Operation> importList = new ArrayList<Operation>();
+
+                for(Operation op : opList){
+                    for(String keyword :  op.getKeyWord()){
+                        if(keyword.equals("Import")){
+                            importList.add(op);
+                        }
+                    }
+                }
+                return ok(render(tImport, "processList", importList));
+            }
+        }
+
+        return badRequest(render(tImport));
+    }
 
     @Route(method = HttpMethod.GET, uri = "/data/export")
-    public Result export() {return ok(render(export));}
+    public Result export(@Parameter("token") String token) {
+        for(Session session : sessionList) {
+            if (session.getToken().toString().equals(token)) {
+                List<Operation> opList = session.getOperationList();
+                List<Operation> exportList = new ArrayList<Operation>();
+
+                for(Operation op : opList){
+                    for(String keyword :  op.getKeyWord()){
+                        if(keyword.equals("Export")){
+                            exportList.add(op);
+                        }
+                    }
+                }
+                return ok(render(export, "processList", exportList));
+            }
+        }
+
+        return badRequest(render(export));
+    }
 
     @Route(method = HttpMethod.GET, uri = "/process/leftNavContent")
     public Result leftNavContent() {return ok(render(leftNavContent));}
