@@ -25,42 +25,27 @@
     </div>
 </li>
 
-<script>
-    function jobs(){
-        $.ajax({ type: "GET",
-            url: "http://localhost:8080/jobs",
-            data: {
-                "token": readCookie("token")
-            },
-            async: false,
-            success : function(text)
-            {
-                $( "#list" ).html("");
-                $( "#content" ).html(String(text));
-            },
-            error : function(text)
-            {
-                $( "#content" ).html(String(text));
-            }
-        });
-    }
+<li class="panel panel-default" id="dropdown">
+    <a data-toggle="collapse" href="#dropdown-lvl2" onclick="javascript:importData()">
+        <span class="glyphicon glyphicon-list"></span> Import
+    </a>
 
-    function listProcess(){
-        $.ajax({ type: "GET",
-            data: {
-                "token": readCookie("token")
-            },
-            url: "http://localhost:8080/process/processList",
-            async: false,
-            success : function(text)
-            {
-                $('#left-nav').addClass('slide-in');
-                $( "#process-list" ).html(String(text));
-            },
-            error : function(text)
-            {
-                $( "#process-list" ).html(String("Error"));
-            }
-        });
-    }
-</script>
+    <div id="dropdown-lvl2" class="panel-collapse collapse">
+        <div class="panel-body">
+            <div id="search">
+                <div class="panel-body">
+                    <form class="navbar-form" role="search">
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Search" />
+                        </div>
+                        <button type="submit" class="btn btn-default "><span class="glyphicon glyphicon-search"></span></button>
+                    </form>
+                </div>
+            </div>
+            <div class="pre-scrollable">
+                <ul class="nav navbar-nav" id="import-list">
+                </ul>
+            </div>
+        </div>
+    </div>
+</li>
