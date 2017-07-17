@@ -48,14 +48,12 @@ import org.orbisgis.orbisserver.coreserver.model.StatusInfo;
 import org.orbiswps.scripts.WpsScriptPlugin;
 import org.orbiswps.server.WpsServer;
 import org.orbiswps.server.WpsServerImpl;
-
 import org.orbiswps.server.model.JaxbContainer;
 
+import javax.sql.DataSource;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-
-import javax.sql.DataSource;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -224,10 +222,21 @@ public class WpsService implements Service {
             Object resultObject = unmarshaller.unmarshal(resultXml);
             WPSCapabilitiesType wpsCapabilitiesType = (WPSCapabilitiesType) ((JAXBElement) resultObject).getValue();
 
+            List<KeywordsType> keywordsType = null;
+            ArrayList<String> listWordEnglish = new ArrayList<>();
+
             for(ProcessSummaryType process : wpsCapabilitiesType.getContents().getProcessSummary()){
                 Operation op = new Operation(process.getTitle().get(0).getValue(), process.getIdentifier().getValue());
-                if(process.getAbstract()!=null && !process.getAbstract().isEmpty()){
+                if(process.getAbstract()!=null && !process.getAbstract().isEmpty()) {
                     op.setAbstr(process.getAbstract().get(0).getValue());
+                    keywordsType = process.getKeywords();
+                    for(KeywordsType keyword : keywordsType){
+                        for (LanguageStringType language : keyword.getKeyword()) {
+                            if(language.getLang().equals("en")) {
+                                op.getKeyWord().add(language.getValue());
+                            }
+                        }
+                    }
                 }
                 cachedOpList.add(op);
             }

@@ -78,10 +78,10 @@
                     </div>
                     <ul class="nav navbar-nav">
                         <li>
-                            <a id="Data" th:onclick="'javascript:data(\'' + ${session} + '\');'" class="navbar-brand" href="#">Data</a>
+                            <a id="Data" onclick="javascript:data();" class="navbar-brand" href="#">Data</a>
                         </li>
                         <li>
-                            <a id="Process" th:onclick="'javascript:process(\'' + ${session} + '\');'" class="navbar-brand" href="#">Process</a>
+                            <a id="Process" onclick="javascript:process();" class="navbar-brand" href="#">Process</a>
                         </li>
                         <li>
                             <a id="Share" onclick="javascript:share();" class="navbar-brand" href="#">Share</a>
@@ -118,7 +118,7 @@
             <div class="container-fluid">
                 <div class="main-body">
                     <div class="row row-offcanvas row-offcanvas-right">
-                        <div id="content" class="col-xs-12 col-sm-9">
+                        <div id="content" class="col-xs-12 col-sm-11 col-sm-pull-1">
                             <div class="jumbotron">
                                 <h1>OrbisServer</h1>
                                 <p>OSGI web server plugin for OrbisGIS based on wisdom-framework.</p>
@@ -133,10 +133,10 @@
                                     properties to configure the ports:
 
 
-                                            http.port = HTTP port, 9000 by default
-                                            https.port = HTTPS port, disabled by default
+                                    http.port = HTTP port, 9000 by default
+                                    https.port = HTTPS port, disabled by default
 
-                                            You can use 0 to use a random port.</p>
+                                    You can use 0 to use a random port.</p>
 
                             </div>
                             <div class="row">
