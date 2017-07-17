@@ -128,7 +128,7 @@ public class MainController extends DefaultController {
             return ok(session.getToken().toString());
         }
         else {
-            return badRequest();
+            return badRequest("Unrecognized credits.");
         }
     }
 
@@ -235,8 +235,20 @@ public class MainController extends DefaultController {
         return badRequest(render(jobs));
     }
 
-    @Route(method = HttpMethod.GET, uri = "/signIn")
-    public Result signIn() {return ok(render(signIn));}
+    @Route(method = HttpMethod.POST, uri = "/register")
+    public Result signIn() throws IOException {
+        String urlContent = URLDecoder.decode(context().reader().readLine(), "UTF-8");
+        String[] split = urlContent.split("&");
+        Session session = CoreServerController.createSession(split[0].replaceAll(".*=", ""),
+                split[1].replaceAll(".*=", ""));
+        if(session != null) {
+            sessionList.add(session);
+            return ok(session.getToken().toString());
+        }
+        else {
+            return badRequest("Can not create user.");
+        }
+    }
 
     @Route(method = HttpMethod.GET, uri = "/workspace")
     public Result workspace() {

@@ -8,118 +8,17 @@
 
         <link rel="stylesheet" href="/libs/css/bootstrap.css" media="screen"/>
         <link rel="stylesheet" href="/assets/main.css"/>
+        <link rel="stylesheet" href="/assets/css/mainbody.css"/>
+        <link rel="stylesheet" href="/assets/css/navbar.css"/>
+        <link rel="stylesheet" href="/assets/css/login_modal.css"/>
+        <link rel="stylesheet" href="/assets/css/spinning_anim.css"/>
 
         <script src="/libs/jquery.min.js"></script>
         <script src="/libs/js/bootstrap.min.js"></script>
+        <script src="/assets/js/main_script.js"></script>
     </head>
     <body>
         <style>
-            #navbar {
-                width: 100%;
-                z-index:10;
-            }
-            #left-nav {
-                margin-top: 50px;
-                position: fixed;
-                height: 100%;
-                width: 300px;
-                border-right: 1px solid #e7e7e7;
-                background-color: #f8f8f8;
-                -moz-animation: slideout 300ms forwards;
-                -o-animation: slideout 300ms forwards;
-                -webkit-animation: slideout 300ms forwards;
-                animation: slideout 300ms forwards;
-                -webkit-transform-style: preserve-3d;
-                transform-style: preserve-3d;
-            }
-            
-            #left-nav .navbar {
-                border: none;
-            }
-
-            #left-nav .navbar-nav {
-                width: 100%;
-            }
-
-            #left-nav .navbar-nav li {
-                width: 100%;
-                border-bottom: 1px solid #e7e7e7;
-            }
-
-            #left-nav .navbar-nav li a .glyphicon {
-                padding-right: 10px;
-            }
-
-            #left-nav .navbar-nav .active a {
-                border-right: 5px solid #e7e7e7;
-                background-color: transparent;
-            }
-
-            /** Dropdown */
-            #left-nav #dropdown {
-                border: none;
-                margin-bottom: 0;
-                background-color: transparent;
-            }
-
-            #left-nav #dropdown .caret {
-                float: right;
-                margin: 9px 5px 0;
-            }
-
-            #left-nav #dropdown > a {
-                border-bottom: 1px solid #e7e7e7;
-            }
-
-            #left-nav #dropdown .panel-body {
-                padding: 0;
-            }
-
-            #left-nav #dropdown .panel-body .navbar-nav li {
-                padding-left: 15px;
-                border-bottom: 1px solid #e7e7e7;
-            }
-
-            /** Search element */
-            #left-nav #search .panel-body {
-                padding: 0;
-                border-bottom: 1px solid #e7e7e7;
-            }
-            #left-nav #search .panel-body .navbar-form {
-                padding: 0;
-                padding-right: 50px;
-                margin: 0;
-                width: 100%;
-                position: relative;
-            }
-            #left-nav #search .panel-body .navbar-form input {
-                width: 100%;
-                height: 50px;
-                border: 0;
-                border-radius: 0;
-            }
-            #left-nav #search .panel-body .navbar-form .form-group {
-                width: 100%;
-            }
-            #left-nav #search .panel-body .navbar-form .form-control {
-                box-shadow: none;
-            }
-            #left-nav #search .panel-body .navbar-form .btn {
-                position: absolute;
-                right: 0;
-                top: 0;
-                border: 0;
-                border-radius: 0;
-                background-color: #f3f3f3;
-                padding: 15px 18px;
-            }
-            /** Body */
-            .main-body {
-                margin-top: 50px;
-                margin-left: 310px;
-            }
-
-            /** Left bar slide in animation */
             @-moz-keyframes slidein {
                 0% {
                     left: -300px;
@@ -168,23 +67,7 @@
                     left: -300px;
                 }
             }
-
-            #left-nav.slide-in {
-                -moz-animation: slidein 300ms forwards;
-                -o-animation: slidein 300ms forwards;
-                -webkit-animation: slidein 300ms forwards;
-                animation: slidein 300ms forwards;
-                -webkit-transform-style: preserve-3d;
-                transform-style: preserve-3d;
-            }
-
-            /** dopdown user*/
-            #span-user {
-                font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
-                font-size: 16px;
-            }
         </style>
-
         <div id="navbar">
             <nav class="nav navbar-inverse navbar-static-top">
                 <div class="container-fluid ">
@@ -211,7 +94,7 @@
                             </a>
                         </li>
                         <li>
-                            <a  id="log_in" data-toggle="modal" data-target="#myModal" href="#">
+                            <a  id="log_in" data-toggle="modal" data-target="#loginModal" href="#">
                                 <span class="glyphicon 	glyphicon-log-in"></span>Login
                             </a>
                         </li>
@@ -289,7 +172,7 @@
             </div>
 
             <!-- Modal -->
-            <div class="modal fade" id="myModal" role="dialog">
+            <div class="modal fade" id="loginModal" role="dialog">
                 <div class="modal-dialog">
 
                     <!-- Modal content-->
@@ -301,11 +184,11 @@
                         </div>
                         <div id="div-forms">
                             <!-- Begin # Login Form -->
-                            <form id="login-form" action="http://localhost:8080/login" method="post">
-                                <div class="modal-body">
-                                    <div id="div-login-msg">
-                                        <span id="text-login-msg">Type your username and password</span>
-                                    </div>
+                            <form id="login-form" action="/login" method="post">
+                                <div id="login-modal-body" class="modal-body form-group">
+                                    <label id="text-login-msg" class="control-label">
+                                        Type your username and password
+                                    </label>
                                     <input id="login_username" name="username" class="form-control" type="text"
                                            placeholder="Username" required="true"/>
                                     <input id="login_password" name="password" class="form-control" type="password"
@@ -313,11 +196,20 @@
                                 </div>
                                 <div class="modal-footer">
                                     <div>
-                                        <button id="log_in_btn" type="submit" class="btn btn-primary btn-lg btn-block">Login</button>
+                                        <button id="login_btn" type="submit" class="btn btn-primary btn-lg btn-block">
+                                            Login<i id="login-refresh" class="glyphicon"></i>
+                                        </button>
                                     </div>
                                     <div>
-                                        <button id="login_lost_btn" type="button" class="btn btn-link">Lost Password?</button>
-                                        <button id="login_register_btn" type="button" class="btn btn-link">Register</button>
+                                        <span id="login-footer-text"></span>
+                                        <button id="login_lost_btn" type="button" class="btn btn-link"
+                                                onclick="javascript:pwdLost()">
+                                            Lost Password?
+                                        </button>
+                                        <button id="login_register_btn" type="button" class="btn btn-link"
+                                                onclick="javascript:register()">
+                                            Register
+                                        </button>
                                     </div>
                                 </div>
                             </form>
@@ -326,151 +218,6 @@
                 </div>
             </div>
         </div>
-        <script>
-        // <![CDATA[
-            $('#navbar').affix({
-                offset: {
-                    top: $('header').height()
-                }
-            });
-
-            $('#Mymodal').on('shown.bs.modal', function () {$('#sign in').focus()})
-
-            function process(){
-                $.ajax({ type: "GET",
-                    data: {
-                        "token": readCookie("token")
-                    },
-                    url: "http://localhost:8080/process/leftNavContent",
-                    async: false,
-                    success : function(text)
-                    {
-                        $('#left-nav').addClass('slide-in');
-                        $('#content').addClass('col-xs-12 col-sm-11 col-sm-pull-0');
-                        $( "#left-nav-content" ).html(String(text));
-                    },
-                    error : function(text)
-                    {
-                        $('#left-nav').addClass('slide-in');
-                        $( "#left-nav-content" ).html(String("Error"));
-                    }
-                });
-            }
-
-            function showProcess(id){
-                $.ajax({ type: "GET",
-                    url: "http://localhost:8080/describeProcess",
-                    data: {
-                        "id": id,
-                        "token": readCookie("token")
-                    },
-                    async: false,
-                    success : function(text)
-                    {
-                        $( "#content" ).html(String(text));
-                    },
-                    error : function(text)
-                    {
-                        $( "#content" ).html(String(text));
-                    }
-                });
-            }
-
-            function signIn(){
-                $.ajax({
-                    type: "GET",
-                    url: "http://localhost:8080/signIn",
-                    async: false,
-                    success : function(text)
-                    {
-                        $( "#content" ).html(String(text));
-                    },
-                    error : function(text)
-                    {
-                        $( "#content" ).html(String("Error"));
-                    }
-                });
-            }
-
-            function data(){
-                $.ajax({
-                    type: "GET",
-                    data: {
-                        "token": readCookie("token")
-                    },
-                    url: "http://localhost:8080/data",
-                    async: false,
-                    success : function(text)
-                    {
-                        $('#left-nav').removeClass('slide-in');
-                        $('#content').attr('class', 'col-xs-12 col-sm-11 col-sm-pull-1');
-                        $( "#content" ).html(String(text));
-                    },
-                    error : function(text)
-                    {
-                        $( "#content" ).html(String("Error"));
-                    }
-                });
-            }
-
-            function showUser(){
-                $.ajax({
-                    type: "GET",
-                    data: {
-                        "token": readCookie("token")
-                    },
-                    url: "http://localhost:8080/user",
-                    async: false,
-                    success : function(text)
-                    {
-                        $( "#user_ul" ).html(String(text));
-                    },
-                    error : function(text)
-                    {
-                        $( "#user_ul" ).html(String("Error"));
-                    }
-                });
-            }
-
-            /** Login form submit */
-
-            $(function() {
-                $("#login-form").on("submit", function(e) {
-                    e.preventDefault();
-                    $.ajax({
-                        url: $(this).attr("action"),
-                        type: 'POST',
-                        data: $(this).serialize(),
-                        success: function(data) {
-                            writeCookie("token",data);
-                            $('#myModal').modal('hide');
-                            showUser();
-                        }
-                    });
-                });
-            });
-
-            /** cookies functions */
-
-            function writeCookie(name, value) {
-                document.cookie = name + "=" + value;
-            }
-
-            function readCookie(name) {
-                var i, cookie, cookies, nameEq = name + "=";
-                cookies = document.cookie.split(';');
-                for(i=0;i<cookies.length;i++) {
-                    cookie = cookies[i];
-                    while (cookie.charAt(0)==' ') {
-                        cookie = cookie.substring(1,cookie.length);
-                    }
-                    if (cookie.indexOf(nameEq) == 0) {
-                        return cookie.substring(nameEq.length,cookie.length);
-                    }
-                }
-                return '';
-            }
-        // ]]>
-        </script>
+        <script src="/assets/js/main_script.js"></script>
     </body>
 </html>

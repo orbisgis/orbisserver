@@ -124,9 +124,18 @@ public class CoreServerController extends DefaultController {
                 return s;
             }
         }
-        Session session = createSession(username);
+        Session session = buildSession(username);
         openSessionList.add(session);
         return session;
+    }
+
+    /**
+     * Instantiate a session with the user name.
+     * @param username User name.
+     * @return An instantiated session.
+     */
+    private static Session buildSession(String username){
+        return new Session(username);
     }
 
     /**
@@ -137,10 +146,10 @@ public class CoreServerController extends DefaultController {
      */
     private static boolean testUser(String username, String password){
         try {
-            ResultSet rs = ds.getConnection().createStatement().executeQuery("SELECT COUNT(username) FROM USER WHERE " +
+            ResultSet rs = ds.getConnection().createStatement().executeQuery("SELECT COUNT(username) FROM users_table WHERE " +
                     "username LIKE '" + username + "' AND password LIKE '" + password + "';");
             rs.first();
-            return rs.getInt(1) == 1;
+            return rs.getInt(1) != 0;
         } catch (SQLException e) {
             LOGGER.error("Unable to request the database\n"+e.getMessage());
         }
@@ -152,7 +161,14 @@ public class CoreServerController extends DefaultController {
      * @param username Name of the user.
      * @return The user session.
      */
-    private static Session createSession(String username){
-        return new Session(username);
+    public static Session createSession(String username, String password){
+        if(!testUser(username, password)) {
+            try {
+                ds.getConnection().createStatement().execute("INSERT INTO users_table VALUES ('" + username + "','" + password + "');");
+            } catch (SQLException e) {
+                LOGGER.error("Unable to add a user\n" + e.getMessage());
+            }
+        }
+        return getSession(username, password);
     }
 }
