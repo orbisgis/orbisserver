@@ -129,6 +129,11 @@ public class CoreServerController extends DefaultController {
         return session;
     }
 
+    /**
+     * Instantiate a session with the user name.
+     * @param username User name.
+     * @return An instantiated session.
+     */
     private static Session buildSession(String username){
         return new Session(username);
     }
