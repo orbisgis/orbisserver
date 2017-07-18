@@ -313,6 +313,22 @@ function readCookie(name) {
 
 /** User scripts */
 function user_settings(){
+    $.ajax({
+        type: "GET",
+        data: {
+            "token": readCookie("token")
+        },
+        url: "/user/settings",
+        async: false,
+        success : function(text)
+        {
+            $( "#content" ).html(String(text));
+        },
+        error : function(text)
+        {
+            $( "#content" ).html(text.responseText);
+        }
+    });
 }
 
 function log_out(){
