@@ -170,21 +170,30 @@ public class MainController extends DefaultController {
 
     @Route(method = HttpMethod.GET, uri = "/describeProcess")
     public Result describeProcess(@Parameter("id") String id, @Parameter("token") String token) throws IOException {
-        for(Session session : sessionList) {
-            if (session.getToken().toString().equals(token)) {
+        Session session = null;
+        for(Session s : sessionList) {
+            if (s.getToken().toString().equals(token)) {
+                session = s;
                 Operation op = session.getOperation(id);
-                return ok(render(describeProcess, "operation", op));
+                return ok(render(describeProcess, "operation", op, "session", session));
             }
         }
         return badRequest(render(describeProcess));
     }
 
     @Route(method = HttpMethod.POST, uri = "/execute")
-    public Result execute(@Parameter("token") String token) throws IOException {
+    public Result execute() throws IOException {
         for(Session session : sessionList) {
+            String urlContent = URLDecoder.decode(context().reader().readLine(), "UTF-8");
+            String[] split = urlContent.split("&");
+            String token = "";
+            for(String str : split){
+                String[] val = str.split("=");
+                if(val[0].equals("token")){
+                    token = val[1];
+                }
+            }
             if (session.getToken().toString().equals(token)) {
-                String urlContent = URLDecoder.decode(context().reader().readLine(), "UTF-8");
-                String[] split = urlContent.split("&");
                 Map<String, String> inputData = new HashMap<>();
                 String id = "";
                 for (String str : split) {

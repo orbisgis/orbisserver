@@ -58,6 +58,7 @@
     <form action="/execute" method="post" id="form">
         <ul class="list-group">
             <input type="hidden" name="processId" th:value="${operation.id}" />
+            <input type="hidden" name="token" th:value="${session.token}" />
             <li class="list-group-item list-group-item-process" th:each="input : ${operation.inputList}">
                 <div th:if="${input.name.equalsIgnoreCase('LiteralDataType')}">
                     <div th:if="${input.type.equalsIgnoreCase('String')}">
@@ -137,7 +138,11 @@
                         $("#submitText").html(' Sending data <i class="glyphicon glyphicon-refresh gly-spin"></i>');
                     },
                     success: function(data) {
-                        showJobs()
+                        jobs()
+                    },
+                    error : function(text)
+                    {
+                        $( "#content" ).html(String("Error"));
                     }
                 });
             });
