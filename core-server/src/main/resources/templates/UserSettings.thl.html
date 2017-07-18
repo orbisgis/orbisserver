@@ -43,19 +43,20 @@
     <div class="col-md-8">
         <ul class="element_list">
             <li>
-                <h2>Settings</h2>
+                <h1>Settings</h1>
             </li>
             <li>
                 <ul>
                     <li>
                         <form id="pwd_change_form" action="/user/changePwd" method="post">
-                            <h4>Password</h4>
+                            <h3>Password</h3>
+                            <p>Change your password</p>
                             <input id="pwd" name="pwd" class="form-control" type="password" placeholder="Password"
                                    required="true"/>
                             <input id="pwd_repeat" name="pwd_repeat" class="form-control" type="password"
                                    placeholder="Repeat Password" required="true"/>
 
-                            <button id="change_pwd_btn" type="submit" class="btn btn-primary btn-lg btn-block">
+                            <button id="change_pwd_btn" type="submit" class="btn btn-primary">
                                 Change password
                             </button>
                             <p id="pwd_change_text"></p>
@@ -65,18 +66,35 @@
             </li>
         </ul>
     </div>
-    <div class="col-md-4" style="background:#e00">
+    <div class="col-md-4">
         <h2 th:text="${session.username}"></h2>
-        <img src="http://orbisgis.org/assets/img/orbisgis.png"/>
+        <img id="settings_user_icon" src="http://orbisgis.org/assets/img/orbisgis.png"/>
+        <button id="upload-image" type="submit" class="btn bnt-block btn-primary">
+            Upload image
+        </button>
     </div>
 </div>
 <div class="col-md-1"></div>
 <div class="col-md-1"></div>
 
 <style>
-#user-settings-panel{
-    margin-top:20px;
+#upload-image{
+    width: 100%;
 }
+
+#settings_user_icon{
+    text-align: center;
+    border: 1px solid #e7e7e7;
+    border-radius: 5px;
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+#user-settings-panel{
+    margin-top:10px;
+    padding: 10px;
+}
+
 .element_list {
     list-style-type: none;
     list-style-position:inside;
@@ -84,13 +102,16 @@
     padding:0;
     width: 100%;
 }
+
 .element_list input {
     margin-bottom: 5px;
     border-radius: 0;
 }
+
 .element_list button {
-    margin-top: 15px;
+    margin-top: 10px;
 }
+
 .element_list ul {
     list-style-type: none;
     list-style-position:inside;
@@ -103,6 +124,10 @@
     margin-top: 10px
     width: 100%;
     border-bottom: 1px solid #e7e7e7;
+}
+
+.element_list li:last-child {
+    border-bottom: none;
 }
 </style>
 
