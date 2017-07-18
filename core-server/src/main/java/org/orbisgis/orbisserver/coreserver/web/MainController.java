@@ -290,7 +290,7 @@ public class MainController extends DefaultController {
         return badRequest(render(data));
     }
 
-    @Route(method = HttpMethod.GET, uri = "/data/import")
+    @Route(method = HttpMethod.GET, uri = "/process/import")
     public Result Import(@Parameter("token") String token) {
         for(Session session : sessionList) {
             if (session.getToken().toString().equals(token)) {
@@ -311,7 +311,7 @@ public class MainController extends DefaultController {
         return badRequest(render(tImport));
     }
 
-    @Route(method = HttpMethod.GET, uri = "/data/export")
+    @Route(method = HttpMethod.GET, uri = "/process/export")
     public Result export(@Parameter("token") String token) {
         for(Session session : sessionList) {
             if (session.getToken().toString().equals(token)) {

@@ -58,6 +58,7 @@ function process(){
         {
             $('#left-nav').addClass('slide-in');
             $('#main-body').css("margin-left", "510px");
+            $('#content').addClass('col-xs-12 col-sm-11 col-sm-pull-0');
             $( "#left-nav-content" ).html(String(text));
         },
         error : function(text)
@@ -88,21 +89,21 @@ function showProcess(id){
     });
 }
 
-function jobs(){
-    $.ajax({ type: "GET",
-        url: "http://localhost:8080/jobs",
+function showUser(){
+    $.ajax({
+        type: "GET",
         data: {
             "token": readCookie("token")
         },
+        url: "http://localhost:8080/user",
         async: false,
         success : function(text)
         {
-            $( "#list" ).html("");
-            $( "#content" ).html(String(text));
+            $( "#user_ul" ).html(String(text));
         },
         error : function(text)
         {
-            $( "#content" ).html(String(text));
+            $( "#user_ul" ).html(String("Error"));
         }
     });
 }
@@ -123,45 +124,101 @@ function signIn(){
     });
 }
 
-function data(){
-    $.ajax({
-        type: "GET",
-        data: {
-            "token": readCookie("token")
-        },
-        url: "http://localhost:8080/data",
-        async: false,
-        success : function(text)
-        {
-            $('#left-nav').removeClass('slide-in');
-            $('#main-body').css("margin-left", "310px");
-            $( "#content" ).html(String(text));
-        },
-        error : function(text)
-        {
-            $( "#content" ).html(String("Error"));
-        }
-    });
-}
+//** leftnav Script */
+function jobs(){
+        $.ajax({ type: "GET",
+            url: "http://localhost:8080/jobs",
+            data: {
+                "token": readCookie("token")
+            },
+            async: false,
+            success : function(text)
+            {
+                $( "#list" ).html("");
+                $( "#content" ).html(String(text));
+            },
+            error : function(text)
+            {
+                $( "#content" ).html(String(text));
+            }
+        });
+    }
 
-function showUser(){
-    $.ajax({
-        type: "GET",
-        data: {
-            "token": readCookie("token")
-        },
-        url: "http://localhost:8080/user",
-        async: false,
-        success : function(text)
-        {
-            $( "#user_ul" ).html(String(text));
-        },
-        error : function(text)
-        {
-            $( "#user_ul" ).html(String("Error"));
-        }
-    });
-}
+    function importData(){
+        $.ajax({ type: "GET",
+            url: "http://localhost:8080/process/import",
+            data: {
+                "token": readCookie("token")
+            },
+            async: false,
+            success : function(text)
+            {
+                if($('#dropdown-lvl3').attr('class')=="panel-collapse collapse in"){
+                    $('#dropdown-lvl3').removeClass('in');
+                }
+                if($('#dropdown-lvl1').attr('class')=="panel-collapse collapse in"){
+                    $('#dropdown-lvl1').removeClass('in');
+                }
+                $('#left-nav').addClass('slide-in');
+                $( '#import-list' ).html(String(text));
+            },
+            error : function(text)
+            {
+                $( '#content' ).html(String(text));
+            }
+        });
+    }
+
+    function exportData(){
+        $.ajax({ type: "GET",
+            url: "http://localhost:8080/process/export",
+            data: {
+                "token": readCookie("token")
+            },
+            async: false,
+            success : function(text)
+            {
+                if($('#dropdown-lvl2').attr('class')=="panel-collapse collapse in"){
+                    $('#dropdown-lvl2').removeClass('in');
+                }
+                if($('#dropdown-lvl1').attr('class')=="panel-collapse collapse in"){
+                    $('#dropdown-lvl1').removeClass('in');
+                }
+                $('#left-nav').addClass('slide-in');
+                $( '#export-list').html(String(text));
+            },
+            error : function(text)
+            {
+                $( '#export-list'  ).html(String(text));
+            }
+        });
+    }
+
+    function listProcess(){
+        $.ajax({ type: "GET",
+            data: {
+                "token": readCookie("token")
+            },
+            url: "http://localhost:8080/process/processList",
+            async: false,
+            success : function(text)
+            {
+                if($('#dropdown-lvl2').attr('class')=="panel-collapse collapse in"){
+                    $('#dropdown-lvl2').removeClass('in');
+                }
+                if($('#dropdown-lvl3').attr('class')=="panel-collapse collapse in"){
+                    $('#dropdown-lvl3').removeClass('in');
+                }
+                $('#left-nav').addClass('slide-in');
+                $( '#process-list' ).html(String(text));
+            },
+            error : function(text)
+            {
+                $( '#process-list' ).html(String("Error"));
+            }
+        });
+    }
+
 
 /** Login modal scripts */
 $(function() {
