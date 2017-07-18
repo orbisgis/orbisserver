@@ -144,9 +144,34 @@ function jobs(){
         });
     }
 
+    function data(){
+        $.ajax({ type: "GET",
+            url: "http://localhost:8080/data",
+            data: {
+                "token": readCookie("token")
+            },
+            async: false,
+            success : function(text)
+            {
+
+                $('#left-nav').addClass('slide-in');
+                $('#main-body').css("margin-left", "510px");
+                $('#content').addClass('col-xs-12 col-sm-11 col-sm-pull-0');
+                $( "#left-nav-content" ).html(String(text));
+            },
+            error : function(text)
+            {
+                $('#left-nav').addClass('slide-in');
+                $('#main-body').css("margin-left", "510px");
+                $( "#left-nav-content" ).html(String("Error"));
+            }
+        });
+    }
+
+
     function importData(){
         $.ajax({ type: "GET",
-            url: "http://localhost:8080/process/import",
+            url: "http://localhost:8080/data/import",
             data: {
                 "token": readCookie("token")
             },
@@ -155,9 +180,6 @@ function jobs(){
             {
                 if($('#dropdown-lvl3').attr('class')=="panel-collapse collapse in"){
                     $('#dropdown-lvl3').removeClass('in');
-                }
-                if($('#dropdown-lvl1').attr('class')=="panel-collapse collapse in"){
-                    $('#dropdown-lvl1').removeClass('in');
                 }
                 $('#left-nav').addClass('slide-in');
                 $( '#import-list' ).html(String(text));
@@ -171,7 +193,7 @@ function jobs(){
 
     function exportData(){
         $.ajax({ type: "GET",
-            url: "http://localhost:8080/process/export",
+            url: "http://localhost:8080/data/export",
             data: {
                 "token": readCookie("token")
             },
@@ -180,9 +202,6 @@ function jobs(){
             {
                 if($('#dropdown-lvl2').attr('class')=="panel-collapse collapse in"){
                     $('#dropdown-lvl2').removeClass('in');
-                }
-                if($('#dropdown-lvl1').attr('class')=="panel-collapse collapse in"){
-                    $('#dropdown-lvl1').removeClass('in');
                 }
                 $('#left-nav').addClass('slide-in');
                 $( '#export-list').html(String(text));
@@ -203,12 +222,6 @@ function jobs(){
             async: false,
             success : function(text)
             {
-                if($('#dropdown-lvl2').attr('class')=="panel-collapse collapse in"){
-                    $('#dropdown-lvl2').removeClass('in');
-                }
-                if($('#dropdown-lvl3').attr('class')=="panel-collapse collapse in"){
-                    $('#dropdown-lvl3').removeClass('in');
-                }
                 $('#left-nav').addClass('slide-in');
                 $( '#process-list' ).html(String(text));
             },
