@@ -139,7 +139,7 @@ public class CoreServerController extends DefaultController {
     }
 
     /**
-     * Test if the user name and password are corrects.
+     * Test if the user name and password are correct.
      * @param username Name of the user.
      * @param password Password of the user.
      * @return True if the user is correct, false otherwise.
@@ -148,6 +148,23 @@ public class CoreServerController extends DefaultController {
         try {
             ResultSet rs = ds.getConnection().createStatement().executeQuery("SELECT COUNT(username) FROM users_table WHERE " +
                     "username LIKE '" + username + "' AND password LIKE '" + password + "';");
+            rs.first();
+            return rs.getInt(1) != 0;
+        } catch (SQLException e) {
+            LOGGER.error("Unable to request the database\n"+e.getMessage());
+        }
+        return false;
+    }
+
+    /**
+     * Test if the user name is correct.
+     * @param username Name of the user.
+     * @return True if the user is correct, false otherwise.
+     */
+    private static boolean testUser(String username){
+        try {
+            ResultSet rs = ds.getConnection().createStatement().executeQuery("SELECT COUNT(username) FROM users_table WHERE " +
+                    "username LIKE '" + username + "';");
             rs.first();
             return rs.getInt(1) != 0;
         } catch (SQLException e) {
@@ -170,5 +187,21 @@ public class CoreServerController extends DefaultController {
             }
         }
         return getSession(username, password);
+    }
+
+    /**
+     * Updates the password of a user
+     * @param username User name.
+     * @param newPassword New password.
+     */
+    public static void changePassword(String username, String newPassword) {
+        if(testUser(username)) {
+            try {
+                ds.getConnection().createStatement().execute("UPDATE user_table SET password = " + newPassword +
+                        " WHERE username='" + username + "';");
+            } catch (SQLException e) {
+                LOGGER.error("Unable to change password\n" + e.getMessage());
+            }
+        }
     }
 }

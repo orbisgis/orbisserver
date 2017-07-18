@@ -107,14 +107,29 @@ public class MainController extends DefaultController {
     @View("User")
     Template user;
 
+    @View("UserSettings")
+    Template userSettings;
+
     @Route(method = HttpMethod.GET, uri = "/")
     public Result home() {
         return ok(render(home));
     }
 
-    @Route(method = HttpMethod.GET, uri = "/logout")
-    public Result logOut() {
-        return ok(render(logOut));
+    @Route(method = HttpMethod.GET, uri = "/user/logOut")
+    public Result logOut(@Parameter("token") String token) {
+        Session session = null;
+        for(Session s : sessionList){
+            if(s.getToken().toString().equals(token)){
+                session = s;
+            }
+        }
+        if(session != null) {
+            sessionList.remove(session);
+            return ok();
+        }
+        else {
+            return badRequest("Unexisting session.");
+        }
     }
 
     @Route(method = HttpMethod.POST, uri = "/login")
@@ -327,6 +342,53 @@ public class MainController extends DefaultController {
                 return ok(render(user, "session", session));
             }
         }
-        return badRequest(render(user));
+        return ok(render(user, "session", null));
+    }
+
+    @Route(method = HttpMethod.POST, uri = "/user/changePwd")
+    public Result changePwd() throws IOException {
+        String urlContent = URLDecoder.decode(context().reader().readLine(), "UTF-8");
+        String newPassword = "";
+        String newPasswordRepeat = null;
+        String token = null;
+        String[] split = urlContent.split("&");
+        for(String argument : split){
+            String[] splitArg = argument.split("=");
+            switch (splitArg[0]) {
+                case "pwd":
+                    newPassword = splitArg[1];
+                    break;
+                case "pwd_repeat":
+                    newPasswordRepeat = splitArg[1];
+                    break;
+                case "token":
+                    token = splitArg[1];
+                    break;
+            }
+        }
+        if(newPassword.equals(newPasswordRepeat) && token != null) {
+            CoreServerController.changePassword(token, newPassword);
+            return ok("Password changed.");
+        }
+        else{
+            return badRequest("The two passwords are not the same.");
+        }
+    }
+
+    @Route(method = HttpMethod.GET, uri = "/user/settings")
+    public Result settings(@Parameter("token") String token) {
+        Session session = null;
+        for(Session s : sessionList){
+            if(s.getToken().toString().equals(token)){
+                session = s;
+            }
+        }
+        if(session != null) {
+            sessionList.remove(session);
+            return ok(render(userSettings, "session", session));
+        }
+        else {
+            return badRequest("Unexisting session.");
+        }
     }
 }
