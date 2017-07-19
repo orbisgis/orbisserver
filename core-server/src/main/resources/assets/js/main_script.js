@@ -57,7 +57,6 @@ function process(){
         success : function(text)
         {
             $('#left-nav').addClass('slide-in');
-            $('#main-body').css("margin-left", "510px");
             $('#content').addClass('col-xs-12 col-sm-11 col-sm-pull-0');
             $( "#left-nav-content" ).html(String(text));
             $("#Data").removeClass("active")
@@ -67,7 +66,6 @@ function process(){
         error : function(text)
         {
             $('#left-nav').addClass('slide-in');
-            $('#main-body').css("margin-left", "510px");
             $( "#left-nav-content" ).html(String("Error"));
             $("#Data").removeClass("active")
             $("#Process").addClass("active")
@@ -141,6 +139,7 @@ function jobs(){
             success : function(text)
             {
                 $( "#list" ).html("");
+                $('#content').addClass('col-xs-12 col-sm-11 col-sm-pull-0');
                 $( "#content" ).html(String(text));
             },
             error : function(text)
@@ -161,7 +160,6 @@ function jobs(){
             {
 
                 $('#left-nav').addClass('slide-in');
-                $('#main-body').css("margin-left", "510px");
                 $('#content').addClass('col-xs-12 col-sm-11 col-sm-pull-0');
                 $("#left-nav-content").html(String(text));
                 $("#Data").addClass("active")
@@ -171,7 +169,6 @@ function jobs(){
             error : function(text)
             {
                 $('#left-nav').addClass('slide-in');
-                $('#main-body').css("margin-left", "510px");
                 $( "#left-nav-content" ).html(String("Error"));
                 $("#Data").addClass("active")
                 $("#Process").removeClass("active")
