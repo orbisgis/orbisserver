@@ -60,12 +60,18 @@ function process(){
             $('#main-body').css("margin-left", "510px");
             $('#content').addClass('col-xs-12 col-sm-11 col-sm-pull-0');
             $( "#left-nav-content" ).html(String(text));
+            $("#Data").removeClass("active")
+            $("#Process").addClass("active")
+            $("#Share").removeClass("active")
         },
         error : function(text)
         {
             $('#left-nav').addClass('slide-in');
             $('#main-body').css("margin-left", "510px");
             $( "#left-nav-content" ).html(String("Error"));
+            $("#Data").removeClass("active")
+            $("#Process").addClass("active")
+            $("#Share").removeClass("active")
         }
     });
 }
@@ -157,13 +163,19 @@ function jobs(){
                 $('#left-nav').addClass('slide-in');
                 $('#main-body').css("margin-left", "510px");
                 $('#content').addClass('col-xs-12 col-sm-11 col-sm-pull-0');
-                $( "#left-nav-content" ).html(String(text));
+                $("#left-nav-content").html(String(text));
+                $("#Data").addClass("active")
+                $("#Process").removeClass("active")
+                $("#Share").removeClass("active")
             },
             error : function(text)
             {
                 $('#left-nav').addClass('slide-in');
                 $('#main-body').css("margin-left", "510px");
                 $( "#left-nav-content" ).html(String("Error"));
+                $("#Data").addClass("active")
+                $("#Process").removeClass("active")
+                $("#Share").removeClass("active")
             }
         });
     }
