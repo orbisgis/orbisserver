@@ -102,20 +102,19 @@
             <td>
                 <div class="progress">
 
-                    <div th:if="${job.status.equalsIgnoreCase('ACCEPTED')}" class="progress-bar progress-bar-info" role="progressbar" aria-valuemin="0" aria-valuenow="10"
-                         aria-valuemax="100" th:style="'width: ' + ${job.percentCompleted} + '%;'">
+                    <div th:if="${job.status.equalsIgnoreCase('ACCEPTED')}" class="progress-bar progress-bar-default" role="progressbar" aria-valuemin="0" aria-valuenow="10"
+                         aria-valuemax="100" style="width: 100%;">
                     </div>
                     <div th:if="${job.status.equalsIgnoreCase('RUNNING')}" class="progress-bar progress-bar-info" role="progressbar" aria-valuemin="0" aria-valuenow="10"
                          aria-valuemax="100" th:style="'width: ' + ${job.percentCompleted} + '%;'">
                         <span th:text="${job.percentCompleted} + '%'"></span>
                     </div>
                     <div th:if="${job.status.equalsIgnoreCase('FAILED')}" class="progress-bar  progress-bar-danger" role="progressbar" aria-valuemin="0" aria-valuenow="10"
-                         aria-valuemax="100" th:style="'width: ' + ${job.percentCompleted} + '%;'">
-                        <span th:text="${job.percentCompleted} + '%'"></span>
+                         aria-valuemax="100" style="width: 100%;">
                     </div>
                     <div th:if="${job.status.equalsIgnoreCase('SUCCEEDED')}" class="progress-bar  progress-bar-success" role="progressbar" aria-valuemin="0" aria-valuenow="100"
                          aria-valuemax="100" style="width: 100%;">
-                        <span th:text="${job.percentCompleted} + '%'"></span>
+                        <span>100%</span>
                     </div>
                 </div>
             </td>
