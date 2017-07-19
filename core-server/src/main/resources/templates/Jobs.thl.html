@@ -79,7 +79,7 @@
         }
     }
 </style>
-<script th:if="${nextRefresh}>=0" th:text="'setTimeout(showJobs, ' + ${nextRefresh} + ')'"></script>
+<script th:if="${nextRefresh}>=0" th:text="'setTimeout(jobs, ' + ${nextRefresh} + ')'"></script>
 <table class="table">
     <thead>
         <tr>
@@ -93,22 +93,33 @@
         <tr class="table" th:each="job : ${jobList}">
 
             <td><p th:text="${job.processTitle}"/></td>
-            <td><p th:text="${job.status}"/></td>
-            <td><button >...</button></td>
+            <td>
+                <p th:if="${job.status.equalsIgnoreCase('ACCEPTED')}" class="label label-primary" th:text="${job.status}"/>
+                <p th:if="${job.status.equalsIgnoreCase('RUNNING')}" class="label label-info" th:text="${job.status}"/>
+                <p th:if="${job.status.equalsIgnoreCase('FAILED')}" class="label label-danger" th:text="${job.status}"/>
+                <p th:if="${job.status.equalsIgnoreCase('SUCCEEDED')}" class="label label-success" th:text="${job.status}"/>
+            </td>
+            <td>
+                <div class="progress">
+
+                    <div th:if="${job.status.equalsIgnoreCase('ACCEPTED')}" class="progress-bar progress-bar-info" role="progressbar" aria-valuemin="0" aria-valuenow="10"
+                         aria-valuemax="100" th:style="'width: ' + ${job.percentCompleted} + '%;'">
+                    </div>
+                    <div th:if="${job.status.equalsIgnoreCase('RUNNING')}" class="progress-bar progress-bar-info" role="progressbar" aria-valuemin="0" aria-valuenow="10"
+                         aria-valuemax="100" th:style="'width: ' + ${job.percentCompleted} + '%;'">
+                        <span th:text="${job.percentCompleted} + '%'"></span>
+                    </div>
+                    <div th:if="${job.status.equalsIgnoreCase('FAILED')}" class="progress-bar  progress-bar-danger" role="progressbar" aria-valuemin="0" aria-valuenow="10"
+                         aria-valuemax="100" th:style="'width: ' + ${job.percentCompleted} + '%;'">
+                        <span th:text="${job.percentCompleted} + '%'"></span>
+                    </div>
+                    <div th:if="${job.status.equalsIgnoreCase('SUCCEEDED')}" class="progress-bar  progress-bar-success" role="progressbar" aria-valuemin="0" aria-valuenow="100"
+                         aria-valuemax="100" style="width: 100%;">
+                        <span th:text="${job.percentCompleted} + '%'"></span>
+                    </div>
+                </div>
+            </td>
             <td><p>24h00</p></td>
-        </tr>
-        <tr>
-            <div class="progress">
-                <div th:if="${job.status.equalsIgnoreCase('RUNNING')}" class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuenow="10"
-                     aria-valuemax="100" th:style="'width: ' + ${job.percent} + '%;'">
-                </div>
-                <div th:if="${job.status.equalsIgnoreCase('FAILED')}" class="progress-bar  progress-bar-danger" role="progressbar" aria-valuemin="0" aria-valuenow="10"
-                     aria-valuemax="100" th:style="'width: ' + ${job.percent} + '%;'">
-                </div>
-                <div th:if="${job.status.equalsIgnoreCase('SUCCEEDED')}" class="progress-bar  progress-bar-success" role="progressbar" aria-valuemin="0" aria-valuenow="100"
-                     aria-valuemax="100" style="width: 100%;">
-                </div>
-            </div>
         </tr>
     </tbody>
 </table>
