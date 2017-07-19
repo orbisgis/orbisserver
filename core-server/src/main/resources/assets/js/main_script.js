@@ -130,116 +130,115 @@ function signIn(){
 
 //** leftnav Script */
 function jobs(){
-        $.ajax({ type: "GET",
-            url: "http://localhost:8080/jobs",
-            data: {
-                "token": readCookie("token")
-            },
-            async: false,
-            success : function(text)
-            {
-                $( "#list" ).html("");
-                $('#content').addClass('col-xs-12 col-sm-11 col-sm-pull-0');
-                $( "#content" ).html(String(text));
-            },
-            error : function(text)
-            {
-                $( "#content" ).html(String(text));
+    $.ajax({ type: "GET",
+        url: "http://localhost:8080/jobs",
+        data: {
+            "token": readCookie("token")
+        },
+        async: false,
+        success : function(text)
+        {
+            $( "#list" ).html("");
+            $('#content').addClass('col-xs-12 col-sm-11 col-sm-pull-0');
+            $( "#content" ).html(String(text));
+        },
+        error : function(text)
+        {
+            $( "#content" ).html(String(text));
+        }
+    });
+}
+
+function data(){
+    $.ajax({ type: "GET",
+        url: "http://localhost:8080/data",
+        data: {
+            "token": readCookie("token")
+        },
+        async: false,
+        success : function(text)
+        {
+            $('#left-nav').addClass('slide-in');
+            $('#content').addClass('col-xs-12 col-sm-11 col-sm-pull-0');
+            $("#left-nav-content").html(String(text));
+            $("#Data").addClass("active")
+            $("#Process").removeClass("active")
+            $("#Share").removeClass("active")
+        },
+        error : function(text)
+        {
+            $('#left-nav').addClass('slide-in');
+            $( "#left-nav-content" ).html(String("Error"));
+            $("#Data").addClass("active")
+            $("#Process").removeClass("active")
+            $("#Share").removeClass("active")
+        }
+    });
+}
+
+
+function importData(){
+    $.ajax({ type: "GET",
+        url: "http://localhost:8080/data/import",
+        data: {
+            "token": readCookie("token")
+        },
+        async: false,
+        success : function(text)
+        {
+            if($('#dropdown-lvl3').attr('class')=="panel-collapse collapse in"){
+                $('#dropdown-lvl3').removeClass('in');
             }
-        });
-    }
+            $('#left-nav').addClass('slide-in');
+            $( '#import-list' ).html(String(text));
+        },
+        error : function(text)
+        {
+            $( '#content' ).html(String(text));
+        }
+    });
+}
 
-    function data(){
-        $.ajax({ type: "GET",
-            url: "http://localhost:8080/data",
-            data: {
-                "token": readCookie("token")
-            },
-            async: false,
-            success : function(text)
-            {
-
-                $('#left-nav').addClass('slide-in');
-                $('#content').addClass('col-xs-12 col-sm-11 col-sm-pull-0');
-                $("#left-nav-content").html(String(text));
-                $("#Data").addClass("active")
-                $("#Process").removeClass("active")
-                $("#Share").removeClass("active")
-            },
-            error : function(text)
-            {
-                $('#left-nav').addClass('slide-in');
-                $( "#left-nav-content" ).html(String("Error"));
-                $("#Data").addClass("active")
-                $("#Process").removeClass("active")
-                $("#Share").removeClass("active")
+function exportData(){
+    $.ajax({ type: "GET",
+        url: "http://localhost:8080/data/export",
+        data: {
+            "token": readCookie("token")
+        },
+        async: false,
+        success : function(text)
+        {
+            if($('#dropdown-lvl2').attr('class')=="panel-collapse collapse in"){
+                $('#dropdown-lvl2').removeClass('in');
             }
-        });
-    }
+            $('#left-nav').addClass('slide-in');
+            $( '#export-list').html(String(text));
+        },
+        error : function(text)
+        {
+            $( '#export-list'  ).html(String(text));
+        }
+    });
+}
 
-
-    function importData(){
-        $.ajax({ type: "GET",
-            url: "http://localhost:8080/data/import",
-            data: {
-                "token": readCookie("token")
-            },
-            async: false,
-            success : function(text)
-            {
-                if($('#dropdown-lvl3').attr('class')=="panel-collapse collapse in"){
-                    $('#dropdown-lvl3').removeClass('in');
-                }
-                $('#left-nav').addClass('slide-in');
-                $( '#import-list' ).html(String(text));
-            },
-            error : function(text)
-            {
-                $( '#content' ).html(String(text));
-            }
-        });
-    }
-
-    function exportData(){
-        $.ajax({ type: "GET",
-            url: "http://localhost:8080/data/export",
-            data: {
-                "token": readCookie("token")
-            },
-            async: false,
-            success : function(text)
-            {
-                if($('#dropdown-lvl2').attr('class')=="panel-collapse collapse in"){
-                    $('#dropdown-lvl2').removeClass('in');
-                }
-                $('#left-nav').addClass('slide-in');
-                $( '#export-list').html(String(text));
-            },
-            error : function(text)
-            {
-                $( '#export-list'  ).html(String(text));
-            }
-        });
-    }
-
-    function listProcess(){
-        $.ajax({ type: "GET",
-            data: {
-                "token": readCookie("token")
-            },
-            url: "http://localhost:8080/process/processList",
-            async: false,
-            success : function(text)
-            {
-                $('#left-nav').addClass('slide-in');
-                $( '#process-list' ).html(String(text));
-            },
-            error : function(text)
-            {
-                $( '#process-list' ).html(String("Error"));
-            }
-        });
-    }
+function listProcess(){
+    $.ajax({ type: "GET",
+        data: {
+            "token": readCookie("token")
+        },
+        url: "http://localhost:8080/process/processList",
+        async: false,
+        success : function(text)
+        {
+            $('#left-nav').addClass('slide-in');
+            $( '#process-list' ).html(String(text));
+        },
+        error : function(text)
+        {
+            $( '#process-list' ).html(String("Error"));
+        }
+    });
+}
 
 
 /** Login modal scripts */

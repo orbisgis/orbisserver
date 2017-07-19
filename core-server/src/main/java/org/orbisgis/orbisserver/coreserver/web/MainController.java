@@ -280,23 +280,8 @@ public class MainController extends DefaultController {
     }
 
     @Route(method = HttpMethod.GET, uri = "/data")
-    public Result data(@Parameter("token") String token) {
-        for(Session session : sessionList) {
-            if (session.getToken().toString().equals(token)) {
-                List<Operation> opList = session.getOperationList();
-                List<Operation> importList = new ArrayList<Operation>();
-
-                for(Operation op : opList){
-                    for(String keyword :  op.getKeyWord()){
-                        if(keyword.equals("Import")){
-                            importList.add(op);
-                        }
-                    }
-                }
-                return ok(render(data, "processList", importList));
-            }
-        }
-        return badRequest(render(data));
+    public Result data() {
+        return ok(render(data));
     }
 
     @Route(method = HttpMethod.GET, uri = "/data/import")
