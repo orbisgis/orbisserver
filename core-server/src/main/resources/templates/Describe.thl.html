@@ -58,14 +58,14 @@
     #hidden{
         border-bottom: solid 2px;
         border-color : #999;
-        margin-bottom:10px
+        margin-bottom:20px
     }
     #rawdata{
         margin-left:15px;
         padding-top:10px;
         padding-bottom:30px;
     }
-    #btn-submit{
+    #submitBtn{
         margin-top:20px;
     }
     #enumeration{
@@ -76,12 +76,10 @@
         border-color : #999;
         padding-top:30px;
         padding-bottom:10px;
-        margin-top:20px;
     }
 
     .elements{
-        padding-top:10px;
-        padding-bottom:10px;
+        padding-bottom:15px;
     }
 
 </style>
@@ -100,19 +98,18 @@
         <div id="rawdata" class="col-xs-12 col-sm-12 col-md-12 col-lg-12 " th:each="input : ${operation.inputList}"
              th:if="${input.name.equalsIgnoreCase('RawData')}">
             <div class="row">
-                <div id="btn-parcourir" class="col-xs-12 col-sm-10 col-md-8 col-lg-6 elements input-group">
-                    <div class="input-group-btn">
-                          <span  id="btnParc" class="btn btn-default">Parcourir&hellip;
-                              <input type="file" style="display: none;" multiple="true"/>
-                          </span>
-                    </div>
-                    <input id="in-parcourir" type="text" class="form-control" readonly="true" th:placeholder="${input.title}"/>
+                <div class="col-xs-12 col-sm-10 col-md-8 col-lg-6 elements input-group">
+                    <label class="input-group-btn" onchange="javascript:nameFile()">
+                        <span class="btn btn-default">
+                            Browse&hellip;
+                            <input id="file-load" th:name="name" type="file" style="display: none;" multiple="true"/>
+                        </span>
+                    </label>
+                    <input id="in-browse" type="text" th:name="${input.id}" class="form-control" readonly="true"
+                           th:placeholder="${input.title}"/>
                 </div>
             </div>
         </div>
-
-
-        <!--GeometryData-->
         <div id="geometrydata" class="col-xs-12 col-sm-6 col-md-6 col-lg-4 elements" th:each="input : ${operation.inputList}"
              th:if="${input.name.equalsIgnoreCase('GeometryData')}">
             <div>
@@ -122,67 +119,68 @@
         </div>
 
         <!--Password-->
-        <div id="password" class="col-xs-12 col-sm-6 col-md-6 col-lg-4 elements" th:each="input : ${operation.inputList}"
+        <div id="password" class="col-xs-12 col-sm-6 col-md-6 col-lg-4 elements form-group"
+             th:each="input : ${operation.inputList}"
              th:if="${input.name.equalsIgnoreCase('Password')}">
             <span th:text="${input.title}">title</span>
-            <input type="password" th:name="${input.id}" value="Password" />
+            <input class="form-control" type="password" th:name="${input.id}" value="Password" />
         </div>
 
         <!--LiteralDataType:String-->
-        <div id="string" class="col-xs-12 col-sm-6 col-md-6 col-lg-4 elements form-group" th:each="input : ${operation.inputList}"
+        <div id="string" class="col-xs-12 col-sm-6 col-md-6 col-lg-4 elements form-group"
+             th:each="input : ${operation.inputList}"
              th:if="${input.name.equalsIgnoreCase('LiteralDataType') and input.type.equalsIgnoreCase('String')}">
-                <span th:text="${input.title}">title</span>
-                <input type="text" class="form-control" th:name="${input.id}" value="String value" />
+            <span th:text="${input.title}">title</span>
+            <input type="text" class="form-control" th:name="${input.id}" value="String value" />
         </div>
 
         <!--LiteralDataType:Number-->
         <div id="number" class="col-xs-12 col-sm-6 col-md-6 col-lg-4 elements form-group "
-             th:each="input : ${operation.inputList}" th:if="${input.name.equalsIgnoreCase('LiteralDataType') and input.type.equalsIgnoreCase('Number')}">
-                <span th:text="${input.title}">title</span>
-                <input type="number" th:step="${input.attributes.get('spacing')}" th:name="${input.id}"
-                       th:min="${input.attributes.get('min')}" th:max="${input.attributes.get('max')}"
-                       th:value="${input.attributes.get('value')}" />
+             th:each="input : ${operation.inputList}"
+             th:if="${input.name.equalsIgnoreCase('LiteralDataType') and input.type.equalsIgnoreCase('Number')}">
+            <span th:text="${input.title}">title</span>
+            <input type="number" class="form-control" th:step="${input.attributes.get('spacing')}" th:name="${input.id}"
+                   th:min="${input.attributes.get('min')}" th:max="${input.attributes.get('max')}"
+                   th:value="${input.attributes.get('value')}" />
         </div>
 
         <!--JDBCTable-->
-        <div id="jdbctable" class="col-xs-12 col-sm-6 col-md-6 col-lg-4 elements" th:each="input : ${operation.inputList}"
-             th:if="${input.name.equalsIgnoreCase('JDBCTable')}">
+        <div id="jdbctable" class="col-xs-12 col-sm-6 col-md-6 col-lg-4 elements form-group"
+             th:each="input : ${operation.inputList}" th:if="${input.name.equalsIgnoreCase('JDBCTable')}">
             <span th:text="${input.title}">title</span>
-            <input type="text" th:name="${input.id}" value="Table name" />
+            <input class="form-control" type="text" th:name="${input.id}" value="Table name" />
         </div>
 
         <!--JDBCColumn-->
-        <div id="jdbccolumn" class="col-xs-12 col-sm-6 col-md-6 col-lg-4 elements" th:each="input : ${operation.inputList}"
-             th:if="${input.name.equalsIgnoreCase('JDBCColumn')}">
+        <div id="jdbccolumn" class="col-xs-12 col-sm-6 col-md-6 col-lg-4 elements form-group"
+             th:each="input : ${operation.inputList}" th:if="${input.name.equalsIgnoreCase('JDBCColumn')}">
             <span th:text="${input.title}">title</span>
-            <input type="text" th:name="${input.id}" value="Table column"/>
+            <input class="form-control" type="text" th:name="${input.id}" value="Table column"/>
         </div>
 
         <!--JDBCValue-->
-        <div id="jdbcvalue" class="col-xs-12 col-sm-6 col-md-6 col-lg-4 elements" th:each="input : ${operation.inputList}"
-             th:if="${input.name.equalsIgnoreCase('JDBCValue')}">
+        <div id="jdbcvalue" class="col-xs-12 col-sm-6 col-md-6 col-lg-4 elements form-group"
+             th:each="input : ${operation.inputList}" th:if="${input.name.equalsIgnoreCase('JDBCValue')}">
             <span th:text="${input.title}">title</span>
-            <input type="text" th:name="${input.id}" value="Table value" />
+            <input class="form-control" type="text" th:name="${input.id}" value="Table value" />
         </div>
 
         <!--Enumertion-->
-        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4" id="enumeration">
-            <div class="row">
-                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 elements" th:each="input : ${operation.inputList}"
-                     th:if="${input.name.equalsIgnoreCase('Enumeration')}">
-                    <select  class="selectpicker" th:multiple="${input.attributes.get('multiSelection')}" th:name="${input.id}">
-                        <option th:each="value : ${input.attributes.get('valueList')}" th:value="${value}" th:text="${value}">
-                        </option>
-                    </select>
-                </div>
-            </div>
+        <div id="enumeration" class="col-xs-12 col-sm-6 col-md-6 col-md-6 col-lg-4 form-group elements"
+             th:each="input : ${operation.inputList}" th:if="${input.name.equalsIgnoreCase('Enumeration')}">
+            <select  class="selectpicker form-control" th:multiple="${input.attributes.get('multiSelection')}"
+                     th:name="${input.id}">
+                <option th:each="value : ${input.attributes.get('valueList')}" th:value="${value}" th:text="${value}">
+                </option>
+            </select>
         </div>
         <!--/Enumertion-->
 
         <!--CheckBoxs-->
         <div class=" col-xs-12 col-sm-12 elements " id="checkBoxs">
             <div class="row">
-                <div class="col-xs-6 col-sm-4 form-check form-check-inline" th:each="input : ${operation.inputList}"
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-4 form-check form-check-inline"
+                     th:each="input : ${operation.inputList}"
                      th:if="${input.name.equalsIgnoreCase('LiteralDataType') and input.type.equalsIgnoreCase('Boolean')}">
                     <label class="form-check-label">
                         <input class="form-check-input" type="checkbox" id="inlineCheckbox1" th:text="${input.title}"/>
@@ -191,8 +189,11 @@
             </div>
         </div>
 
-        <!--Button-->
-            <button id="btn-submit" type="button" class="btn btn-primary col-sm-4 col-sm-push-4">Submit</button>
+        <!--Submit-->
+            <input id="submitBtn" class="btn btn-primary col-sm-4 col-sm-push-4" type="submit" value="Submit">
+                <span class="col-sm-4" id="submitText" hidden="true"> Sending data
+                    <i class="glyphicon glyphicon-refresh gly-spin"></i></span>
+            </input>
     </form>
 </div>
 
@@ -206,10 +207,10 @@
                 type: 'POST',
                 data: $(this).serialize(),
                 beforeSend: function() {
-                    $("#submitText").html(' Sending data <i class="glyphicon glyphicon-refresh gly-spin"></i>');
+                    $("#submitText").toggle();
                 },
                 success: function(data) {
-                    jobs()
+                    jobs();
                 },
                 error : function(text)
                 {
@@ -218,5 +219,10 @@
             });
         });
     });
+
+    function nameFile(){
+        var title = $('#file-load').val().replace(/\\/g, '/').replace(/.*\//, '');
+        $('#in-browse').val(title);
+    }
 // ]]>
 </script>
