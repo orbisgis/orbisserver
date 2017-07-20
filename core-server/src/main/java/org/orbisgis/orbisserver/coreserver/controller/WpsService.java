@@ -48,7 +48,7 @@ import org.orbisgis.orbisserver.coreserver.model.StatusInfo;
 import org.orbiswps.scripts.WpsScriptPlugin;
 import org.orbiswps.server.WpsServer;
 import org.orbiswps.server.WpsServerImpl;
-import org.orbiswps.server.model.JaxbContainer;
+import org.orbiswps.server.model.*;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBElement;
@@ -291,49 +291,92 @@ public class WpsService implements Service {
                                 String name = idt.getDataDescription().getValue().getClass().getSimpleName();
                                 String type = null;
                                 Map<String, Object> attributeMap = new HashMap<>();
-                                if(name.equalsIgnoreCase("LiteralDataType")){
-                                    LiteralDataType literalData = (LiteralDataType)idt.getDataDescription().getValue();
-                                    for(LiteralDataType.LiteralDataDomain ldd : literalData.getLiteralDataDomain()) {
-                                        if(ldd.isDefault()) {
-                                            String dataType = ldd.getDataType().getValue();
-                                            if (dataType.equalsIgnoreCase("string")) {
-                                                type = "string";
-                                            }
-                                            if (dataType.equalsIgnoreCase("boolean")) {
-                                                type = "boolean";
-                                                attributeMap.put("value", "false");
-                                                if(ldd.isSetDefaultValue()) {
-                                                    attributeMap.put("value", ldd.getDefaultValue().getValue());
+                                DataDescriptionType dataDescriptionType = idt.getDataDescription().getValue();
+                                if(dataDescriptionType instanceof LiteralDataType){
+                                    if(name.equalsIgnoreCase("LiteralDataType")) {
+                                        LiteralDataType literalData = (LiteralDataType) idt.getDataDescription().getValue();
+                                        for (LiteralDataType.LiteralDataDomain ldd : literalData.getLiteralDataDomain()) {
+                                            if (ldd.isDefault()) {
+                                                String dataType = ldd.getDataType().getValue();
+                                                if (dataType.equalsIgnoreCase("string")) {
+                                                    type = "string";
                                                 }
-                                            }
-                                            if (dataType.equalsIgnoreCase("double") || dataType.equalsIgnoreCase("integer") ||
-                                                    dataType.equalsIgnoreCase("float") || dataType.equalsIgnoreCase("short") ||
-                                                    dataType.equalsIgnoreCase("byte") || dataType.equalsIgnoreCase("unsigned_byte") ||
-                                                    dataType.equalsIgnoreCase("long")) {
-                                                if(dataType.equalsIgnoreCase("double") || dataType.equalsIgnoreCase("float")) {
-                                                    attributeMap.put("spacing", "0.1");
+                                                if (dataType.equalsIgnoreCase("boolean")) {
+                                                    type = "boolean";
+                                                    attributeMap.put("value", "false");
+                                                    if (ldd.isSetDefaultValue()) {
+                                                        attributeMap.put("value", ldd.getDefaultValue().getValue());
+                                                    }
                                                 }
-                                                type = "number";
-                                                if(ldd.isSetDefaultValue()) {
-                                                    attributeMap.put("value", ldd.getDefaultValue().getValue());
-                                                }
-                                                if(ldd.isSetAllowedValues()) {
-                                                    for(Object valueOrRange : ldd.getAllowedValues().getValueOrRange()) {
-                                                        if(valueOrRange instanceof ValueType) {
-                                                            ValueType value = (ValueType)valueOrRange;
-                                                            attributeMap.put("value", value.getValue());
-                                                        }
-                                                        if(valueOrRange instanceof RangeType) {
-                                                            RangeType range = (RangeType)valueOrRange;
-                                                            attributeMap.put("min", range.getMinimumValue().getValue());
-                                                            attributeMap.put("max", range.getMaximumValue().getValue());
-                                                            attributeMap.put("spacing", range.getSpacing().getValue());
+                                                if (dataType.equalsIgnoreCase("double") || dataType.equalsIgnoreCase("integer") ||
+                                                        dataType.equalsIgnoreCase("float") || dataType.equalsIgnoreCase("short") ||
+                                                        dataType.equalsIgnoreCase("byte") || dataType.equalsIgnoreCase("unsigned_byte") ||
+                                                        dataType.equalsIgnoreCase("long")) {
+                                                    if (dataType.equalsIgnoreCase("double") || dataType.equalsIgnoreCase("float")) {
+                                                        attributeMap.put("spacing", "0.1");
+                                                    }
+                                                    type = "number";
+                                                    if (ldd.isSetDefaultValue()) {
+                                                        attributeMap.put("value", ldd.getDefaultValue().getValue());
+                                                    }
+                                                    if (ldd.isSetAllowedValues()) {
+                                                        for (Object valueOrRange : ldd.getAllowedValues().getValueOrRange()) {
+                                                            if (valueOrRange instanceof ValueType) {
+                                                                ValueType value = (ValueType) valueOrRange;
+                                                                attributeMap.put("value", value.getValue());
+                                                            }
+                                                            if (valueOrRange instanceof RangeType) {
+                                                                RangeType range = (RangeType) valueOrRange;
+                                                                attributeMap.put("min", range.getMinimumValue().getValue());
+                                                                attributeMap.put("max", range.getMaximumValue().getValue());
+                                                                attributeMap.put("spacing", range.getSpacing().getValue());
+                                                            }
                                                         }
                                                     }
                                                 }
                                             }
                                         }
                                     }
+                                }
+                                if(dataDescriptionType instanceof JDBCTable){
+                                    attributeMap.put("value", "Table name");
+                                    JDBCTable table = (JDBCTable)dataDescriptionType;
+                                    if(table.getDefaultValue() != null && !table.getDefaultValue().isEmpty()){
+                                        attributeMap.put("value", table.getDefaultValue());
+                                    }
+                                }
+                                if(dataDescriptionType instanceof JDBCColumn){
+                                    attributeMap.put("value", "Columns name");
+                                    JDBCColumn column = (JDBCColumn)dataDescriptionType;
+                                    if(column.getDefaultValues() != null && column.getDefaultValues().length>0){
+                                        StringBuilder str = new StringBuilder();
+                                        for(String val : column.getDefaultValues()){
+                                            if(str.length() > 0){
+                                                str.append(",");
+                                            }
+                                            str.append(val);
+                                        }
+                                        attributeMap.put("value", str.toString());
+                                    }
+                                }
+                                if(dataDescriptionType instanceof JDBCValue){
+                                    attributeMap.put("value", "Values name");
+                                    JDBCValue value = (JDBCValue)dataDescriptionType;
+                                    if(value.getDefaultValues() != null && value.getDefaultValues().length>0){
+                                        StringBuilder str = new StringBuilder();
+                                        for(String val : value.getDefaultValues()){
+                                            if(str.length() > 0){
+                                                str.append(",");
+                                            }
+                                            str.append(val);
+                                        }
+                                        attributeMap.put("value", str.toString());
+                                    }
+                                }
+                                if(dataDescriptionType instanceof Enumeration){
+                                    Enumeration enumeration = (Enumeration)dataDescriptionType;
+                                    attributeMap.put("multiSelection", enumeration.isMultiSelection());
+                                    attributeMap.put("valueList", enumeration.getValues());
                                 }
                                 String identifier = idt.getIdentifier().getValue();
                                 Input input = new Input(title, name, identifier, type, attributeMap);
