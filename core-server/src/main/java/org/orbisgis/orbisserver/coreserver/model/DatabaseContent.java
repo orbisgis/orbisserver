@@ -36,37 +36,27 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
+package org.orbisgis.orbisserver.coreserver.model;
 
-html,body{height:100%;}
+import java.util.ArrayList;
+import java.util.List;
 
-body > div:not(#navbar) {
-    height :100%;
-}
+/**
+ * @author Sylvain PALOMINOS
+ */
+public class DatabaseContent {
 
-body .container-fluid {
-    height :100%;
-}
+    private List<DatabaseTable> tableList;
 
-#main-body {
-    margin-top: 50px;
-    margin-left: 310px;
-    height :100%;
-}
+    public DatabaseContent(){
+        this.tableList = new ArrayList<>();
+    }
 
-#main-body > .row {
-    height :100%;
-}
+    public void addTable(DatabaseTable dbTable) {
+        tableList.add(dbTable);
+    }
 
-#content{
-    height :100%;
-}
-
-#content_top {
-  overflow-y: auto;
-  margin-bottom: 10px;
-}
-
-#content_bottom {
-  overflow-y: auto;
-  margin-top: 10px;
+    public List<DatabaseTable> getTableList(){
+        return tableList;
+    }
 }

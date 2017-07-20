@@ -37,5 +37,5 @@
 - info_at_ orbisgis.org
 -->
 <li th:each="operation : ${processList}">
-    <a th:text="${operation.title}" th:onclick="'javascript:showProcess(\'' + ${operation.id} + '\');'"></a>
+    <a th:text="${operation.title}" th:onclick="'javascript:showImport(\'' + ${operation.id} + '\');'"></a>
 </li>

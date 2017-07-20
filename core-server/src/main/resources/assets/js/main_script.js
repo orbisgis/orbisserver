@@ -93,6 +93,44 @@ function showProcess(id){
     });
 }
 
+function showImport(id){
+    $.ajax({ type: "GET",
+        url: "http://localhost:8080/describeProcess",
+        data: {
+            "id": id,
+            "token": readCookie("token")
+        },
+        async: false,
+        success : function(text)
+        {
+            $( "#content_top" ).html(String(text));
+        },
+        error : function(text)
+        {
+            $( "#content_top" ).html(String(text));
+        }
+    });
+}
+
+function showExport(id){
+    $.ajax({ type: "GET",
+        url: "http://localhost:8080/describeProcess",
+        data: {
+            "id": id,
+            "token": readCookie("token")
+        },
+        async: false,
+        success : function(text)
+        {
+            $( "#content_top" ).html(String(text));
+        },
+        error : function(text)
+        {
+            $( "#content_top" ).html(String(text));
+        }
+    });
+}
+
 function showUser(){
     $.ajax({
         type: "GET",
@@ -159,7 +197,11 @@ function data(){
         success : function(text)
         {
             $('#left-nav').addClass('slide-in');
+            $('#content').html('<div id="content_top"></div><div id="content_bottom"></div>');
             $('#content').addClass('col-xs-12 col-sm-11 col-sm-pull-0');
+            $('#content_top').css('height', '100%');
+            $('#content_bottom').css('height', '0%');
+
             $("#left-nav-content").html(String(text));
             $("#Data").addClass("active")
             $("#Process").removeClass("active")
@@ -186,7 +228,7 @@ function importData(){
         async: false,
         success : function(text)
         {
-            if($('#dropdown-lvl3').attr('class')=="panel-collapse collapse in"){
+            if($('#dropdown-lvl3').addClass("panel-collapse collapse in")){
                 $('#dropdown-lvl3').removeClass('in');
             }
             $('#left-nav').addClass('slide-in');
@@ -208,7 +250,7 @@ function exportData(){
         async: false,
         success : function(text)
         {
-            if($('#dropdown-lvl2').attr('class')=="panel-collapse collapse in"){
+            if($('#dropdown-lvl2').addClass("panel-collapse collapse in")){
                 $('#dropdown-lvl2').removeClass('in');
             }
             $('#left-nav').addClass('slide-in');
@@ -357,6 +399,27 @@ function log_out(){
         {
             $( "#user_ul" ).html(String("Error"));
             showUser();
+        }
+    });
+}
+
+function toggleDatabaseView(){
+    $.ajax({
+        type: "GET",
+        data: {
+            "token": readCookie("token")
+        },
+        url: "http://localhost:8080/data/database",
+        async: false,
+        success : function(text)
+        {
+            $('#content_top').css('height', '50%');
+            $('#content_bottom').css('height', '50%');
+            $( "#content_bottom" ).html(String(text));
+        },
+        error : function(text)
+        {
+            $( "#user_ul" ).html(String("Error"));
         }
     });
 }

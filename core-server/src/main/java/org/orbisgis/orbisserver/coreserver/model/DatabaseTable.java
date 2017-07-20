@@ -36,37 +36,35 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
+package org.orbisgis.orbisserver.coreserver.model;
 
-html,body{height:100%;}
+import org.h2gis.utilities.TableLocation;
 
-body > div:not(#navbar) {
-    height :100%;
-}
+import java.util.ArrayList;
+import java.util.List;
 
-body .container-fluid {
-    height :100%;
-}
+/**
+ * @author Sylvain PALOMINOS
+ */
+public class DatabaseTable {
 
-#main-body {
-    margin-top: 50px;
-    margin-left: 310px;
-    height :100%;
-}
+    private TableLocation tableLocation;
+    private List<DatabaseField> fieldList;
 
-#main-body > .row {
-    height :100%;
-}
+    public DatabaseTable(TableLocation tableLocation){
+        this.tableLocation = tableLocation;
+        this.fieldList = new ArrayList();
+    }
 
-#content{
-    height :100%;
-}
+    public String getName() {
+        return tableLocation.getTable();
+    }
 
-#content_top {
-  overflow-y: auto;
-  margin-bottom: 10px;
-}
+    public void addField(String columnLabel, String columnTypeName) {
+        fieldList.add(new DatabaseField(columnLabel, columnTypeName));
+    }
 
-#content_bottom {
-  overflow-y: auto;
-  margin-top: 10px;
+    public List<DatabaseField> getFieldList(){
+        return fieldList;
+    }
 }
