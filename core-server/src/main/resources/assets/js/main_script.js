@@ -57,6 +57,7 @@ function process(){
         success : function(text)
         {
             $('#left-nav').addClass('slide-in');
+            $('#content').removeClass('col-sm-pull-1');
             $('#content').addClass('col-xs-12 col-sm-11 col-sm-pull-0');
             $( "#left-nav-content" ).html(String(text));
         },
@@ -79,6 +80,9 @@ function showProcess(id){
         success : function(text)
         {
             $( "#content" ).html(String(text));
+            $('#content').removeClass('col-sm-pull-1');
+            $('#content').removeClass('col-sm-11');
+            $('#content').addClass('col-sm-10 col-sm-push-1');
         },
         error : function(text)
         {
@@ -133,7 +137,7 @@ function jobs(){
             success : function(text)
             {
                 $( "#list" ).html("");
-                $('#content').addClass('col-xs-12 col-sm-11 col-sm-pull-0');
+                $('#content').addClass('col-sm-pull-0');
                 $( "#content" ).html(String(text));
             },
             error : function(text)
@@ -154,7 +158,8 @@ function jobs(){
             {
 
                 $('#left-nav').addClass('slide-in');
-                $('#content').addClass('col-xs-12 col-sm-11 col-sm-pull-0');
+                $('#content').removeClass('col-sm-pull-1');
+                $('#content').addClass('col-sm-pull-0');
                 $( "#left-nav-content" ).html(String(text));
             },
             error : function(text)
