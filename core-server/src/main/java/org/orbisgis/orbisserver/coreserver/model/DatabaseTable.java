@@ -36,77 +36,35 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
+package org.orbisgis.orbisserver.coreserver.model;
 
-html,body{height:100%;}
+import org.h2gis.utilities.TableLocation;
 
-body .row {
-    margin-left: 0px;
-    margin-right: 0px;
-}
-body .container-fluid {
-    padding-left: 0px;
-    padding-right: 0px;
-}
+import java.util.ArrayList;
+import java.util.List;
 
-body > div:not(#navbar) {
-    height :100%;
-}
+/**
+ * @author Sylvain PALOMINOS
+ */
+public class DatabaseTable {
 
-body .container-fluid {
-    height :100%;
-}
+    private TableLocation tableLocation;
+    private List<DatabaseField> fieldList;
 
-#user_icon {
-    margin-right: 15px;
-}
+    public DatabaseTable(TableLocation tableLocation){
+        this.tableLocation = tableLocation;
+        this.fieldList = new ArrayList();
+    }
 
-#log_in{
-    margin-right: 15px;
-}
+    public String getName() {
+        return tableLocation.getTable();
+    }
 
-#main-body {
-    padding-top: 50px;
-    height :100%;
-}
+    public void addField(String columnLabel, String columnTypeName) {
+        fieldList.add(new DatabaseField(columnLabel, columnTypeName));
+    }
 
-#main-body > .row {
-    height :100%;
-}
-
-#content{
-    height :100%;
-    padding: 0px;
-}
-
-#content_top {
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-bottom: 10px;
-  top: 0px;
-}
-
-#content_bottom {
-    overflow-y: auto;
-    overflow-x: auto;
-    padding-top: 10px;
-    padding-left: 0px;
-    padding-right: 0px;
-    bottom: 0px;
-}
-
-.table {
-    margin-bottom: 0px;
-}
-
-table tr td p {
-    margin-top: 5px;
-}
-
-table thead tr td p {
-    font-weight: bold;
-    font-size: 150%;
-}
-
-table tr td:first-child {
-    font-weight: bold;
+    public List<DatabaseField> getFieldList(){
+        return fieldList;
+    }
 }

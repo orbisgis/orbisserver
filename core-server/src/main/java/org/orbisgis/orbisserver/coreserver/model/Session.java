@@ -39,14 +39,16 @@
 package org.orbisgis.orbisserver.coreserver.model;
 
 import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.orbisserver.coreserver.controller.WpsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.io.File;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -189,5 +191,36 @@ public class Session {
     /** Unique token associated to the session.*/
     public UUID getToken() {
         return token;
+    }
+
+    public DatabaseContent getDatabaseContent(){
+        DatabaseContent dbContent = new DatabaseContent();
+        try(Connection connection = ds.getConnection()) {
+            for(String tableName : JDBCUtilities.getTableNames(connection.getMetaData(), null, null, null, new String[]{"TABLE","LINKED TABLE","VIEW","EXTERNAL","UIodfsghjmodfhjgodujhfg"})){
+                DatabaseTable dbTable = new DatabaseTable(TableLocation.parse(tableName));
+                //Get the list of the columns of a table
+                ResultSet rs1 = connection.createStatement().executeQuery(String.format("select * from %s limit 1",
+                        dbTable.getName()));
+                ResultSetMetaData metaData = rs1.getMetaData();
+                //If the column isn't a geometry, add it to the map
+                for(int i=1; i<=metaData.getColumnCount(); i++){
+                    if(!metaData.getColumnTypeName(i).equalsIgnoreCase("GEOMETRY")){
+                        dbTable.addField(metaData.getColumnLabel(i), metaData.getColumnTypeName(i));
+                    }
+                }
+                //Once the non geometric columns are get, do the same with the geometric one.
+                Statement statement = connection.createStatement();
+                String query = "SELECT * FROM GEOMETRY_COLUMNS WHERE F_TABLE_NAME LIKE '" +
+                        TableLocation.parse(dbTable.getName()).getTable() + "';";
+                ResultSet rs = statement.executeQuery(query);
+                while (rs.next()) {
+                    dbTable.addField(rs.getString(4), SFSUtilities.getGeometryTypeNameFromCode(rs.getInt(6)));
+                }
+                dbContent.addTable(dbTable);
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the database information.\nCause : "+e.getMessage());
+        }
+        return dbContent;
     }
 }

@@ -39,9 +39,7 @@
 package org.orbisgis.orbisserver.coreserver.web;
 
 import org.orbisgis.orbisserver.coreserver.controller.CoreServerController;
-import org.orbisgis.orbisserver.coreserver.model.Operation;
-import org.orbisgis.orbisserver.coreserver.model.Session;
-import org.orbisgis.orbisserver.coreserver.model.StatusInfo;
+import org.orbisgis.orbisserver.coreserver.model.*;
 import org.wisdom.api.DefaultController;
 import org.wisdom.api.annotations.Controller;
 import org.wisdom.api.annotations.Parameter;
@@ -109,6 +107,9 @@ public class MainController extends DefaultController {
 
     @View("UserSettings")
     Template userSettings;
+
+    @View("DatabaseView")
+    Template databaseView;
 
     @Route(method = HttpMethod.GET, uri = "/")
     public Result home() {
@@ -280,23 +281,8 @@ public class MainController extends DefaultController {
     }
 
     @Route(method = HttpMethod.GET, uri = "/data")
-    public Result data(@Parameter("token") String token) {
-        for(Session session : sessionList) {
-            if (session.getToken().toString().equals(token)) {
-                List<Operation> opList = session.getOperationList();
-                List<Operation> importList = new ArrayList<Operation>();
-
-                for(Operation op : opList){
-                    for(String keyword :  op.getKeyWord()){
-                        if(keyword.equals("Import")){
-                            importList.add(op);
-                        }
-                    }
-                }
-                return ok(render(data, "processList", importList));
-            }
-        }
-        return badRequest(render(data));
+    public Result data() {
+        return ok(render(data));
     }
 
     @Route(method = HttpMethod.GET, uri = "/data/import")
@@ -395,6 +381,29 @@ public class MainController extends DefaultController {
         if(session != null) {
             sessionList.remove(session);
             return ok(render(userSettings, "session", session));
+        }
+        else {
+            return badRequest("Unexisting session.");
+        }
+    }
+
+    @Route(method = HttpMethod.GET, uri = "/data/database")
+    public Result database(@Parameter("token") String token) {
+        Session session = null;
+        for(Session s : sessionList){
+            if(s.getToken().toString().equals(token)){
+                session = s;
+            }
+        }
+        if(session != null) {
+            DatabaseContent dbContent = session.getDatabaseContent();
+            int maxSize = 0;
+            for(DatabaseTable dbTable : dbContent.getTableList()){
+                maxSize = Math.max(maxSize, dbTable.getFieldList().size()+1);
+            }
+            return ok(render(databaseView,
+                    "databaseContent", dbContent,
+                    "cell_width_percent", (float)(100)/maxSize));
         }
         else {
             return badRequest("Unexisting session.");

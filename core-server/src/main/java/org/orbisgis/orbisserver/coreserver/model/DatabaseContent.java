@@ -36,77 +36,27 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
+package org.orbisgis.orbisserver.coreserver.model;
 
-html,body{height:100%;}
+import java.util.ArrayList;
+import java.util.List;
 
-body .row {
-    margin-left: 0px;
-    margin-right: 0px;
-}
-body .container-fluid {
-    padding-left: 0px;
-    padding-right: 0px;
-}
+/**
+ * @author Sylvain PALOMINOS
+ */
+public class DatabaseContent {
 
-body > div:not(#navbar) {
-    height :100%;
-}
+    private List<DatabaseTable> tableList;
 
-body .container-fluid {
-    height :100%;
-}
+    public DatabaseContent(){
+        this.tableList = new ArrayList<>();
+    }
 
-#user_icon {
-    margin-right: 15px;
-}
+    public void addTable(DatabaseTable dbTable) {
+        tableList.add(dbTable);
+    }
 
-#log_in{
-    margin-right: 15px;
-}
-
-#main-body {
-    padding-top: 50px;
-    height :100%;
-}
-
-#main-body > .row {
-    height :100%;
-}
-
-#content{
-    height :100%;
-    padding: 0px;
-}
-
-#content_top {
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-bottom: 10px;
-  top: 0px;
-}
-
-#content_bottom {
-    overflow-y: auto;
-    overflow-x: auto;
-    padding-top: 10px;
-    padding-left: 0px;
-    padding-right: 0px;
-    bottom: 0px;
-}
-
-.table {
-    margin-bottom: 0px;
-}
-
-table tr td p {
-    margin-top: 5px;
-}
-
-table thead tr td p {
-    font-weight: bold;
-    font-size: 150%;
-}
-
-table tr td:first-child {
-    font-weight: bold;
+    public List<DatabaseTable> getTableList(){
+        return tableList;
+    }
 }
