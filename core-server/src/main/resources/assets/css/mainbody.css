@@ -39,6 +39,15 @@
 
 html,body{height:100%;}
 
+body .row {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+body .container-fluid {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
 body > div:not(#navbar) {
     height :100%;
 }
@@ -47,9 +56,16 @@ body .container-fluid {
     height :100%;
 }
 
+#user_icon {
+    margin-right: 15px;
+}
+
+#log_in{
+    margin-right: 15px;
+}
+
 #main-body {
-    margin-top: 50px;
-    margin-left: 310px;
+    padding-top: 50px;
     height :100%;
 }
 
@@ -59,14 +75,38 @@ body .container-fluid {
 
 #content{
     height :100%;
+    padding: 0px;
 }
 
 #content_top {
   overflow-y: auto;
-  margin-bottom: 10px;
+  overflow-x: hidden;
+  padding-bottom: 10px;
+  top: 0px;
 }
 
 #content_bottom {
-  overflow-y: auto;
-  margin-top: 10px;
+    overflow-y: auto;
+    overflow-x: auto;
+    padding-top: 10px;
+    padding-left: 0px;
+    padding-right: 0px;
+    bottom: 0px;
+}
+
+.table {
+    margin-bottom: 0px;
+}
+
+table tr td p {
+    margin-top: 5px;
+}
+
+table thead tr td p {
+    font-weight: bold;
+    font-size: 150%;
+}
+
+table tr td:first-child {
+    font-weight: bold;
 }

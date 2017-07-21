@@ -47,105 +47,212 @@
             transform: rotate(359deg);
         }
     }
+    #tilte{
+        padding-top:50px;
+    }
+    #description{
+        padding-top:20px;
+        padding-bottom:20px;
+    }
+    #hidden{
+        border-bottom: solid 2px;
+        border-color : #999;
+        margin-bottom : 20px
+    }
+    #rawdata{
+        padding-top:20px;
+    }
+    #submitBtn{
+        margin-top:10px;
+    }
+    #enumeration{
+        padding-top:20px;
+    }
+    #checkBoxs{
+        padding-top:20px;
+        padding-bottom:20px;
+    }
+
 </style>
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 th:text="${operation.title}">title</h3>
+
+<div id="titre" > <h2 th:text="${operation.title}"></h2></div>
+<div id="description"><p th:text="${operation.abstr}"></p></div>
+
+<form action="/execute" method="post" id="form">
+    <div id="hidden">
+        <input type="hidden" name="processId" th:value="${operation.id}" />
+        <input type="hidden" name="token" th:value="${session.token}" />
     </div>
-    <div class="panel-body">
-        <p th:text="${operation.abstr}">abstract</p>
+
+    <!--RawData-->
+    <div id="rawdata" class="elements form-group"
+         th:each="input : ${operation.inputList}" th:if="${input.name.equalsIgnoreCase('RawData')}">
+        <!--<div class="row">
+            <div class="col-xs-12 col-sm-10 col-md-8 col-lg-6 elements input-group">
+                <label class="input-group-btn" onchange="javascript:nameFile()">
+                    <span class="btn btn-default">
+                        Browse&hellip;
+                        <input id="file-load" th:name="name" type="file" style="display: none;" multiple="true"/>
+                    </span>
+                </label>
+                <input id="in-browse" type="text" th:name="${input.id}" class="form-control" readonly="true"
+                       th:placeholder="${input.title}"/>
+            </div>
+        </div>-->
+        <div class="row">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <span th:text="${input.title}">title</span>
+                <input class="form-control" type="text" th:name="${input.id}" value="Table name" />
+            </div>
+        </div>
     </div>
-    <form action="/execute" method="post" id="form">
-        <ul class="list-group">
-            <input type="hidden" name="processId" th:value="${operation.id}" />
-            <input type="hidden" name="token" th:value="${session.token}" />
-            <li class="list-group-item list-group-item-process" th:each="input : ${operation.inputList}">
-                <div th:if="${input.name.equalsIgnoreCase('LiteralDataType')}">
-                    <div th:if="${input.type.equalsIgnoreCase('String')}">
-                        <span th:text="${input.title}">title</span>
-                        <input type="text" th:name="${input.id}" value="String value" />
-                    </div>
-                    <div th:if="${input.type.equalsIgnoreCase('Number')}">
-                        <span th:text="${input.title}">title</span>
-                        <input type="number" th:step="${input.attributes.get('spacing')}" th:name="${input.id}"
-                               th:min="${input.attributes.get('min')}" th:max="${input.attributes.get('max')}"
-                               th:value="${input.attributes.get('value')}" />
-                    </div>
-                    <div th:if="${input.type.equalsIgnoreCase('Boolean')}">
-                        <span th:text="${input.title}">title</span><br />
-                        <input type="radio" th:name="${input.id}" value="true"
-                               th:checked="${input.attributes.get('value').equals('true')}"> true </input><br />
-                        <input type="radio" th:name="${input.id}" value="false"
-                               th:checked="${input.attributes.get('value').equals('false')}"> false </input>
-                    </div>
-                </div>
-                <div th:if="${input.name.equalsIgnoreCase('JDBCTable')}">
-                    <span th:text="${input.title}">title</span>
-                    <input type="text" th:name="${input.id}" value="Table name" />
-                </div>
-                <div th:if="${input.name.equalsIgnoreCase('JDBCColumn')}">
-                    <span th:text="${input.title}">title</span>
-                    <input type="text" th:name="${input.id}" value="Table column"></input>
-                </div>
-                <div th:if="${input.name.equalsIgnoreCase('JDBCValue')}">
-                    <span th:text="${input.title}">title</span>
-                    <input type="text" th:name="${input.id}" value="Table value" />
-                </div>
-                <div th:if="${input.name.equalsIgnoreCase('Enumeration')}">
-                    <span th:text="${input.title}">title</span><br th:if="${input.attributes.get('multiSelection')}" />
-                    <select th:multiple="${input.attributes.get('multiSelection')}" th:name="${input.id}">
-                        <option th:each="value : ${input.attributes.get('valueList')}" th:value="${value}" th:text="${value}">
-                            none
-                        </option>
-                    </select>
-                </div>
-                <div th:if="${input.name.equalsIgnoreCase('BoundingBoxData')}">
-                    <span th:text="${input.title}">title</span>
-                    <input type="text" th:name="${input.id}" value="BoundingBox" />
-                </div>
-                <div th:if="${input.name.equalsIgnoreCase('GeometryData')}">
-                    <span th:text="${input.title}">title</span>
-                    <input type="text" th:name="${input.id}" value="Table name" />
-                </div>
-                <div th:if="${input.name.equalsIgnoreCase('Password')}">
-                    <span th:text="${input.title}">title</span>
-                    <input type="password" th:name="${input.id}" value="Password" />
-                </div>
-                <div th:if="${input.name.equalsIgnoreCase('RawData')}">
-                    <span th:text="${input.title}">title</span>
-                    <input type="text" th:name="${input.id}" value="File url" />
-                </div>
-            </li>
-            <li class="list-group-item list-group-item-process" th:each="output : operation.outputList">
 
-            </li>
 
-            <input id="submitBtn" type="submit" value="Submit">
-                <span id="submitText"></span>
-            </input>
-        </ul>
-    </form>
+    <div id="geometrydata" class=" elements form-group"
+         th:each="input : ${operation.inputList}" th:if="${input.name.equalsIgnoreCase('GeometryData')}">
+        <div class="row">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <span th:text="${input.title}">title</span>
+                <input class="form-control" type="text" th:name="${input.id}" value="Table name" />
+            </div>
+        </div>
+    </div>
 
-    <script>
-        $(function() {
-            $("#form").on("submit", function(e) {
-                e.preventDefault();
-                $.ajax({
-                    url: $(this).attr("action"),
-                    type: 'POST',
-                    data: $(this).serialize(),
-                    beforeSend: function() {
-                        $("#submitText").html(' Sending data <i class="glyphicon glyphicon-refresh gly-spin"></i>');
-                    },
-                    success: function(data) {
-                        jobs()
-                    },
-                    error : function(text)
-                    {
-                        $( "#content" ).html(String("Error"));
-                    }
-                });
+    <!--Password-->
+    <div id="password" class=" elements form-group"
+         th:each="input : ${operation.inputList}" th:if="${input.name.equalsIgnoreCase('Password')}">
+        <div class="row">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <span th:text="${input.title}">title</span>
+                <input class="form-control" type="password" th:name="${input.id}" value="Password" />
+            </div>
+        </div>
+    </div>
+
+    <!--LiteralDataType:String-->
+    <div id="string" class=" elements form-group"
+         th:each="input : ${operation.inputList}"
+         th:if="${input.name.equalsIgnoreCase('LiteralDataType') and input.type.equalsIgnoreCase('String')}">
+        <div class="row">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <span th:text="${input.title}">title</span>
+                <input type="text" class="form-control" th:name="${input.id}" value="String value" />
+            </div>
+        </div>
+    </div>
+
+    <!--LiteralDataType:Number-->
+    <div id="number" class=" elements form-group "
+         th:each="input : ${operation.inputList}"
+         th:if="${input.name.equalsIgnoreCase('LiteralDataType') and input.type.equalsIgnoreCase('Number')}">
+        <div class="row">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <span th:text="${input.title}">title</span>
+                <input type="number" class="form-control" th:step="${input.attributes.get('spacing')}" th:name="${input.id}"
+               th:min="${input.attributes.get('min')}" th:max="${input.attributes.get('max')}"
+               th:value="${input.attributes.get('value')}" />
+            </div>
+        </div>
+    </div>
+
+    <!--JDBCTable-->
+    <div id="jdbctable" class=" elements form-group"
+         th:each="input : ${operation.inputList}" th:if="${input.name.equalsIgnoreCase('JDBCTable')}">
+        <div class="row">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <span th:text="${input.title}">title</span>
+                <input class="form-control" type="text" th:name="${input.id}" value="Table name" />
+            </div>
+        </div>
+    </div>
+
+    <!--JDBCColumn-->
+    <div id="jdbccolumn" class=" elements form-group"
+         th:each="input : ${operation.inputList}" th:if="${input.name.equalsIgnoreCase('JDBCColumn')}">
+        <div class="row">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <span th:text="${input.title}">title</span>
+                <input class="form-control" type="text" th:name="${input.id}" value="Table column"/>
+            </div>
+        </div>
+    </div>
+
+    <!--JDBCValue-->
+    <div id="jdbcvalue" class=" elements form-group"
+         th:each="input : ${operation.inputList}" th:if="${input.name.equalsIgnoreCase('JDBCValue')}">
+        <div class="row">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <span th:text="${input.title}">title</span>
+                <input class="form-control" type="text" th:name="${input.id}" value="Table value" />
+            </div>
+        </div>
+    </div>
+
+    <!--Enumertion-->
+    <div id="enumeration" class=" form-group elements"
+         th:each="input : ${operation.inputList}" th:if="${input.name.equalsIgnoreCase('Enumeration')}">
+        <div class="row">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <span th:text="${input.title}">title</span>
+                <br th:if="${input.attributes.get('multiSelection')}" />
+                <select class="selectpicker form-control" th:multiple="${input.attributes.get('multiSelection')}" th:name="${input.id}">
+                    <option th:each="value : ${input.attributes.get('valueList')}" th:value="${value}" th:text="${value}">
+                        none
+                    </option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <!--/Enumertion-->
+
+    <!--CheckBoxs-->
+    <div class="elements" id="checkBoxs">
+        <div class="row">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 form-check form-check-inline"
+                 th:each="input : ${operation.inputList}"
+                 th:if="${input.name.equalsIgnoreCase('LiteralDataType') and input.type.equalsIgnoreCase('Boolean')}">
+                <label class="form-check-label">
+                    <input class="form-check-input" type="checkbox" th:name="${input.id}" id="inlineCheckbox1" th:text="${input.title}"/>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!--Submit-->
+    <input id="submitBtn" class="btn btn-primary" type="submit" value="Submit">
+        <span id="submitText" hidden="true"> Sending data
+            <i class="glyphicon glyphicon-refresh gly-spin"></i></span>
+    </input>
+
+</form>
+
+
+<script>
+// <![CDATA[
+    $(function() {
+        $("#form").on("submit", function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: $(this).attr("action"),
+                type: 'POST',
+                data: $(this).serialize(),
+                beforeSend: function() {
+                    $("#submitText").toggle();
+                },
+                success: function(data) {
+                    jobs();
+                },
+                error : function(text)
+                {
+                    $( "#content" ).html(String("Error"));
+                }
             });
         });
-    </script>
-</div>
+    });
+
+    function nameFile(){
+        var title = $('#file-load').val().replace(/\\/g, '/').replace(/.*\//, '');
+        $('#in-browse').val(title);
+    }
+// ]]>
+</script>
