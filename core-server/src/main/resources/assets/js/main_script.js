@@ -215,11 +215,12 @@ function data(){
 }
 
 
-function importData(){
+function importData(search_id){
     $.ajax({ type: "GET",
         url: "http://localhost:8080/data/import",
         data: {
-            "token": readCookie("token")
+            "token": readCookie("token"),
+            "filters": getFilters(search_id)
         },
         async: false,
         success : function(text)
@@ -237,11 +238,12 @@ function importData(){
     });
 }
 
-function exportData(){
+function exportData(search_id){
     $.ajax({ type: "GET",
         url: "http://localhost:8080/data/export",
         data: {
-            "token": readCookie("token")
+            "token": readCookie("token"),
+            "filters": getFilters(search_id)
         },
         async: false,
         success : function(text)
@@ -259,10 +261,11 @@ function exportData(){
     });
 }
 
-function listProcess(){
+function listProcess(search_id){
     $.ajax({ type: "GET",
         data: {
-            "token": readCookie("token")
+            "token": readCookie("token"),
+            "filters": getFilters(search_id)
         },
         url: "http://localhost:8080/process/processList",
         async: false,
@@ -276,6 +279,13 @@ function listProcess(){
             $( '#process-list' ).html(String("Error"));
         }
     });
+}
+
+function getFilters(search_id){
+    if ("undefined" === typeof search_id) {
+        return '';
+    }
+    return $("#"+search_id).val();
 }
 
 

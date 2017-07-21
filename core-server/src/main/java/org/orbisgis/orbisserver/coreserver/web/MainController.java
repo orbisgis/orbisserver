@@ -149,11 +149,12 @@ public class MainController extends DefaultController {
     }
 
     @Route(method = HttpMethod.GET, uri = "/process/processList")
-    public Result processList(@Parameter("token") String token) throws IOException {
+    public Result processList(@Parameter("token") String token, @Parameter("filters") String filters) throws IOException {
         for(Session session : sessionList) {
             if (session.getToken().toString().equals(token)) {
                 List<Operation> processList = session.getOperationList();
-                List<Operation> importExportList = new ArrayList<Operation>();
+                List<Operation> importExportList = new ArrayList<>();
+                List<Operation> filteredList = new ArrayList<>();
 
                 for(Operation op : processList){
                     for(String keyword :  op.getKeyWord()){
@@ -163,7 +164,12 @@ public class MainController extends DefaultController {
                     }
                 }
                 processList.removeAll(importExportList);
-                return ok(render(processListTemplate, "processList", processList));
+                for(Operation op : processList){
+                    if(op.getTitle().toLowerCase().contains(filters.toLowerCase())) {
+                        filteredList.add(op);
+                    }
+                }
+                return ok(render(processListTemplate, "processList", filteredList));
             }
         }
         return badRequest(render(processListTemplate));
@@ -286,11 +292,12 @@ public class MainController extends DefaultController {
     }
 
     @Route(method = HttpMethod.GET, uri = "/data/import")
-    public Result Import(@Parameter("token") String token) {
+    public Result Import(@Parameter("token") String token, @Parameter("filters") String filters) {
         for(Session session : sessionList) {
             if (session.getToken().toString().equals(token)) {
                 List<Operation> opList = session.getOperationList();
-                List<Operation> importList = new ArrayList<Operation>();
+                List<Operation> importList = new ArrayList<>();
+                List<Operation> filteredList = new ArrayList<>();
 
                 for(Operation op : opList){
                     for(String keyword :  op.getKeyWord()){
@@ -299,7 +306,12 @@ public class MainController extends DefaultController {
                         }
                     }
                 }
-                return ok(render(tImport, "processList", importList));
+                for(Operation op : importList){
+                    if(op.getTitle().toLowerCase().contains(filters.toLowerCase())) {
+                        filteredList.add(op);
+                    }
+                }
+                return ok(render(tImport, "processList", filteredList));
             }
         }
 
@@ -307,11 +319,12 @@ public class MainController extends DefaultController {
     }
 
     @Route(method = HttpMethod.GET, uri = "/data/export")
-    public Result export(@Parameter("token") String token) {
+    public Result export(@Parameter("token") String token, @Parameter("filters") String filters) {
         for(Session session : sessionList) {
             if (session.getToken().toString().equals(token)) {
                 List<Operation> opList = session.getOperationList();
-                List<Operation> exportList = new ArrayList<Operation>();
+                List<Operation> exportList = new ArrayList<>();
+                List<Operation> filteredList = new ArrayList<>();
 
                 for(Operation op : opList){
                     for(String keyword :  op.getKeyWord()){
@@ -320,7 +333,12 @@ public class MainController extends DefaultController {
                         }
                     }
                 }
-                return ok(render(export, "processList", exportList));
+                for(Operation op : exportList){
+                    if(op.getTitle().toLowerCase().contains(filters.toLowerCase())) {
+                        filteredList.add(op);
+                    }
+                }
+                return ok(render(export, "processList", filteredList));
             }
         }
 
