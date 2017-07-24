@@ -56,6 +56,8 @@ function process(){
         async: false,
         success : function(text)
         {
+            $('#content').removeClass();
+            $('#content').addClass('col-xs-12 col-sm-10 col-sm-push-1 col-md-10 col-md-push-1');
             $('#left-nav').addClass('slide-in');
             $('#main-body').css('margin-left', '300px');
             $( "#content" ).html(String(text));
@@ -64,13 +66,14 @@ function process(){
         },
         error : function(text)
         {
+            $('#content').removeClass();
+            $('#content').addClass('col-xs-12 col-sm-10 col-sm-push-1 col-md-10 col-md-push-1');
             $('#left-nav').removeClass('slide-in');
             $('#main-body').css('margin-left', '0px');
             $( "#content" ).html(String(text.responseText));
         }
     });
-    $('#content').removeClass();
-    $('#content').addClass('col-xs-12 col-sm-10 col-sm-push-1 col-md-10 col-md-push-1');
+
     $("#Data").removeClass("active");
     $("#Process").addClass("active");
     $("#Share").removeClass("active");
@@ -245,9 +248,9 @@ function data(){
         {
             $('#left-nav').addClass('slide-in');
             $('#main-body').css('margin-left', '300px');
-            $('#content').html('<div class="row"><div id="content_top"></div></div><div class="row"><div id="content_bottom"></div></div>');
             $('#content').removeClass();
             $('#content').addClass('col-xs-12 col-sm-12 col-md-12');
+            $('#content').html('<div class="row"><div id="content_top"></div></div><div class="row"><div id="content_bottom"></div></div>');
             $('#content_top').css('height', '100%');
             $('#content_top').removeClass();
             $('#content_bottom').removeClass();
