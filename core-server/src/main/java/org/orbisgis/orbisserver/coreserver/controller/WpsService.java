@@ -290,6 +290,7 @@ public class WpsService implements Service {
                                 String title = idt.getTitle().get(0).getValue();
                                 String name = idt.getDataDescription().getValue().getClass().getSimpleName();
                                 String type = null;
+                                Boolean optional = (idt.getMinOccurs().intValue()==0);
                                 Map<String, Object> attributeMap = new HashMap<>();
                                 DataDescriptionType dataDescriptionType = idt.getDataDescription().getValue();
                                 if(dataDescriptionType instanceof LiteralDataType){
@@ -379,7 +380,7 @@ public class WpsService implements Service {
                                     attributeMap.put("valueList", enumeration.getValues());
                                 }
                                 String identifier = idt.getIdentifier().getValue();
-                                Input input = new Input(title, name, identifier, type, attributeMap);
+                                Input input = new Input(title, name, identifier, type, attributeMap, optional);
                                 operation.addInput(input);
                             }
                         }
