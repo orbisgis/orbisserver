@@ -52,7 +52,39 @@ function process(){
         data: {
             "token": readCookie("token")
         },
+        url: "http://localhost:8080/process",
+        async: false,
+        success : function(text)
+        {
+            $('#content').removeClass();
+            $('#content').addClass('col-xs-12 col-sm-10 col-sm-push-1 col-md-10 col-md-push-1');
+            $('#left-nav').addClass('slide-in');
+            $('#main-body').css('margin-left', '300px');
+            $( "#content" ).html(String(text));
+            processLeftNav();
+
+        },
+        error : function(text)
+        {
+            $('#content').removeClass();
+            $('#content').addClass('col-xs-12 col-sm-10 col-sm-push-1 col-md-10 col-md-push-1');
+            $('#left-nav').removeClass('slide-in');
+            $('#main-body').css('margin-left', '0px');
+            $( "#content" ).html(String(text.responseText));
+        }
+    });
+
+    $("#Data").removeClass("active");
+    $("#Process").addClass("active");
+    $("#Share").removeClass("active");
+}
+
+function processLeftNav(){
+    $.ajax({ type: "GET",
         url: "http://localhost:8080/process/leftNavContent",
+        data: {
+            "token": readCookie("token")
+        },
         async: false,
         success : function(text)
         {
@@ -60,16 +92,34 @@ function process(){
         },
         error : function(text)
         {
-            $( "#left-nav-content" ).html(String("Error"));
+            $( "#content" ).html(String(text.responseText));
         }
     });
-    $('#left-nav').addClass('slide-in');
-    $('#content').removeClass('col-sm-12 col-md-12');
-    $('#content').addClass('col-sm-10 col-sm-push-1 col-md-10 col-md-push-1');
-    $('#main-body').css('margin-left', '300px');
-    $("#Data").removeClass("active")
-    $("#Process").addClass("active")
-    $("#Share").removeClass("active")
+}
+
+function home(){
+    $.ajax({ type: "GET",
+        data: {
+            "token": readCookie("token")
+        },
+        url: "http://localhost:8080/home",
+        async: false,
+        success : function(text)
+        {
+            $( "#content" ).html(String(text));
+        },
+        error : function(text)
+        {
+            $( "#content" ).html(String(text.responseText));
+        }
+    });
+    $('#left-nav').removeClass('slide-in');
+    $('#content').removeClass();
+    $('#content').addClass('col-xs-12 col-sm-10 col-sm-push-1 col-md-10 col-md-push-1');
+    $('#main-body').css('margin-left', '0px');
+    $("#Data").removeClass("active");
+    $("#Process").removeClass("active");
+    $("#Share").removeClass("active");
 }
 
 function showProcess(id){
@@ -86,7 +136,7 @@ function showProcess(id){
         },
         error : function(text)
         {
-            $( "#content" ).html(String(text));
+            $( "#content" ).html(String(text.responseText));
         }
     });
 }
@@ -105,7 +155,7 @@ function showImport(id){
         },
         error : function(text)
         {
-            $( "#content_top" ).html(String(text));
+            $( "#content_top" ).html(String(text.responseText));
         }
     });
 }
@@ -124,7 +174,7 @@ function showExport(id){
         },
         error : function(text)
         {
-            $( "#content_top" ).html(String(text));
+            $( "#content_top" ).html(String(text.responseText));
         }
     });
 }
@@ -152,6 +202,9 @@ function signIn(){
     $.ajax({
         type: "GET",
         url: "http://localhost:8080/signIn",
+        data: {
+            "token": readCookie("token")
+        },
         async: false,
         success : function(text)
         {
@@ -159,30 +212,30 @@ function signIn(){
         },
         error : function(text)
         {
-            $( "#content" ).html(String("Error"));
+            $( "#content" ).html(String(text.responseText));
         }
     });
 }
 
 //** leftnav Script */
 function jobs(){
-        $.ajax({ type: "GET",
-            url: "http://localhost:8080/jobs",
-            data: {
-                "token": readCookie("token")
-            },
-            async: false,
-            success : function(text)
-            {
-                $( "#list" ).html("");
-                $( "#content" ).html(String(text));
-            },
-            error : function(text)
-            {
-                $( "#content" ).html(String(text));
-            }
-        });
-    }
+    $.ajax({ type: "GET",
+        url: "http://localhost:8080/jobs",
+        data: {
+            "token": readCookie("token")
+        },
+        async: false,
+        success : function(text)
+        {
+            $( "#list" ).html("");
+            $( "#content" ).html(String(text));
+        },
+        error : function(text)
+        {
+            $( "#content" ).html(String(text.responseText));
+        }
+    });
+}
 
 function data(){
     $.ajax({ type: "GET",
@@ -193,27 +246,51 @@ function data(){
         async: false,
         success : function(text)
         {
+            $('#left-nav').addClass('slide-in');
+            $('#main-body').css('margin-left', '300px');
+            $('#content').removeClass();
+            $('#content').addClass('col-xs-12 col-sm-12 col-md-12');
             $('#content').html('<div class="row"><div id="content_top"></div></div><div class="row"><div id="content_bottom"></div></div>');
             $('#content_top').css('height', '100%');
+            $('#content_top').removeClass();
+            $('#content_bottom').removeClass();
             $('#content_top').addClass('col-sm-10 col-sm-push-1 col-md-10 col-md-push-1');
             $('#content_bottom').css('height', '0%');
             $('#content_bottom').addClass('col-sm-12 col-md-12');
+            $( "#content_top" ).html(String(text));
+            dataLeftNav();
+        },
+        error : function(text)
+        {
+            $('#left-nav').removeClass('slide-in');
+            $('#main-body').css('margin-left', '0px');
+            $('#content').removeClass();
+            $('#content').addClass('col-xs-12 col-sm-10 col-sm-push-1 col-md-10 col-md-push-1');
+            $( "#content" ).html(String(text.responseText));
+        }
+    });
+    $("#Data").addClass("active");
+    $("#Process").removeClass("active");
+    $("#Share").removeClass("active");
+}
+
+function dataLeftNav(){
+    $.ajax({ type: "GET",
+        url: "http://localhost:8080/dataleftnav",
+        data: {
+            "token": readCookie("token")
+        },
+        async: false,
+        success : function(text)
+        {
             $( "#left-nav-content" ).html(String(text));
         },
         error : function(text)
         {
-            $( "#left-nav-content" ).html(String("Error"));
+            $( "#content" ).html(String(text.responseText));
         }
     });
-    $('#left-nav').addClass('slide-in');
-    $('#main-body').css('margin-left', '300px');
-    $('#content').removeClass('col-sm-10 col-sm-push-1 col-md-10 col-md-push-1');
-    $('#content').addClass('col-sm-12 col-md-12');
-    $("#Data").addClass("active")
-    $("#Process").removeClass("active")
-    $("#Share").removeClass("active")
 }
-
 
 function importData(){
     $.ajax({ type: "GET",
@@ -224,9 +301,7 @@ function importData(){
         async: false,
         success : function(text)
         {
-            if($('#dropdown-lvl3').addClass("panel-collapse collapse in")){
-                $('#dropdown-lvl3').removeClass('in');
-            }
+            $('#dropdown-lvl3').removeClass('in');
             $('#left-nav').addClass('slide-in');
             $( '#import-list' ).html(String(text));
         },
@@ -246,9 +321,7 @@ function exportData(){
         async: false,
         success : function(text)
         {
-            if($('#dropdown-lvl2').addClass("panel-collapse collapse in")){
-                $('#dropdown-lvl2').removeClass('in');
-            }
+            $('#dropdown-lvl2').removeClass('in');
             $('#left-nav').addClass('slide-in');
             $( '#export-list').html(String(text));
         },
