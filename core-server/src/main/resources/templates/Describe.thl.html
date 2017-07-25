@@ -47,6 +47,19 @@
             transform: rotate(359deg);
         }
     }
+    .rotate{
+        -moz-transition: all 0.3s linear;
+        -webkit-transition: all 0.3s linear;
+        -o-animation: all 0.3s linear;
+        transition: all 0.3s linear;
+    }
+
+    .rotate.down{
+        -moz-transform:rotate(180deg);
+        -webkit-transform:rotate(180deg);
+        -o-animation: rotate(180deg);
+        transform:rotate(180deg);
+    }
     .tilte{
         padding-top:50px;
     }
@@ -76,17 +89,7 @@
         padding-top:20px;
         padding-bottom:20px;
     }
-    .rotate{
-        -moz-transition: all 0.3s linear;
-        -webkit-transition: all 0.3s linear;
-        transition: all 0.3s linear;
-    }
 
-    .rotate.down{
-        -moz-transform:rotate(180deg);
-        -webkit-transform:rotate(180deg);
-        transform:rotate(180deg);
-    }
 </style>
 
 <div id="titre" > <h2 th:text="${operation.title}"></h2></div>
@@ -237,7 +240,7 @@
 
 
 
-    <div id="optional">
+    <div id="optional" hidden="true">
         <div id="inputsCollapse" class="panel-heading">
             <h4 class="panel-title">
                 <a id="a_Optional" href="#collapse" data-toggle="collapse" data-parent="#optional">
@@ -246,7 +249,7 @@
         </div>
 
         <div id="collapse" class="panel-collapse collapse">
-            <div class="panel-body">
+            <div id="ListElements" class="panel-body">
                 <div class="optionalElements" th:each="input : ${operation.inputList}" th:if="${input.optional}">
 
                     <div class="elements form-group rawdata" th:if="${input.name.equalsIgnoreCase('RawData')
@@ -362,8 +365,8 @@
                     </div>
                 </div>
             </div>
-            <div class="elements" id="checkBoxs_optional">
-                <div class="row">
+            <div class="elements">
+                <div id="checkBoxs_optional"  class="row">
                     <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 form-check form-check-inline"
                          th:each="input : ${listInputOptional}"
                          th:if="${input.name.equalsIgnoreCase('LiteralDataType') and
@@ -384,46 +387,4 @@
             <i class="glyphicon glyphicon-refresh gly-spin"></i></span>
     </input>
 </form>
-
-
-<script>
-// <![CDATA[
-
-    $(function() {
-        $("#form").on("submit", function(e) {
-            e.preventDefault();
-            $.ajax({
-                url: $(this).attr("action"),
-                type: 'POST',
-                data: $(this).serialize(),
-                beforeSend: function() {
-                    $("#submitText").toggle();
-                },
-                success: function(data) {
-                    $("#Data").removeClass("active");
-                    $("#Process").addClass("active");
-                    $("#Share").removeClass("active");
-                    jobs();
-                    processLeftNav();
-                },
-                error : function(text)
-                {
-                    $( "#content" ).html(String("Error"));
-                }
-            });
-        });
-    });
-
-    $('#a_Optional').click(function (e) {
-        $('html, body').animate({
-            scrollTop: $('#optional').offset().top
-        }, 'slow');
-        $('#icon-chevron').toggleClass("down");
-    });
-
-    function nameFile(){
-        var title = $('#file-load').val().replace(/\\/g, '/').replace(/.*\//, '');
-        $('#in-browse').val(title);
-    }
-// ]]>
-</script>
+<script src="/assets/js/describe_script.js"></script>
