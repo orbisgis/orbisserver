@@ -56,13 +56,16 @@ public class Input {
     private String type;
     /** Attributes of the input. */
     private Map<String, Object> attributes;
+    /** the input is optional or not. */
+    private Boolean optional;
 
-    public Input(String title, String name, String id, String type, Map<String, Object> attributes){
+    public Input(String title, String name, String id, String type, Map<String, Object> attributes,Boolean optional){
         this.title = title;
         this.name = name;
         this.id = id;
         this.type = type;
         this.attributes = attributes;
+        this.optional = optional;
     }
 
     public String getTitle() {
@@ -84,4 +87,6 @@ public class Input {
     public Map<String, Object> getAttributes() {
         return attributes;
     }
+
+    public Boolean getOptional() { return optional; }
 }
