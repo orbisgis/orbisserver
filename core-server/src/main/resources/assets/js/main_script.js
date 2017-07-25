@@ -487,6 +487,8 @@ function toggleDatabaseView(){
         $('#row_top').css('height', '100%');
         $('#row_bottom').css('height', '0%');
         $( "#content_bottom" ).html("");
+        $('#db_view_button').removeClass('coloring');
+        $('#db_view_button').addClass('uncoloring');
     }
     else {
         $.ajax({
@@ -501,6 +503,8 @@ function toggleDatabaseView(){
                 $('#row_top').css('height', '50%');
                 $('#row_bottom').css('height', '50%');
                 $( "#content_bottom" ).html(String(text));
+                $('#db_view_button').addClass('coloring');
+                $('#db_view_button').removeClass('uncoloring');
             },
             error : function(text)
             {
