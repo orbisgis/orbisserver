@@ -351,6 +351,9 @@ function listProcess(){
     });
 }
 
+$(".rotate").click(function(){
+   $(this).toggleClass("down");
+})
 
 /** Login modal scripts */
 $(function() {
@@ -400,6 +403,18 @@ function register(){
         $('#login-form')[0].action='/register';
     }
 }
+
+$("#log_in").click(function(){
+    $('#login_btn').html('Login');
+    $('#login_register_btn').html('Register');
+    $('#login-form')[0].action='/login';
+});
+
+$("#sign_in").click(function(){
+    $('#login_btn').html('Register');
+    $('#login_register_btn').html('Login');
+    $('#login-form')[0].action='/register';
+});
 
 function pwdLost(){
     $('#login-footer-text').html('Please contact your administrator');

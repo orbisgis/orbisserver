@@ -37,78 +37,51 @@
  * info_at_ orbisgis.org
  */
 
-html,body{height:100%;}
 
-body .row {
-    margin-left: 0px;
-    margin-right: 0px;
-}
-body .container-fluid {
-    padding-left: 0px;
-    padding-right: 0px;
-}
+// <![CDATA[
 
-body > div:not(#navbar) {
-    height :100%;
-}
+    $(function() {
+        $("#form").on("submit", function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: $(this).attr("action"),
+                type: 'POST',
+                data: $(this).serialize(),
+                beforeSend: function() {
+                    $("#submitText").toggle();
+                },
+                success: function(data) {
+                    $("#Data").removeClass("active");
+                    $("#Process").addClass("active");
+                    $("#Share").removeClass("active");
+                    jobs();
+                    processLeftNav();
+                },
+                error : function(text)
+                {
+                    $( "#content" ).html(String("Error"));
+                }
+            });
+        });
+    });
 
-body .container-fluid {
-    height :100%;
-}
+    $('#a_Optional').click(function (e) {
+        $('html, body').animate({
+            scrollTop: $('#optional').offset().top
+        }, 'slow');
+        $('#icon-chevron').toggleClass("down");
+    });
 
-#user_icon {
-    margin-right: 15px;
-}
+    function nameFile(){
+        var title = $('#file-load').val().replace(/\\/g, '/').replace(/.*\//, '');
+        $('#in-browse').val(title);
+    }
 
-#log_in{
-    margin-right: 15px;
-}
 
-#main-body {
-    padding-top: 50px;
-    height :100%;
-}
+    if(($('#ListElements').children().length>0) || ($('#checkBoxs_optional').children().length>0)){
+        $('#optional').show();
+    }
 
-#main-body > .row {
-    height :100%;
-}
 
-#content{
-    height :100%;
-    padding: 0px;
-}
 
-#content_top {
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-bottom: 10px;
-  padding-left: 0px;
-  padding-right: 0px;
-  top: 0px;
-}
-
-#content_bottom {
-    overflow-y: auto;
-    overflow-x: auto;
-    padding-top: 10px;
-    padding-left: 0px;
-    padding-right: 0px;
-    bottom: 0px;
-}
-
-.table {
-    margin-bottom: 0px;
-}
-
-table tr td p {
-    margin-top: 5px;
-}
-
-table thead tr td p {
-    font-weight: bold;
-    font-size: 150%;
-}
-
-table tr td:first-child {
-    font-weight: bold;
-}
+// ]]>
