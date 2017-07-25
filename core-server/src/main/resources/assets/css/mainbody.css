@@ -79,7 +79,7 @@ body .container-fluid {
 }
 
 #content_top {
-  padding-bottom: 10px;
+  padding-bottom:10px;
   top: 0px;
   height: 100%
 }
@@ -87,7 +87,6 @@ body .container-fluid {
 #row_top {
   overflow-y: auto;
   overflow-x: hidden;
-  height: 100%
 }
 
 #content_bottom {

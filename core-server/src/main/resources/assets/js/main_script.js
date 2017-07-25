@@ -251,7 +251,7 @@ function data(){
             $('#content').removeClass();
             $('#content').addClass('col-xs-12 col-sm-12 col-md-12');
             $('#content').html('<div id="row_top" class="row"><div id="content_top"></div></div><div id="row_bottom" class="row"><div id="content_bottom"></div></div>');
-            $('#row_top').css('height', '100%');
+            $('#row_top').css('height', 'none');
             $('#content_top').removeClass();
             $('#content_bottom').removeClass();
             $('#content_top').addClass('col-sm-10 col-sm-push-1 col-md-10 col-md-push-1');
@@ -484,7 +484,7 @@ function log_out(){
 
 function toggleDatabaseView(){
     if ( $('#content_bottom').children().length > 0 ) {
-        $('#row_top').css('height', '100%');
+        $('#row_top').css('height', 'none');
         $('#row_bottom').css('height', '0%');
         $( "#content_bottom" ).html("");
         $('#db_view_button').removeClass('coloring');
