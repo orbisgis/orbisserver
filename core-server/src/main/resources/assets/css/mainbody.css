@@ -83,6 +83,7 @@ body .container-fluid {
   overflow-x: hidden;
   padding-bottom: 10px;
   top: 0px;
+  height: 100%
 }
 
 #content_bottom {

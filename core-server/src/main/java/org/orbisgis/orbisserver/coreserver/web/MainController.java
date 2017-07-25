@@ -56,6 +56,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.Thread.sleep;
+
 /**
  * Main orbisserver controller
  *
@@ -69,11 +71,8 @@ public class MainController extends DefaultController {
     @View("Home")
     Template home;
 
-    @View("BaseLog_In")
-    Template logIn;
-
-    @View("BaseLog_Out")
-    Template logOut;
+    @View("HomeContent")
+    Template homeContent;
 
     @View("ProcessList")
     Template processListTemplate;
@@ -90,6 +89,9 @@ public class MainController extends DefaultController {
     @View("Workspace")
     Template workspace;
 
+    @View("DataLeftNav")
+    Template dataLeftNav;
+
     @View("Data")
     Template data;
 
@@ -98,6 +100,9 @@ public class MainController extends DefaultController {
 
     @View("Export")
     Template export;
+
+    @View("Process")
+    Template process;
 
     @View("ProcessLeftNav")
     Template leftNavContent;
@@ -114,6 +119,11 @@ public class MainController extends DefaultController {
     @Route(method = HttpMethod.GET, uri = "/")
     public Result home() {
         return ok(render(home));
+    }
+
+    @Route(method = HttpMethod.GET, uri = "/home")
+    public Result homeContent(@Parameter("token") String token) {
+        return ok(render(homeContent));
     }
 
     @Route(method = HttpMethod.GET, uri = "/user/logOut")
@@ -185,7 +195,7 @@ public class MainController extends DefaultController {
                 return ok(render(describeProcess, "operation", op, "session", session));
             }
         }
-        return badRequest(render(describeProcess));
+        return badRequest(render(homeContent));
     }
 
     @Route(method = HttpMethod.POST, uri = "/execute")
@@ -263,7 +273,7 @@ public class MainController extends DefaultController {
                 return ok(render(jobs, "jobList", session.getAllStatusInfo(), "nextRefresh", minRefresh));
             }
         }
-        return badRequest(render(jobs));
+        return ok(render(homeContent));
     }
 
     @Route(method = HttpMethod.POST, uri = "/register")
@@ -287,8 +297,33 @@ public class MainController extends DefaultController {
     }
 
     @Route(method = HttpMethod.GET, uri = "/data")
-    public Result data() {
-        return ok(render(data));
+    public Result data(@Parameter("token") String token) {
+        for (Session session : sessionList) {
+            if (session.getToken().toString().equals(token)) {
+                return ok(render(data));
+            }
+        }
+        return badRequest(render(data));
+    }
+
+    @Route(method = HttpMethod.GET, uri = "/dataleftnav")
+    public Result dataLeftNav(@Parameter("token") String token) {
+        for (Session session : sessionList) {
+            if (session.getToken().toString().equals(token)) {
+                List<Operation> opList = session.getOperationList();
+                List<Operation> importList = new ArrayList<Operation>();
+
+                for(Operation op : opList){
+                    for(String keyword :  op.getKeyWord()){
+                        if(keyword.equals("Import")){
+                            importList.add(op);
+                        }
+                    }
+                }
+                return ok(render(dataLeftNav,"processList", importList ));
+            }
+        }
+        return badRequest(render(data));
     }
 
     @Route(method = HttpMethod.GET, uri = "/data/import")
@@ -315,7 +350,7 @@ public class MainController extends DefaultController {
             }
         }
 
-        return badRequest(render(tImport));
+        return badRequest(render(homeContent));
     }
 
     @Route(method = HttpMethod.GET, uri = "/data/export")
@@ -342,11 +377,29 @@ public class MainController extends DefaultController {
             }
         }
 
-        return badRequest(render(export));
+        return badRequest(render(homeContent));
     }
 
+    @Route(method = HttpMethod.GET, uri = "/process")
+    public Result process(@Parameter("token") String token) {
+        for(Session session : sessionList) {
+            if (session.getToken().toString().equals(token)) {
+                return ok(render(process));
+            }
+        }
+        return badRequest(render(process));
+    }
+
+
     @Route(method = HttpMethod.GET, uri = "/process/leftNavContent")
-    public Result leftNavContent() {return ok(render(leftNavContent));}
+    public Result leftNavContent(@Parameter("token") String token) {
+        for(Session session : sessionList) {
+            if (session.getToken().toString().equals(token)) {
+                return ok(render(leftNavContent));
+            }
+        }
+        return badRequest(render(process));
+    }
 
     @Route(method = HttpMethod.GET, uri = "/user")
     public Result user(@Parameter("token") String token) {
