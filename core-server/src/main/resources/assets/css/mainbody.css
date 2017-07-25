@@ -79,10 +79,14 @@ body .container-fluid {
 }
 
 #content_top {
-  overflow-y: auto;
-  overflow-x: hidden;
   padding-bottom: 10px;
   top: 0px;
+  height: 100%
+}
+
+#row_top {
+  overflow-y: auto;
+  overflow-x: hidden;
   height: 100%
 }
 
