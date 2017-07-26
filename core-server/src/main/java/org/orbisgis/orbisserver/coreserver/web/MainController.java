@@ -41,10 +41,8 @@ package org.orbisgis.orbisserver.coreserver.web;
 import org.orbisgis.orbisserver.coreserver.controller.CoreServerController;
 import org.orbisgis.orbisserver.coreserver.model.*;
 import org.wisdom.api.DefaultController;
-import org.wisdom.api.annotations.Controller;
-import org.wisdom.api.annotations.Parameter;
-import org.wisdom.api.annotations.Route;
-import org.wisdom.api.annotations.View;
+import org.wisdom.api.annotations.*;
+import org.wisdom.api.http.FileItem;
 import org.wisdom.api.http.HttpMethod;
 import org.wisdom.api.http.Result;
 import org.wisdom.api.templates.Template;
@@ -232,6 +230,13 @@ public class MainController extends DefaultController {
         return badRequest();
     }
 
+    @Route(method = HttpMethod.POST, uri = "/uploading")
+    public Result upload(@FormParameter("upload") FileItem uploaded) {
+        if (uploaded != null) {
+            return ok();
+        }
+        return badRequest(render(homeContent));
+    }
     @Route(method = HttpMethod.GET, uri = "/jobs")
     public Result jobs(@Parameter("token") String token) throws IOException {
         for(Session session : sessionList) {

@@ -355,6 +355,50 @@ $(".rotate").click(function(){
    $(this).toggleClass("down");
 })
 
+function loadFile(){
+    alert("load file : "+$("#file")[0].files[0].name);
+    var element = $("#file")[0].files[0];
+    var form = new FormData();
+    form.append("file", element);
+    $.ajax({
+        url: "http://localhost:8080/uploading",
+        type: 'POST',
+        data: form,
+        processData: false,
+        contentType: false,
+        success: function(data) {
+            alert("success");
+        },
+        error : function(data)
+        {
+            alert("j'ai glissé, chef");
+        }
+    });
+}
+
+function submitForm() {
+    alert("form submit");
+    $.ajax({
+        url: "http://localhost:8080/execute",
+        type: 'POST',
+        data: $("#form").serialize(),
+        beforeSend: function() {
+            $("#submitText").toggle();
+        },
+        success: function(data) {
+            $("#Data").removeClass("active");
+            $("#Process").addClass("active");
+            $("#Share").removeClass("active");
+            jobs();
+            processLeftNav();
+        },
+        error : function(text)
+        {
+            $( "#content" ).html(String(text.responseText));
+        }
+    });
+}
+
 /** Login modal scripts */
 $(function() {
     $("#login-form").on("submit", function(e) {
@@ -404,17 +448,17 @@ function register(){
     }
 }
 
-$("#log_in").click(function(){
+function logInModal(){
     $('#login_btn').html('Login');
     $('#login_register_btn').html('Register');
     $('#login-form')[0].action='/login';
-});
+}
 
-$("#sign_in").click(function(){
+function signInModal(){
     $('#login_btn').html('Register');
     $('#login_register_btn').html('Login');
     $('#login-form')[0].action='/register';
-});
+}
 
 function pwdLost(){
     $('#login-footer-text').html('Please contact your administrator');
