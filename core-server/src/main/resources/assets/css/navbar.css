@@ -68,16 +68,15 @@
 
 #left-nav .navbar-nav li {
     width: 100%;
+    border: none;
     border-bottom: 1px solid #e7e7e7;
+    margin-bottom: 0;
+    background-color: transparent;
+    border-radius: 0px;
 }
 
 #left-nav .navbar-nav li a .glyphicon {
     padding-right: 10px;
-}
-
-#left-nav .navbar-nav .active a {
-    border-right: 5px solid #e7e7e7;
-    background-color: transparent;
 }
 
 /** Dropdown */

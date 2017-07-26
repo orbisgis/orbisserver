@@ -37,7 +37,11 @@
  * info_at_ orbisgis.org
  */
 
- #login-form .modal-body {
+#loginModal {
+    overflow : hidden;
+}
+
+#login-form .modal-body {
     padding-top: 10px;
     padding-bottom: 0;
 }
