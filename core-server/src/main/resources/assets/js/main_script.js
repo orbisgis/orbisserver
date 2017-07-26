@@ -115,7 +115,8 @@ function home(){
     });
     $('#left-nav').removeClass('slide-in');
     $('#content').removeClass();
-    $('#content').addClass('col-xs-12 col-sm-10 col-sm-push-1 col-md-10 col-md-push-1');
+    $('#content').addClass('col-xs-12 col-sm-12 col-md-12');
+    $('#content').removeClass('col-sm-10 col-sm-push-1 col-md-10 col-md-push-1');
     $('#main-body').css('margin-left', '0px');
     $("#Data").removeClass("active");
     $("#Process").removeClass("active");
@@ -529,4 +530,5 @@ function toggleDatabaseView(){
     }
 }
 
+home();
 // ]]>
