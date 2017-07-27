@@ -402,27 +402,14 @@ $(function() {
     });
 });
 
-function register(){
-    if(~$('#login_btn').html().indexOf('Register')){
-        $('#login_btn').html('Login');
-        $('#login_register_btn').html('Register');
-        $('#login-form')[0].action='/login';
-    }
-    else if(~$('#login_btn').html().indexOf('Login')){
-        $('#login_btn').html('Register');
-        $('#login_register_btn').html('Login');
-        $('#login-form')[0].action='/register';
-    }
-}
-
 $("#log_in").click(function(){
-    $('#login_btn').html('Login');
+    $('#login_btn').html('Login<i id="login-refresh" class="glyphicon">');
     $('#login_register_btn').html('Register');
     $('#login-form')[0].action='/login';
 });
 
 $("#sign_in").click(function(){
-    $('#login_btn').html('Register');
+    $('#login_btn').html('Register<i id="login-refresh" class="glyphicon">');
     $('#login_register_btn').html('Login');
     $('#login-form')[0].action='/register';
 });
