@@ -257,3 +257,11 @@ table tr td:first-child {
     height: 10%;
     margin-bottom: 20px;
 }
+
+#sign_in .glyphicon{
+    margin-right: 5px;
+}
+
+#log_in .glyphicon{
+    margin-right: 5px;
+}
