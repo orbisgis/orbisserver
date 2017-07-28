@@ -56,8 +56,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.lang.Thread.sleep;
-
 /**
  * Main orbisserver controller
  *
@@ -82,9 +80,6 @@ public class MainController extends DefaultController {
 
     @View("Jobs")
     Template jobs;
-
-    @View("SignIn")
-    Template signIn;
 
     @View("Workspace")
     Template workspace;
@@ -310,17 +305,7 @@ public class MainController extends DefaultController {
     public Result dataLeftNav(@Parameter("token") String token) {
         for (Session session : sessionList) {
             if (session.getToken().toString().equals(token)) {
-                List<Operation> opList = session.getOperationList();
-                List<Operation> importList = new ArrayList<Operation>();
-
-                for(Operation op : opList){
-                    for(String keyword :  op.getKeyWord()){
-                        if(keyword.equals("Import")){
-                            importList.add(op);
-                        }
-                    }
-                }
-                return ok(render(dataLeftNav,"processList", importList ));
+                return ok(render(dataLeftNav));
             }
         }
         return badRequest(render(data));

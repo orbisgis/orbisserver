@@ -57,7 +57,7 @@ function process(){
         success : function(text)
         {
             $('#content').removeClass();
-            $('#content').addClass('col-xs-12 col-sm-10 col-sm-push-1 col-md-10 col-md-push-1');
+            $('#content').addClass('col-xs-12 col-sm-12 col-md-12');
             $('#left-nav').addClass('slide-in');
             $('#main-body').css('margin-left', '300px');
             $( "#content" ).html(String(text));
@@ -67,7 +67,7 @@ function process(){
         error : function(text)
         {
             $('#content').removeClass();
-            $('#content').addClass('col-xs-12 col-sm-10 col-sm-push-1 col-md-10 col-md-push-1');
+            $('#content').addClass('col-xs-12 col-sm-12 col-md-12');
             $('#left-nav').removeClass('slide-in');
             $('#main-body').css('margin-left', '0px');
             $( "#content" ).html(String(text.responseText));
@@ -115,7 +115,7 @@ function home(){
     });
     $('#left-nav').removeClass('slide-in');
     $('#content').removeClass();
-    $('#content').addClass('col-xs-12 col-sm-10 col-sm-push-1 col-md-10 col-md-push-1');
+    $('#content').addClass('col-xs-12 col-sm-12 col-md-12');
     $('#main-body').css('margin-left', '0px');
     $("#Data").removeClass("active");
     $("#Process").removeClass("active");
@@ -190,10 +190,12 @@ function showUser(){
         success : function(text)
         {
             $( "#user_ul" ).html(String(text));
+            home();
         },
         error : function(text)
         {
             $( "#user_ul" ).html(String("Error"));
+            home();
         }
     });
 }
@@ -254,7 +256,7 @@ function data(){
             $('#row_top').css('height', 'none');
             $('#content_top').removeClass();
             $('#content_bottom').removeClass();
-            $('#content_top').addClass('col-sm-10 col-sm-push-1 col-md-10 col-md-push-1');
+            $('#content_top').addClass('col-sm-12 col-md-12');
             $('#row_bottom').css('height', '0%');
             $('#content_bottom').addClass('col-sm-12 col-md-12');
             $( "#content_top" ).html(String(text));
@@ -265,7 +267,7 @@ function data(){
             $('#left-nav').removeClass('slide-in');
             $('#main-body').css('margin-left', '0px');
             $('#content').removeClass();
-            $('#content').addClass('col-xs-12 col-sm-10 col-sm-push-1 col-md-10 col-md-push-1');
+            $('#content').addClass('col-xs-12 col-sm-12 col-md-12');
             $( "#content" ).html(String(text.responseText));
         }
     });
@@ -401,27 +403,14 @@ $(function() {
     });
 });
 
-function register(){
-    if(~$('#login_btn').html().indexOf('Register')){
-        $('#login_btn').html('Login');
-        $('#login_register_btn').html('Register');
-        $('#login-form')[0].action='/login';
-    }
-    else if(~$('#login_btn').html().indexOf('Login')){
-        $('#login_btn').html('Register');
-        $('#login_register_btn').html('Login');
-        $('#login-form')[0].action='/register';
-    }
-}
-
 $("#log_in").click(function(){
-    $('#login_btn').html('Login');
+    $('#login_btn').html('Login<i id="login-refresh" class="glyphicon">');
     $('#login_register_btn').html('Register');
     $('#login-form')[0].action='/login';
 });
 
 $("#sign_in").click(function(){
-    $('#login_btn').html('Register');
+    $('#login_btn').html('Register<i id="login-refresh" class="glyphicon">');
     $('#login_register_btn').html('Login');
     $('#login-form')[0].action='/register';
 });
@@ -529,4 +518,5 @@ function toggleDatabaseView(){
     }
 }
 
+home();
 // ]]>
