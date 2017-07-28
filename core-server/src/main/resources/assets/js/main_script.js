@@ -367,7 +367,13 @@ $(".rotate").click(function(){
    $(this).toggleClass("down");
 })
 
+function nameFile(){
+    var title = $('#file').val().replace(/\\/g, '/').replace(/.*\//, '');
+    $('#in-browse').val(title);
+}
+
 function loadFile(){
+    nameFile();
     var form = new FormData();
     form.append("file",$("#file")[0].files[0]);
     var request = new XMLHttpRequest();
