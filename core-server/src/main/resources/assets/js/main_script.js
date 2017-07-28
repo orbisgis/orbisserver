@@ -385,7 +385,6 @@ $(function() {
                 $('#loginModal').modal('hide');
                 $("#login-refresh").removeClass('gly-spin');
                 $("#login-refresh").removeClass('glyphicon-refresh');
-                $("#login_btn").html('Login');
                 $('#login_btn').prop("disabled", false);
                 $('#text-login-msg').html("Type your username and password");
                 $('#login-modal-body').removeClass('has-error')
@@ -394,7 +393,6 @@ $(function() {
             error: function(data) {
                 $("#login-refresh").removeClass('gly-spin');
                 $("#login-refresh").removeClass('glyphicon-refresh');
-                $("#login_btn").html('Login');
                 $('#login_btn').prop("disabled", false);
                 $('#login-modal-body').addClass('has-error')
                 $('#text-login-msg').html(data.responseText);
@@ -403,17 +401,19 @@ $(function() {
     });
 });
 
-$("#log_in").click(function(){
+function login(){
     $('#login_btn').html('Login<i id="login-refresh" class="glyphicon">');
     $('#login_register_btn').html('Register');
-    $('#login-form')[0].action='/login';
-});
+    $('#login-form').attr('action','/login');
+    $("#login_register_btn").attr('onClick', 'javascript:register()')
+}
 
-$("#sign_in").click(function(){
+function register(){
     $('#login_btn').html('Register<i id="login-refresh" class="glyphicon">');
     $('#login_register_btn').html('Login');
-    $('#login-form')[0].action='/register';
-});
+    $('#login-form').attr('action','/register');
+    $("#login_register_btn").attr('onClick', 'javascript:login()')
+}
 
 function pwdLost(){
     $('#login-footer-text').html('Please contact your administrator');
@@ -519,4 +519,6 @@ function toggleDatabaseView(){
 }
 
 home();
+login();
+showUser();
 // ]]>
