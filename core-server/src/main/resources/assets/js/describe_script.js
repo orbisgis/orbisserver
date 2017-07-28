@@ -49,10 +49,7 @@
         $('#icon-chevron').toggleClass("down");
     });
 
-    function nameFile(){
-        var title = $('#file-load').val().replace(/\\/g, '/').replace(/.*\//, '');
-        $('#in-browse').val(title);
-    }
+
 
 
     if(($('#ListElements').children().length>0) || ($('#checkBoxs_optional').children().length>0)){
