@@ -58,6 +58,7 @@ public class Input {
     private Map<String, Object> attributes;
     /** the input is optional or not. */
     private Boolean optional;
+    private String htmlId;
 
     public Input(String title, String name, String id, String type, Map<String, Object> attributes,Boolean optional){
         this.title = title;
@@ -66,6 +67,10 @@ public class Input {
         this.type = type;
         this.attributes = attributes;
         this.optional = optional;
+        htmlId = id.replaceAll(" ", "");
+        htmlId = htmlId.replaceAll(":", "");
+        htmlId = htmlId.replaceAll("/", "");
+        htmlId = htmlId.replaceAll("\\.", "");
     }
 
     public String getTitle() {
@@ -78,6 +83,10 @@ public class Input {
 
     public String getId() {
         return id;
+    }
+
+    public String getHtmlId() {
+        return htmlId;
     }
 
     public String getType() {

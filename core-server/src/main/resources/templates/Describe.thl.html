@@ -103,13 +103,13 @@
                 <div class="elements form-group rawdata">
 
                      <div class="row">
-                        <div class="col-xs-12 col-sm-10 col-md-8 col-lg-6 elements input-group">
+                        <div th:id="${input.htmlId}" class="col-xs-12 col-sm-10 col-md-8 col-lg-6 elements input-group">
                             <form id="upload-form" action="/uploading" enctype="multipart/form-data" method="POST">
-                                <label class="input-group-btn" onchange="javascript:nameFile()">
+                                <label class="input-group-btn control-label" onchange="javascript:nameFile()">
                                     <span class="btn btn-default">
                                         Browse
                                         <input id="file" th:name="file" type="file" style="display: none;" multiple="true"
-                                               onchange="javascript:loadFile()"/>
+                                               th:onchange="'javascript:loadFile(\''+${input.htmlId}+'\')'" class="form-control"/>
                                     </span>
                                 </label>
                                 <input id="in-browse" type="text" th:name="${input.id}" class="form-control" readonly="true"
