@@ -356,35 +356,16 @@ $(".rotate").click(function(){
 })
 
 function loadFile(){
-    alert("load file : "+$("#file"));
-    alert("load file : "+$("#file")[0]);
-    alert("load file : "+$("#file")[0].files);
-    alert("load file : "+$("#file")[0].files[0]);
-    var element = $("#file");
-    var element1 = element[0];
-    var element2 = element1.files;
-    var element3 = element2[0];
     var form = new FormData();
-    form.append("file",element1);
-    form.append("file",element2);
-    form.append("file",element3);
-    alert("test : "+form);
-    $.ajax({
-        url: "http://localhost:8080/uploading",
-        type: 'POST',
-        data:{
-             "upload" : form
-        },
-        processData: false,
-        contentType: false,
-        success: function(data) {
-            alert("success");
-        },
-        error : function(data)
-        {
-            alert("j'ai glissé, chef");
-        }
-    });
+    form.append("file",$("#file")[0].files[0]);
+    var request = new XMLHttpRequest();
+    request.open('POST', 'http://localhost:8080/uploading', false);
+    request.send(form);
+    if (request.status === 200) {
+        //Alert user
+    } else {
+        //Alert user
+    }
 }
 
 function submitForm() {

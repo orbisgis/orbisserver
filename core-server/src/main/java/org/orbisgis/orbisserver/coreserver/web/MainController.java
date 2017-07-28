@@ -48,13 +48,9 @@ import org.wisdom.api.http.HttpMethod;
 import org.wisdom.api.http.Result;
 import org.wisdom.api.templates.Template;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.lang.Thread.sleep;
 
@@ -234,19 +230,29 @@ public class MainController extends DefaultController {
 
     @Route(method = HttpMethod.POST, uri = "/uploading")
     public Result upload() throws IOException {
-        Object obj =  context();
-        Object header =  context().headers();
-        Object body =  context().body();
-        Object body4 =  context().cookieValue("token");
-        Object body3 =  context().file("upload");
-        Object body5 =  context().file("uploaded");
-        //Object upload3 =  context().files();
-        //Object upload4 =  context().parameters();
-        //Object upload1 =  context().parameter("upload");
-        if(!context().files().isEmpty()){
-            return ok() ;
+        String cookie = context().cookieValue("token");
+        for(Session session : sessionList) {
+            if(session.getToken().toString().equalsIgnoreCase(cookie)){
+
+                if(!context().files().isEmpty()){
+                    for (FileItem fileItem : context().files()) {
+                        if(fileItem!=null){
+                            byte[] buffer = new byte[8 * 1024];
+                            FileOutputStream out = new FileOutputStream(new File(session.getWorkspaceFolder(),
+                                    fileItem.name()));
+                            BufferedInputStream in = new BufferedInputStream(fileItem.stream());
+                            while (in.read(buffer) != -1) {
+                                out.write(buffer);
+                            }
+                            in.close();
+                            out.close();
+                        }
+                    }
+                }
+                return  ok();
+            }
         }
-        else { return badRequest(render(homeContent));}
+        return badRequest(render(homeContent));
     }
 
     @Route(method = HttpMethod.GET, uri = "/jobs")
