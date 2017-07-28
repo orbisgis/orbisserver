@@ -378,6 +378,15 @@ public class WpsService implements Service {
                                     Enumeration enumeration = (Enumeration)dataDescriptionType;
                                     attributeMap.put("multiSelection", enumeration.isMultiSelection());
                                     attributeMap.put("valueList", enumeration.getValues());
+                                    List<String> nameList = new ArrayList<>();
+                                    for(TranslatableString translatableString : enumeration.getValuesNames()){
+                                        for(LanguageStringType languageStringType : translatableString.getStrings()){
+                                            if(languageStringType.getLang().equalsIgnoreCase("en")){
+                                                nameList.add(languageStringType.getValue());
+                                            }
+                                        }
+                                    }
+                                    attributeMap.put("nameList", nameList);
                                 }
                                 String identifier = idt.getIdentifier().getValue();
                                 Input input = new Input(title, name, identifier, type, attributeMap, optional);

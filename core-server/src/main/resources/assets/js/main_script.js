@@ -372,7 +372,7 @@ function nameFile(){
     $('#in-browse').val(title);
 }
 
-function loadFile(){
+function loadFile(id){
     nameFile();
     var form = new FormData();
     form.append("file",$("#file")[0].files[0]);
@@ -380,14 +380,13 @@ function loadFile(){
     request.open('POST', 'http://localhost:8080/uploading', false);
     request.send(form);
     if (request.status === 200) {
-        //Alert user
+        $("#"+id).addClass("has-success")
     } else {
-        //Alert user
+        $("#"+id).addClass("has-error")
     }
 }
 
 function submitForm() {
-    alert("form submit");
     $.ajax({
         url: "http://localhost:8080/execute",
         type: 'POST',

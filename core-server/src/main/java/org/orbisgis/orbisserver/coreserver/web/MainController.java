@@ -344,6 +344,7 @@ public class MainController extends DefaultController {
 
     @Route(method = HttpMethod.GET, uri = "/data/import")
     public Result Import(@Parameter("token") String token, @Parameter("filters") String filters) {
+        System.out.println(filters);
         for(Session session : sessionList) {
             if (session.getToken().toString().equals(token)) {
                 List<Operation> opList = session.getOperationList();
@@ -371,6 +372,7 @@ public class MainController extends DefaultController {
 
     @Route(method = HttpMethod.GET, uri = "/data/export")
     public Result export(@Parameter("token") String token, @Parameter("filters") String filters) {
+        System.out.println(filters);
         for(Session session : sessionList) {
             if (session.getToken().toString().equals(token)) {
                 List<Operation> opList = session.getOperationList();

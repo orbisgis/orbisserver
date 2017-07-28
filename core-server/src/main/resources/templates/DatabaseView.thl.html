@@ -11,11 +11,11 @@
     </thead>
     <tbody>
         <tr th:each="table : ${databaseContent.tableList}">
-            <td th:style="'width: '+${cell_width_percent}+'%;'">
+            <td>
                 <p class="table-row-title" th:text="${table.name}"></p>
             </td>
-            <td th:style="'width: '+${cell_width_percent}+'%;'" th:each="field : ${table.fieldList}">
-                <p th:text="${field.name}"></p>
+            <td th:each="field : ${table.fieldList}">
+                <span th:text="${field.name}"></span>
             </td>
         </tr>
     </tbody>
