@@ -105,25 +105,36 @@
         <!--RawData-->
         <div class="elements form-group rawdata"
              th:if="${input.name.equalsIgnoreCase('RawData') and !(input.optional)}">
-            <!-- Button 'Browse'
-                <div class="row">
+
+             <!--   <div class="row">
                 <div class="col-xs-12 col-sm-10 col-md-8 col-lg-6 elements input-group">
-                    <label class="input-group-btn" onchange="javascript:nameFile()">
-                        <span class="btn btn-default">
-                            Browse&hellip;
-                            <input id="file-load" th:name="name" type="file" style="display: none;" multiple="true"/>
-                        </span>
-                    </label>
-                    <input id="in-browse" type="text" th:name="${input.id}" class="form-control" readonly="true"
-                           th:placeholder="${input.title}"/>
-                </div>
-            </div>-->
-            <div class="row">
-                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                    <span th:text="${input.title}">title</span>
-                    <input class="form-control" type="text" th:name="${input.id}" value="Table name" />
+                    <form action="" enctype="multipart/form-data" method="POST">
+                        <label class="input-group-btn" onchange="javascript:nameFile()">
+                            <span class="btn btn-default">
+                                Browse&hellip;
+                                <input id="file-load" th:name="name" type="file" style="display: none;" multiple="true"/>
+                            </span>
+                        </label>
+                        <input id="in-browse" type="text" th:name="${input.id}" class="form-control" readonly="true"
+                               th:placeholder="${input.title}"/>
+                    </form>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    <form action="#" enctype="multipart/form-data" method="POST" th:attr="action=${#routes.route('upload')}">
+                        <span th:text="${input.title}">title</span>
+                        <input class="form-control" type="text" th:name="${input.id}" value="Table name" />
+                    </form>
+                </div>
+            </div>-->
+
+            <form id="upload-form" action="/uploading" enctype="multipart/form-data" method="POST">
+                <fieldset>
+                    <input type="file" id="file" name="file" />
+                    <input id="upload" type="button" value="Upload" onclick="javascript:loadFile()"/>
+                </fieldset>
+            </form>
         </div>
 
 
@@ -380,9 +391,7 @@
         </div>
     </div>
 
-
-    <!--Submit-->
-    <input id="submitBtn" class="btn btn-primary" type="submit" value="Submit">
+    <input id="submitBtn" class="btn btn-primary" type="submit" value="Submit" onclick="javascript:submitForm()">
         <span id="submitText" hidden="true"> Sending data
             <i class="glyphicon glyphicon-refresh gly-spin"></i></span>
     </input>

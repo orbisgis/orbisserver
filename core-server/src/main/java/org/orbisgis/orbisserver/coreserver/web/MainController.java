@@ -45,10 +45,14 @@ import org.wisdom.api.annotations.Controller;
 import org.wisdom.api.annotations.Parameter;
 import org.wisdom.api.annotations.Route;
 import org.wisdom.api.annotations.View;
+import org.wisdom.api.http.FileItem;
 import org.wisdom.api.http.HttpMethod;
 import org.wisdom.api.http.Result;
 import org.wisdom.api.templates.Template;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -225,6 +229,33 @@ public class MainController extends DefaultController {
             }
         }
         return badRequest();
+    }
+
+    @Route(method = HttpMethod.POST, uri = "/uploading")
+    public Result upload() throws IOException {
+        String cookie = context().cookieValue("token");
+        for(Session session : sessionList) {
+            if(session.getToken().toString().equalsIgnoreCase(cookie)){
+
+                if(!context().files().isEmpty()){
+                    for (FileItem fileItem : context().files()) {
+                        if(fileItem!=null){
+                            byte[] buffer = new byte[8 * 1024];
+                            FileOutputStream out = new FileOutputStream(new File(session.getWorkspaceFolder(),
+                                    fileItem.name()));
+                            BufferedInputStream in = new BufferedInputStream(fileItem.stream());
+                            while (in.read(buffer) != -1) {
+                                out.write(buffer);
+                            }
+                            in.close();
+                            out.close();
+                        }
+                    }
+                }
+                return  ok();
+            }
+        }
+        return badRequest(render(homeContent));
     }
 
     @Route(method = HttpMethod.GET, uri = "/jobs")

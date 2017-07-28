@@ -367,6 +367,42 @@ $(".rotate").click(function(){
    $(this).toggleClass("down");
 })
 
+function loadFile(){
+    var form = new FormData();
+    form.append("file",$("#file")[0].files[0]);
+    var request = new XMLHttpRequest();
+    request.open('POST', 'http://localhost:8080/uploading', false);
+    request.send(form);
+    if (request.status === 200) {
+        //Alert user
+    } else {
+        //Alert user
+    }
+}
+
+function submitForm() {
+    alert("form submit");
+    $.ajax({
+        url: "http://localhost:8080/execute",
+        type: 'POST',
+        data: $("#form").serialize(),
+        beforeSend: function() {
+            $("#submitText").toggle();
+        },
+        success: function(data) {
+            $("#Data").removeClass("active");
+            $("#Process").addClass("active");
+            $("#Share").removeClass("active");
+            jobs();
+            processLeftNav();
+        },
+        error : function(text)
+        {
+            $( "#content" ).html(String(text.responseText));
+        }
+    });
+}
+
 /** Login modal scripts */
 $(function() {
     $("#login-form").on("submit", function(e) {

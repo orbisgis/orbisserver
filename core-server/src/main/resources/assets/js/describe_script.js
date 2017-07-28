@@ -40,30 +40,7 @@
 
 // <![CDATA[
 
-    $(function() {
-        $("#form").on("submit", function(e) {
-            e.preventDefault();
-            $.ajax({
-                url: $(this).attr("action"),
-                type: 'POST',
-                data: $(this).serialize(),
-                beforeSend: function() {
-                    $("#submitText").toggle();
-                },
-                success: function(data) {
-                    $("#Data").removeClass("active");
-                    $("#Process").addClass("active");
-                    $("#Share").removeClass("active");
-                    jobs();
-                    processLeftNav();
-                },
-                error : function(text)
-                {
-                    $( "#content" ).html(String("Error"));
-                }
-            });
-        });
-    });
+
 
     $('#a_Optional').click(function (e) {
         $('html, body').animate({
