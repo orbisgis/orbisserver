@@ -38,21 +38,27 @@
  */
 package org.orbisgis.orbisserver.coreserver.web;
 
-import org.apache.commons.io.IOUtils;
 import org.orbisgis.orbisserver.coreserver.controller.CoreServerController;
 import org.orbisgis.orbisserver.coreserver.model.*;
 import org.wisdom.api.DefaultController;
-import org.wisdom.api.annotations.*;
+import org.wisdom.api.annotations.Controller;
+import org.wisdom.api.annotations.Parameter;
+import org.wisdom.api.annotations.Route;
+import org.wisdom.api.annotations.View;
 import org.wisdom.api.http.FileItem;
 import org.wisdom.api.http.HttpMethod;
 import org.wisdom.api.http.Result;
 import org.wisdom.api.templates.Template;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URLDecoder;
-import java.util.*;
-
-import static java.lang.Thread.sleep;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Main orbisserver controller
@@ -70,12 +76,6 @@ public class MainController extends DefaultController {
     @View("HomeContent")
     Template homeContent;
 
-    @View("BaseLog_In")
-    Template logIn;
-
-    @View("BaseLog_Out")
-    Template logOut;
-
     @View("ProcessList")
     Template processListTemplate;
 
@@ -84,9 +84,6 @@ public class MainController extends DefaultController {
 
     @View("Jobs")
     Template jobs;
-
-    @View("SignIn")
-    Template signIn;
 
     @View("Workspace")
     Template workspace;
@@ -161,11 +158,12 @@ public class MainController extends DefaultController {
     }
 
     @Route(method = HttpMethod.GET, uri = "/process/processList")
-    public Result processList(@Parameter("token") String token) throws IOException {
+    public Result processList(@Parameter("token") String token, @Parameter("filters") String filters) throws IOException {
         for(Session session : sessionList) {
             if (session.getToken().toString().equals(token)) {
                 List<Operation> processList = session.getOperationList();
-                List<Operation> importExportList = new ArrayList<Operation>();
+                List<Operation> importExportList = new ArrayList<>();
+                List<Operation> filteredList = new ArrayList<>();
 
                 for(Operation op : processList){
                     for(String keyword :  op.getKeyWord()){
@@ -175,7 +173,12 @@ public class MainController extends DefaultController {
                     }
                 }
                 processList.removeAll(importExportList);
-                return ok(render(processListTemplate, "processList", processList));
+                for(Operation op : processList){
+                    if(op.getTitle().toLowerCase().contains(filters.toLowerCase())) {
+                        filteredList.add(op);
+                    }
+                }
+                return ok(render(processListTemplate, "processList", filteredList));
             }
         }
         return badRequest(render(processListTemplate));
@@ -333,28 +336,19 @@ public class MainController extends DefaultController {
     public Result dataLeftNav(@Parameter("token") String token) {
         for (Session session : sessionList) {
             if (session.getToken().toString().equals(token)) {
-                List<Operation> opList = session.getOperationList();
-                List<Operation> importList = new ArrayList<Operation>();
-
-                for(Operation op : opList){
-                    for(String keyword :  op.getKeyWord()){
-                        if(keyword.equals("Import")){
-                            importList.add(op);
-                        }
-                    }
-                }
-                return ok(render(dataLeftNav,"processList", importList ));
+                return ok(render(dataLeftNav));
             }
         }
         return badRequest(render(data));
     }
 
     @Route(method = HttpMethod.GET, uri = "/data/import")
-    public Result Import(@Parameter("token") String token) {
+    public Result Import(@Parameter("token") String token, @Parameter("filters") String filters) {
         for(Session session : sessionList) {
             if (session.getToken().toString().equals(token)) {
                 List<Operation> opList = session.getOperationList();
-                List<Operation> importList = new ArrayList<Operation>();
+                List<Operation> importList = new ArrayList<>();
+                List<Operation> filteredList = new ArrayList<>();
 
                 for(Operation op : opList){
                     for(String keyword :  op.getKeyWord()){
@@ -363,7 +357,12 @@ public class MainController extends DefaultController {
                         }
                     }
                 }
-                return ok(render(tImport, "processList", importList));
+                for(Operation op : importList){
+                    if(op.getTitle().toLowerCase().contains(filters.toLowerCase())) {
+                        filteredList.add(op);
+                    }
+                }
+                return ok(render(tImport, "processList", filteredList));
             }
         }
 
@@ -371,11 +370,12 @@ public class MainController extends DefaultController {
     }
 
     @Route(method = HttpMethod.GET, uri = "/data/export")
-    public Result export(@Parameter("token") String token) {
+    public Result export(@Parameter("token") String token, @Parameter("filters") String filters) {
         for(Session session : sessionList) {
             if (session.getToken().toString().equals(token)) {
                 List<Operation> opList = session.getOperationList();
-                List<Operation> exportList = new ArrayList<Operation>();
+                List<Operation> exportList = new ArrayList<>();
+                List<Operation> filteredList = new ArrayList<>();
 
                 for(Operation op : opList){
                     for(String keyword :  op.getKeyWord()){
@@ -384,7 +384,12 @@ public class MainController extends DefaultController {
                         }
                     }
                 }
-                return ok(render(export, "processList", exportList));
+                for(Operation op : exportList){
+                    if(op.getTitle().toLowerCase().contains(filters.toLowerCase())) {
+                        filteredList.add(op);
+                    }
+                }
+                return ok(render(export, "processList", filteredList));
             }
         }
 
