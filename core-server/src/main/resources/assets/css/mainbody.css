@@ -154,6 +154,7 @@ body .container-fluid {
 }
 
 #content_top {
+    margin-top:1px;
     padding-bottom:10px;
     top: 0px;
     height: 100%;
@@ -182,17 +183,21 @@ body .container-fluid {
     margin-bottom: 0px;
 }
 
-table tr td p {
+table tbody tr td {
     margin-top: 5px;
+    font-family: "Lato";
+    font-size: 12px;
 }
 
 table thead tr td p {
+    font-family: "Raleway";
     font-weight: bold;
-    font-size: 150%;
+    font-size: 16px;
 }
 
 table tr td:first-child {
-    font-weight: bold;
+    font-family: "Raleway";
+    font-size: 14px;
 }
 
 .section {
@@ -248,7 +253,7 @@ table tr td:first-child {
     background: url(http://orbisgis.org/assets/img/bg/divider1.jpg) center no-repeat;
     background-size:cover;
     height: 10%;
-    margin-bottom: 21px;
+    margin-bottom: 20px;
 }
 
 #process-header{
