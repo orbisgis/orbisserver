@@ -1,8 +1,6 @@
-<li th:if="${session == null}"><a id="sign_in" data-toggle="modal"
-    data-target="#loginModal" href="#" onclick="javascript:signInModal()">
-    <span class="glyphicon glyphicon-user"></span>Sign Up</a></li>
-<li th:if="${session == null}"><a  id="log_in" data-toggle="modal"
-    data-target="#loginModal" href="#" onclick="javascript:logInModal()">
+<li th:if="${session == null}"><a onclick="javascript:register()" id="sign_in" data-toggle="modal" data-target="#loginModal" href="#"><span class="glyphicon glyphicon-user">
+        </span>Sign Up</a></li>
+<li th:if="${session == null}"><a onclick="javascript:login()" id="log_in" data-toggle="modal" data-target="#loginModal" href="#">
     <span class="glyphicon 	glyphicon-log-in"></span>Login</a></li>
 <li th:if="${session != null}" id="user_icon" role="presentation" class="dropdown">
     <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
