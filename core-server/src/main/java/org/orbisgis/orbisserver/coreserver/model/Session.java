@@ -134,6 +134,19 @@ public class Session {
     }
 
     public void executeOperation(String id, Map<String, String> inputData) {
+        Operation operation = getOperation(id);
+        Map<String, String> tmpMap = new HashMap<>();
+        for(Input input : operation.getInputList()){
+            if(input.getName().equalsIgnoreCase("RawData")){
+                for(Map.Entry<String, String> entry : inputData.entrySet()){
+                    if(input.getId().equalsIgnoreCase(entry.getKey())){
+                        tmpMap.put(entry.getKey(), new File(workspaceFolder, entry.getValue()).getAbsolutePath());
+                    }
+                }
+            }
+        }
+        System.out.println(id);
+        inputData.putAll(tmpMap);
         ExecuteRequest executeRequest = new ExecuteRequest(id, inputData);
         Service serv = null;
         for(Service service : serviceList){

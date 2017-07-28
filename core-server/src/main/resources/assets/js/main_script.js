@@ -387,7 +387,6 @@ function loadFile(){
 }
 
 function submitForm() {
-    alert("form submit");
     $.ajax({
         url: "http://localhost:8080/execute",
         type: 'POST',

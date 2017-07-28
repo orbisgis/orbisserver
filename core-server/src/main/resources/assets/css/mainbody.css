@@ -270,3 +270,42 @@ table tr td:first-child {
 #log_in .glyphicon{
     margin-right: 5px;
 }
+
+.col-xs-6, .col-sm-6, .col-md-6, .col-lg-6 {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+#title{
+    text-align: center;
+    font-family: "Raleway";
+    font-weight: 300;
+    font-size: 26px;
+    color: #333;
+}
+
+#description{
+    font-family: "Lato";
+    font-weight: 300;
+    font-size: 20px;
+    color: #555;
+    padding-bottom: 25px;
+}
+
+.elements{
+    font-family: "Lato";
+    font-weight: 300;
+    font-size: 16px;
+    color: #555;
+}
+
+.panel-title{
+    font-family: "Lato";
+    font-weight: bold;
+    font-size: 16px;
+    color: #555;
+}
+
+label{
+    font-weight: inherit;
+}
