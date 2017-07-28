@@ -38,6 +38,7 @@
  */
 package org.orbisgis.orbisserver.coreserver.web;
 
+import org.apache.commons.io.IOUtils;
 import org.orbisgis.orbisserver.coreserver.controller.CoreServerController;
 import org.orbisgis.orbisserver.coreserver.model.*;
 import org.wisdom.api.DefaultController;
@@ -47,6 +48,7 @@ import org.wisdom.api.http.HttpMethod;
 import org.wisdom.api.http.Result;
 import org.wisdom.api.templates.Template;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -231,12 +233,22 @@ public class MainController extends DefaultController {
     }
 
     @Route(method = HttpMethod.POST, uri = "/uploading")
-    public Result upload(@FormParameter("upload") FileItem uploaded) {
-        if (uploaded != null) {
-            return ok();
+    public Result upload() throws IOException {
+        Object obj =  context();
+        Object header =  context().headers();
+        Object body =  context().body();
+        Object body4 =  context().cookieValue("token");
+        Object body3 =  context().file("upload");
+        Object body5 =  context().file("uploaded");
+        //Object upload3 =  context().files();
+        //Object upload4 =  context().parameters();
+        //Object upload1 =  context().parameter("upload");
+        if(!context().files().isEmpty()){
+            return ok() ;
         }
-        return badRequest(render(homeContent));
+        else { return badRequest(render(homeContent));}
     }
+
     @Route(method = HttpMethod.GET, uri = "/jobs")
     public Result jobs(@Parameter("token") String token) throws IOException {
         for(Session session : sessionList) {
