@@ -44,26 +44,47 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Representation of a table from a database.
+ *
  * @author Sylvain PALOMINOS
  */
 public class DatabaseTable {
 
+    /** TableLocation object of the table. */
     private TableLocation tableLocation;
+    /** List of fields of the table. */
     private List<DatabaseField> fieldList;
 
+    /**
+     * Main constructor.
+     * @param tableLocation TableLocation of the table.
+     */
     public DatabaseTable(TableLocation tableLocation){
         this.tableLocation = tableLocation;
         this.fieldList = new ArrayList();
     }
 
+    /**
+     * Returns the name of the table.
+     * @return The table name.
+     */
     public String getName() {
         return tableLocation.getTable();
     }
 
+    /**
+     * Adds a field.
+     * @param columnLabel Name of the field.
+     * @param columnTypeName Type of the field.
+     */
     public void addField(String columnLabel, String columnTypeName) {
         fieldList.add(new DatabaseField(columnLabel, columnTypeName));
     }
 
+    /**
+     * Returns the list of the fields.
+     * @return The field list.
+     */
     public List<DatabaseField> getFieldList(){
         return fieldList;
     }

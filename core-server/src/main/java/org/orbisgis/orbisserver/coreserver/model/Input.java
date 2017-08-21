@@ -58,6 +58,7 @@ public class Input {
     private Map<String, Object> attributes;
     /** the input is optional or not. */
     private Boolean optional;
+    /** Unique id used in the html code. */
     private String htmlId;
 
     public Input(String title, String name, String id, String type, Map<String, Object> attributes,Boolean optional){
@@ -73,29 +74,58 @@ public class Input {
         htmlId = htmlId.replaceAll("\\.", "");
     }
 
+    /**
+     * Returns the title of the input.
+     * @return The title of the input.
+     */
     public String getTitle() {
         return title;
     }
 
+    /**
+     * Returns the name of the input.
+     * @return The name of the input.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Returns the id of the input.
+     * @return The id of the input.
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * Returns the html id of the input.
+     * @return The html id of the input.
+     */
     public String getHtmlId() {
         return htmlId;
     }
 
+    /**
+     * Returns the type of the input.
+     * @return The type of the input.
+     */
     public String getType() {
         return type;
     }
 
+    /**
+     * Return the map od the attributes of the input. The attributes defines additional information defined in the
+     * extensions of the complex data input.
+     * @return The attributes of the input.
+     */
     public Map<String, Object> getAttributes() {
         return attributes;
     }
 
+    /**
+     * Tells if the input is optional or not.
+     * @return True if the input is optional, false otherwise.
+     */
     public Boolean getOptional() { return optional; }
 }

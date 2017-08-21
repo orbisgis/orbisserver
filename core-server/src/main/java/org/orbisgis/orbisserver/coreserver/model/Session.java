@@ -54,30 +54,38 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Session of the server usage
+ * Session of the server. A session contains a list of Services, a DataSource and a workspace.
  *
  * @author Sylvain PALOMINOS
  */
 public class Session {
 
+    /** Logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(Session.class);
 
+    /** Token associated to the session. It is used for the identification of the web client requests. */
     private UUID token;
-
+    /** DataSource associated to the session. This data source is used for the differents services associated. */
     private DataSource ds;
-
+    /** Executor services dedicated to the session. */
     private ExecutorService executorService;
-
+    /** Workspace folder. */
     private File workspaceFolder;
-
+    /** Username associated to the session. */
     private String username;
-
+    /** List of services instance for the Session. */
     private List<Service> serviceList;
-
+    /** List of StatusInfo. This list is used as a cache saving all the process executed and waiting for the data
+     * retrieving.
+     */
     private List<StatusInfo> statusInfoList;
-
+    /** Map linking the job id with the service executing it. */
     private Map<String, Service> jobIdServiceMap;
 
+    /**
+     * Main constructor.
+     * @param username Username associated to the session.
+     */
     public Session(String username){
         jobIdServiceMap = new HashMap<>();
         serviceList = new ArrayList<>();
@@ -96,22 +104,42 @@ public class Session {
         serviceList.add(new WpsService(ds, executorService, workspaceFolder));
     }
 
+    /**
+     * Returns the DataSource of the Session.
+     * @return The session DataSource.
+     */
     public DataSource getDataSource(){
         return ds;
     }
 
+    /**
+     * Returns the ExecutorService of the session.
+     * @return The session ExecutorService.
+     */
     public ExecutorService getExecutorService(){
         return executorService;
     }
 
+    /**
+     * Returns the workspace folder of the sessions.
+     * @return The session workspace folder.
+     */
     public File getWorkspaceFolder(){
         return workspaceFolder;
     }
 
+    /**
+     * Returns the username of the session.
+     * @return The session username.
+     */
     public String getUsername(){
         return username;
     }
 
+    /**
+     * Returns the list of operations available in ths session.
+     * @return The available operation list.
+     */
     public List<Operation> getOperationList(){
         List<Operation> operationList = new ArrayList<>();
         for(Service service : serviceList) {
@@ -120,6 +148,11 @@ public class Session {
         return operationList;
     }
 
+    /**
+     * Returns the Operation with the given identifier.
+     * @param id Identifier of the operation.
+     * @return The operation with the given identifier.
+     */
     public Operation getOperation(String id) {
         Service serv = null;
         for(Service service : serviceList){
@@ -133,6 +166,11 @@ public class Session {
         return serv.getOperation(id);
     }
 
+    /**
+     * Execute the operation corresponding to the given identifier, using the given input data Map.
+     * @param id Identifier of the operation to execute.
+     * @param inputData Input data Map to use on the execution.
+     */
     public void executeOperation(String id, Map<String, String> inputData) {
         Operation operation = getOperation(id);
         Map<String, String> tmpMap = new HashMap<>();
@@ -145,7 +183,6 @@ public class Session {
                 }
             }
         }
-        System.out.println(id);
         inputData.putAll(tmpMap);
         ExecuteRequest executeRequest = new ExecuteRequest(id, inputData);
         Service serv = null;
@@ -163,6 +200,11 @@ public class Session {
         }
     }
 
+    /**
+     * Returns the title of the operation with the given identifier. If no operation is found, returns an empty string.
+     * @param id Identifier of the operation to find.
+     * @return The title of the operation.
+     */
     private String getTitle(String id){
         for(Service service : serviceList){
             if(service.hasOperation(id)){
@@ -172,10 +214,18 @@ public class Session {
         return "";
     }
 
+    /**
+     * Returns the list of the cached list of StatusInfo responses.
+     * @return The cached StatusInfo list.
+     */
     public List<StatusInfo> getAllStatusInfo(){
         return statusInfoList;
     }
 
+    /**
+     * Return the list of all the StatusInfo with the next poll date is reached and which needs to be refreshed.
+     * @return The list of Status info to refresh.
+     */
     public List<StatusInfo> getAllStatusInfoToRefresh() {
         List<StatusInfo> allStatusInfoToRefresh = new ArrayList<>();
         List<StatusInfo> list = getAllStatusInfo();
@@ -193,6 +243,11 @@ public class Session {
         return allStatusInfoToRefresh;
     }
 
+    /**
+     * Refresh the status of the job with the given identifier.
+     * @param jobId Identifier of the job to refresh.
+     * @return The refreshed StatusInfo of the job.
+     */
     public StatusInfo refreshStatus(String jobId) {
         Service service = jobIdServiceMap.get(jobId);
         StatusRequest statusRequest = new StatusRequest(jobId);
@@ -201,11 +256,18 @@ public class Session {
         return info;
     }
 
-    /** Unique token associated to the session.*/
+    /**
+     * Returns the token of the session.
+     * @return The token of the session.
+     */
     public UUID getToken() {
         return token;
     }
 
+    /**
+     * Returns the DatabaseContent object which contains the representation of the Database.
+     * @return The DatabaseContent object.
+     */
     public DatabaseContent getDatabaseContent(){
         DatabaseContent dbContent = new DatabaseContent();
         try(Connection connection = ds.getConnection()) {
