@@ -56,7 +56,7 @@ function process(){
             $('#content').removeClass();
             $('#content').addClass('col-xs-12 col-sm-12 col-md-12');
             $('#left-nav').addClass('slide-in');
-            $('#main-body').css('margin-left', '300px');
+            $('#main-body').addClass('is-menu');
             $( "#content" ).html(String(text));
             processLeftNav();
 
@@ -66,7 +66,7 @@ function process(){
             $('#content').removeClass();
             $('#content').addClass('col-xs-12 col-sm-12 col-md-12');
             $('#left-nav').removeClass('slide-in');
-            $('#main-body').css('margin-left', '0px');
+            $('#main-body').removeClass('is-menu');
             $( "#content" ).html(String(text.responseText));
         }
     });
@@ -82,7 +82,8 @@ function processLeftNav(){
         async: false,
         success : function(text)
         {
-            $( "#left-nav-content" ).html(String(text));
+            $( "#process-content" ).html(String(text));
+            $( "#dropdown-data" ).removeClass('in');
         },
         error : function(text)
         {
@@ -107,10 +108,12 @@ function home(){
     $('#left-nav').removeClass('slide-in');
     $('#content').removeClass();
     $('#content').addClass('col-xs-12 col-sm-12 col-md-12');
-    $('#main-body').css('margin-left', '0px');
+    $('#main-body').removeClass('is-menu');
     $("#Data").removeClass("active");
     $("#Process").removeClass("active");
     $("#Share").removeClass("active");
+    $("#dropdown-process").removeClass("in");
+    $("#dropdown-data").removeClass("in");
 }
 
 function showProcess(id){
@@ -225,7 +228,7 @@ function data(){
         success : function(text)
         {
             $('#left-nav').addClass('slide-in');
-            $('#main-body').css('margin-left', '300px');
+            $('#main-body').addClass('is-menu');
             $('#content').removeClass();
             $('#content').addClass('col-xs-12 col-sm-12 col-md-12');
             $('#content').html('<div id="row_top" class="row"><div id="content_top"></div></div><div id="row_bottom" class="row"><div id="content_bottom"></div></div>');
@@ -241,7 +244,7 @@ function data(){
         error : function(text)
         {
             $('#left-nav').removeClass('slide-in');
-            $('#main-body').css('margin-left', '0px');
+            $('#main-body').removeClass('is-menu');
             $('#content').removeClass();
             $('#content').addClass('col-xs-12 col-sm-12 col-md-12');
             $( "#content" ).html(String(text.responseText));
@@ -258,7 +261,8 @@ function dataLeftNav(){
         async: false,
         success : function(text)
         {
-            $( "#left-nav-content" ).html(String(text));
+            $( "#data-content" ).html(String(text));
+            $( "#dropdown-process" ).removeClass('in');
         },
         error : function(text)
         {
@@ -276,7 +280,7 @@ function importData(search_id){
         async: false,
         success : function(text)
         {
-            $('#dropdown-lvl3').removeClass('in');
+            $('#dropdown-export').removeClass('in');
             $('#left-nav').addClass('slide-in');
             $( '#import-list' ).html(String(text));
         },
@@ -296,7 +300,7 @@ function exportData(search_id){
         async: false,
         success : function(text)
         {
-            $('#dropdown-lvl2').removeClass('in');
+            $('#dropdown-import').removeClass('in');
             $('#left-nav').addClass('slide-in');
             $( '#export-list').html(String(text));
         },
