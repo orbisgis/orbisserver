@@ -205,13 +205,7 @@ public class MainController extends DefaultController {
         for(Session session : sessionList) {
             String urlContent = URLDecoder.decode(context().reader().readLine(), "UTF-8");
             String[] split = urlContent.split("&");
-            String token = "";
-            for(String str : split){
-                String[] val = str.split("=");
-                if(val[0].equals("token")){
-                    token = val[1];
-                }
-            }
+            String token = context().cookieValue("token");
             if (session.getToken().toString().equals(token)) {
                 Map<String, String> inputData = new HashMap<>();
                 String id = "";

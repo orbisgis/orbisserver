@@ -207,6 +207,10 @@
     color: #eee;
 }
 
+#left-nav #left-nav-content > li {
+    border-bottom: 0px;
+}
+
 @media (max-width: 768px) {
 
     #left-nav {
@@ -266,6 +270,10 @@
     .dropdown-lvl1 ul {
         margin-left: 0px;
     }
+
+    #left-nav #left-nav-content > li {
+        border-bottom: 1px solid #e7e7e7;
+    }
 }
 
 
@@ -279,7 +287,7 @@
         padding: 0px;
     }
 
-    #left-nav #left-nav-content li:last-child {
-        border-bottom: 0px;
-    }
+    /*#left-nav #left-nav-content .navbar-nav-lvl2 li:last-child {
+        border-bottom: 1px solid #e7e7e7;
+    }*/
 }
