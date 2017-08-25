@@ -42,6 +42,7 @@ import net.opengis.ows._2.*;
 import net.opengis.wps._2_0.*;
 import net.opengis.wps._2_0.GetCapabilitiesType;
 import net.opengis.wps._2_0.ObjectFactory;
+import net.opengis.wps._2_0.ReferenceType;
 import org.orbisgis.orbisserver.coreserver.model.*;
 import org.orbisgis.orbisserver.coreserver.model.Operation;
 import org.orbisgis.orbisserver.coreserver.model.StatusInfo;
@@ -49,6 +50,8 @@ import org.orbiswps.scripts.WpsScriptPlugin;
 import org.orbiswps.server.WpsServer;
 import org.orbiswps.server.WpsServerImpl;
 import org.orbiswps.server.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBElement;
@@ -62,14 +65,22 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 /**
- * Service for the core-server module managing the wps part
+ * Service managing the wps part for the core-server module
  */
 public class WpsService implements Service {
 
+    /** Logger of the class. */
+    private static final Logger LOGGER = LoggerFactory.getLogger(WpsService.class);
+
+    /** Wps server instance */
     private WpsServer wpsServer;
+    /** ExecutorService used for the WpsServer instance to execute the scripts. */
     private ExecutorService executorService;
+    /** Workspace used by the WsServer.*/
     private File workspaceFolder;
+    /** DataSource to use for the SQL requests.*/
     private DataSource ds;
+    /** Cached list of operations available.*/
     private List<Operation> cachedOpList;
 
     public WpsService(DataSource ds, ExecutorService executorService, File workspaceFolder){
@@ -186,7 +197,7 @@ public class WpsService implements Service {
             return statusInfo;
         }
         catch(Exception e){
-
+            LOGGER.error("Unable to get the StatusRequest response.\n"+e.getMessage());
         }
         return null;
     }
@@ -242,6 +253,7 @@ public class WpsService implements Service {
             }
         }
         catch (Exception e){
+            LOGGER.error("Unable to get the list of the operations.\n"+e.getMessage());
         }
         return cachedOpList;
     }
@@ -396,6 +408,7 @@ public class WpsService implements Service {
                     }
                 }
                 catch(Exception e){
+                    LOGGER.error("Unable to get the Operation with the given id.\n"+e.getMessage());
                 }
             }
         }

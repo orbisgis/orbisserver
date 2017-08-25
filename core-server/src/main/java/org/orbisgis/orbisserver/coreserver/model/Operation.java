@@ -42,17 +42,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Operation performed throw the server
+ * Operation performed by the server.
+ *
+ * @author Sylvain PALOMINOS
  */
 public class Operation {
 
+    /** Title. */
     private String title;
+    /** Unique identifier. */
     private String id;
+    /** Abstract.*/
     private String abstr;
+    /** List of the inputs. */
     private List<Input> inputList;
+    /** List of the outputs. */
     private List<Output> outputList;
+    /** List of the keywords. */
     private List<String> keyWord;
 
+    /**
+     * Main constructor.
+     * @param title Title of the operation.
+     * @param id Identifier of the operation.
+     */
     public Operation(String title, String id){
         this.title = title;
         this.id = id;
@@ -61,47 +74,95 @@ public class Operation {
         keyWord = new ArrayList();
     }
 
+    /**
+     * Returns the title.
+     * @return The title.
+     */
     public String getTitle() {
         return title;
     }
 
+    /**
+     * Sets the title.
+     * @param title The title.
+     */
     public void setTitle(String title) {
         this.title = title;
     }
 
+    /**
+     * Returns the identifier.
+     * @return The identifier.
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * Sets the identifier.
+     * @param id The identifier.
+     */
     public void setId(String id) {
         this.id = id;
     }
 
+    /**
+     * Returns the abstract.
+     * @return The abstract.
+     */
     public String getAbstr() {
         return abstr;
     }
 
+    /**
+     * Sets the abstract.
+     * @param abstr The abstract.
+     */
     public void setAbstr(String abstr) {
         this.abstr = abstr;
     }
 
+    /**
+     * Returns the list of the inputs.
+     * @return The input list.
+     */
     public List<Input> getInputList() {
         return inputList;
     }
 
+    /**
+     * Adds an Input.
+     * @param input Input to add.
+     */
     public void addInput(Input input) {
         this.inputList.add(input);
     }
 
+    /**
+     * Returns the list of the inputs.
+     * @return The input List.
+     */
     public List<Output> getOutputList() {
         return outputList;
     }
 
+    /**
+     * Adds an output.
+     * @param output Output to add.
+     */
     public void addOutput(Output output) {
         this.outputList.add(output);
     }
 
+    /**
+     * Return the list of keywords.
+     * @return The keyword list.
+     */
     public List<String> getKeyWord() {return keyWord;}
 
+    /**
+     * Adds a keywords.
+     * @param keyWord Keyword to add.
+     */
     public void setKeyWord(List<String> keyWord) {this.keyWord = keyWord;}
 }

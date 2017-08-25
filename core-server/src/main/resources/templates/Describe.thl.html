@@ -93,7 +93,6 @@
     <form action="/execute" method="post" id="form">
         <div id="hidden">
             <input type="hidden" name="processId" th:value="${operation.id}" />
-            <input type="hidden" name="token" th:value="${session.token}" />
         </div>
 
         <div class="NoOptional" th:each="input : ${operation.inputList}" th:if="${!(input.optional)}">

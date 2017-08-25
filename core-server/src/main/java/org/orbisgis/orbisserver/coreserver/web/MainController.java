@@ -61,7 +61,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Main orbisserver controller
+ * Main orbisserver controller containing all the rpute for the web wps client.
  *
  * @author Sylvain PALOMINOS
  */
@@ -71,49 +71,49 @@ public class MainController extends DefaultController {
     private List<Session> sessionList = new ArrayList<>();
 
     @View("Home")
-    Template home;
+    private Template home;
 
     @View("HomeContent")
-    Template homeContent;
+    private Template homeContent;
 
     @View("ProcessList")
-    Template processListTemplate;
+    private Template processListTemplate;
 
     @View("Describe")
-    Template describeProcess;
+    private Template describeProcess;
 
     @View("Jobs")
-    Template jobs;
+    private Template jobs;
 
     @View("Workspace")
-    Template workspace;
+    private Template workspace;
 
     @View("DataLeftNav")
-    Template dataLeftNav;
+    private Template dataLeftNav;
 
     @View("Data")
-    Template data;
+    private Template data;
 
     @View("Import")
-    Template tImport;
+    private Template tImport;
 
     @View("Export")
-    Template export;
+    private Template export;
 
     @View("Process")
-    Template process;
+    private Template process;
 
     @View("ProcessLeftNav")
-    Template leftNavContent;
+    private Template leftNavContent;
 
     @View("User")
-    Template user;
+    private Template user;
 
     @View("UserSettings")
-    Template userSettings;
+    private Template userSettings;
 
     @View("DatabaseView")
-    Template databaseView;
+    private Template databaseView;
 
     @Route(method = HttpMethod.GET, uri = "/")
     public Result home() {
@@ -121,12 +121,13 @@ public class MainController extends DefaultController {
     }
 
     @Route(method = HttpMethod.GET, uri = "/home")
-    public Result homeContent(@Parameter("token") String token) {
+    public Result homeContent() {
         return ok(render(homeContent));
     }
 
     @Route(method = HttpMethod.GET, uri = "/user/logOut")
-    public Result logOut(@Parameter("token") String token) {
+    public Result logOut() {
+        String token = context().cookieValue("token");
         Session session = null;
         for(Session s : sessionList){
             if(s.getToken().toString().equals(token)){
@@ -158,7 +159,8 @@ public class MainController extends DefaultController {
     }
 
     @Route(method = HttpMethod.GET, uri = "/process/processList")
-    public Result processList(@Parameter("token") String token, @Parameter("filters") String filters) throws IOException {
+    public Result processList(@Parameter("filters") String filters) throws IOException {
+        String token = context().cookieValue("token");
         for(Session session : sessionList) {
             if (session.getToken().toString().equals(token)) {
                 List<Operation> processList = session.getOperationList();
@@ -185,7 +187,8 @@ public class MainController extends DefaultController {
     }
 
     @Route(method = HttpMethod.GET, uri = "/describeProcess")
-    public Result describeProcess(@Parameter("id") String id, @Parameter("token") String token) throws IOException {
+    public Result describeProcess(@Parameter("id") String id) throws IOException {
+        String token = context().cookieValue("token");
         Session session = null;
         for(Session s : sessionList) {
             if (s.getToken().toString().equals(token)) {
@@ -202,13 +205,7 @@ public class MainController extends DefaultController {
         for(Session session : sessionList) {
             String urlContent = URLDecoder.decode(context().reader().readLine(), "UTF-8");
             String[] split = urlContent.split("&");
-            String token = "";
-            for(String str : split){
-                String[] val = str.split("=");
-                if(val[0].equals("token")){
-                    token = val[1];
-                }
-            }
+            String token = context().cookieValue("token");
             if (session.getToken().toString().equals(token)) {
                 Map<String, String> inputData = new HashMap<>();
                 String id = "";
@@ -259,7 +256,8 @@ public class MainController extends DefaultController {
     }
 
     @Route(method = HttpMethod.GET, uri = "/jobs")
-    public Result jobs(@Parameter("token") String token) throws IOException {
+    public Result jobs() throws IOException {
+        String token = context().cookieValue("token");
         for(Session session : sessionList) {
             if (session.getToken().toString().equals(token)) {
                 long timeMillisNow = System.currentTimeMillis();
@@ -323,7 +321,8 @@ public class MainController extends DefaultController {
     }
 
     @Route(method = HttpMethod.GET, uri = "/data")
-    public Result data(@Parameter("token") String token) {
+    public Result data() {
+        String token = context().cookieValue("token");
         for (Session session : sessionList) {
             if (session.getToken().toString().equals(token)) {
                 return ok(render(data));
@@ -333,7 +332,8 @@ public class MainController extends DefaultController {
     }
 
     @Route(method = HttpMethod.GET, uri = "/dataleftnav")
-    public Result dataLeftNav(@Parameter("token") String token) {
+    public Result dataLeftNav() {
+        String token = context().cookieValue("token");
         for (Session session : sessionList) {
             if (session.getToken().toString().equals(token)) {
                 return ok(render(dataLeftNav));
@@ -343,8 +343,8 @@ public class MainController extends DefaultController {
     }
 
     @Route(method = HttpMethod.GET, uri = "/data/import")
-    public Result Import(@Parameter("token") String token, @Parameter("filters") String filters) {
-        System.out.println(filters);
+    public Result Import(@Parameter("filters") String filters) {
+        String token = context().cookieValue("token");
         for(Session session : sessionList) {
             if (session.getToken().toString().equals(token)) {
                 List<Operation> opList = session.getOperationList();
@@ -371,8 +371,8 @@ public class MainController extends DefaultController {
     }
 
     @Route(method = HttpMethod.GET, uri = "/data/export")
-    public Result export(@Parameter("token") String token, @Parameter("filters") String filters) {
-        System.out.println(filters);
+    public Result export(@Parameter("filters") String filters) {
+        String token = context().cookieValue("token");
         for(Session session : sessionList) {
             if (session.getToken().toString().equals(token)) {
                 List<Operation> opList = session.getOperationList();
@@ -399,7 +399,8 @@ public class MainController extends DefaultController {
     }
 
     @Route(method = HttpMethod.GET, uri = "/process")
-    public Result process(@Parameter("token") String token) {
+    public Result process() {
+        String token = context().cookieValue("token");
         for(Session session : sessionList) {
             if (session.getToken().toString().equals(token)) {
                 return ok(render(process));
@@ -410,7 +411,8 @@ public class MainController extends DefaultController {
 
 
     @Route(method = HttpMethod.GET, uri = "/process/leftNavContent")
-    public Result leftNavContent(@Parameter("token") String token) {
+    public Result leftNavContent() {
+        String token = context().cookieValue("token");
         for(Session session : sessionList) {
             if (session.getToken().toString().equals(token)) {
                 return ok(render(leftNavContent));
@@ -420,7 +422,8 @@ public class MainController extends DefaultController {
     }
 
     @Route(method = HttpMethod.GET, uri = "/user")
-    public Result user(@Parameter("token") String token) {
+    public Result user() {
+        String token = context().cookieValue("token");
         for(Session session : sessionList) {
             if (session.getToken().toString().equals(token)) {
                 return ok(render(user, "session", session));
@@ -460,7 +463,8 @@ public class MainController extends DefaultController {
     }
 
     @Route(method = HttpMethod.GET, uri = "/user/settings")
-    public Result settings(@Parameter("token") String token) {
+    public Result settings() {
+        String token = context().cookieValue("token");
         Session session = null;
         for(Session s : sessionList){
             if(s.getToken().toString().equals(token)){
@@ -477,7 +481,8 @@ public class MainController extends DefaultController {
     }
 
     @Route(method = HttpMethod.GET, uri = "/data/database")
-    public Result database(@Parameter("token") String token) {
+    public Result database() {
+        String token = context().cookieValue("token");
         Session session = null;
         for(Session s : sessionList){
             if(s.getToken().toString().equals(token)){

@@ -45,30 +45,57 @@ package org.orbisgis.orbisserver.coreserver.model;
  */
 public class StatusRequest {
 
+    /** Identifier of the running job. */
     private String id;
+    /** Title of the process executed. */
     private String processTitle;
+    /** Id of the process executed. */
     private String processId;
 
+    /**
+     * Main constructor.
+     * @param id Identifier of the running job.
+     */
     public StatusRequest(String id){
         this.id = id;
     }
 
+    /**
+     * Returns the identifier.
+     * @return The identifier.
+     */
     public String getId(){
         return id;
     }
 
+    /**
+     * Returns the process title.
+     * @return The process title.
+     */
     public String getProcessTitle() {
         return processTitle;
     }
 
+    /**
+     * Sets the process title.
+     * @param processTitle The process title.
+     */
     public void setProcessTitle(String processTitle) {
         this.processTitle = processTitle;
     }
 
+    /**
+     * Returns the process identifier.
+     * @return The process identifier.
+     */
     public String getProcessId() {
         return processId;
     }
 
+    /**
+     * Sets the process identifier.
+     * @param processId Process identifier.
+     */
     public void setProcessId(String processId) {
         this.processId = processId;
     }

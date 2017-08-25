@@ -49,9 +49,6 @@ $('#Mymodal').on('shown.bs.modal', function () {$('#sign in').focus()})
 
 function process(){
     $.ajax({ type: "GET",
-        data: {
-            "token": readCookie("token")
-        },
         url: "http://localhost:8080/process",
         async: false,
         success : function(text)
@@ -59,7 +56,7 @@ function process(){
             $('#content').removeClass();
             $('#content').addClass('col-xs-12 col-sm-12 col-md-12');
             $('#left-nav').addClass('slide-in');
-            $('#main-body').css('margin-left', '300px');
+            $('#main-body').addClass('is-menu');
             $( "#content" ).html(String(text));
             processLeftNav();
 
@@ -69,7 +66,7 @@ function process(){
             $('#content').removeClass();
             $('#content').addClass('col-xs-12 col-sm-12 col-md-12');
             $('#left-nav').removeClass('slide-in');
-            $('#main-body').css('margin-left', '0px');
+            $('#main-body').removeClass('is-menu');
             $( "#content" ).html(String(text.responseText));
         }
     });
@@ -82,13 +79,11 @@ function process(){
 function processLeftNav(){
     $.ajax({ type: "GET",
         url: "http://localhost:8080/process/leftNavContent",
-        data: {
-            "token": readCookie("token")
-        },
         async: false,
         success : function(text)
         {
-            $( "#left-nav-content" ).html(String(text));
+            $( "#process-content" ).html(String(text));
+            $( "#dropdown-data" ).removeClass('in');
         },
         error : function(text)
         {
@@ -99,9 +94,6 @@ function processLeftNav(){
 
 function home(){
     $.ajax({ type: "GET",
-        data: {
-            "token": readCookie("token")
-        },
         url: "http://localhost:8080/home",
         async: false,
         success : function(text)
@@ -116,18 +108,19 @@ function home(){
     $('#left-nav').removeClass('slide-in');
     $('#content').removeClass();
     $('#content').addClass('col-xs-12 col-sm-12 col-md-12');
-    $('#main-body').css('margin-left', '0px');
+    $('#main-body').removeClass('is-menu');
     $("#Data").removeClass("active");
     $("#Process").removeClass("active");
     $("#Share").removeClass("active");
+    $("#dropdown-process").removeClass("in");
+    $("#dropdown-data").removeClass("in");
 }
 
 function showProcess(id){
     $.ajax({ type: "GET",
         url: "http://localhost:8080/describeProcess",
         data: {
-            "id": id,
-            "token": readCookie("token")
+            "id": id
         },
         async: false,
         success : function(text)
@@ -145,8 +138,7 @@ function showImport(id){
     $.ajax({ type: "GET",
         url: "http://localhost:8080/describeProcess",
         data: {
-            "id": id,
-            "token": readCookie("token")
+            "id": id
         },
         async: false,
         success : function(text)
@@ -164,8 +156,7 @@ function showExport(id){
     $.ajax({ type: "GET",
         url: "http://localhost:8080/describeProcess",
         data: {
-            "id": id,
-            "token": readCookie("token")
+            "id": id
         },
         async: false,
         success : function(text)
@@ -182,9 +173,6 @@ function showExport(id){
 function showUser(){
     $.ajax({
         type: "GET",
-        data: {
-            "token": readCookie("token")
-        },
         url: "http://localhost:8080/user",
         async: false,
         success : function(text)
@@ -204,9 +192,6 @@ function signIn(){
     $.ajax({
         type: "GET",
         url: "http://localhost:8080/signIn",
-        data: {
-            "token": readCookie("token")
-        },
         async: false,
         success : function(text)
         {
@@ -223,9 +208,6 @@ function signIn(){
 function jobs(){
     $.ajax({ type: "GET",
         url: "http://localhost:8080/jobs",
-        data: {
-            "token": readCookie("token")
-        },
         async: false,
         success : function(text)
         {
@@ -242,14 +224,11 @@ function jobs(){
 function data(){
     $.ajax({ type: "GET",
         url: "http://localhost:8080/data",
-        data: {
-            "token": readCookie("token")
-        },
         async: false,
         success : function(text)
         {
             $('#left-nav').addClass('slide-in');
-            $('#main-body').css('margin-left', '300px');
+            $('#main-body').addClass('is-menu');
             $('#content').removeClass();
             $('#content').addClass('col-xs-12 col-sm-12 col-md-12');
             $('#content').html('<div id="row_top" class="row"><div id="content_top"></div></div><div id="row_bottom" class="row"><div id="content_bottom"></div></div>');
@@ -265,7 +244,7 @@ function data(){
         error : function(text)
         {
             $('#left-nav').removeClass('slide-in');
-            $('#main-body').css('margin-left', '0px');
+            $('#main-body').removeClass('is-menu');
             $('#content').removeClass();
             $('#content').addClass('col-xs-12 col-sm-12 col-md-12');
             $( "#content" ).html(String(text.responseText));
@@ -279,13 +258,11 @@ function data(){
 function dataLeftNav(){
     $.ajax({ type: "GET",
         url: "http://localhost:8080/dataleftnav",
-        data: {
-            "token": readCookie("token")
-        },
         async: false,
         success : function(text)
         {
-            $( "#left-nav-content" ).html(String(text));
+            $( "#data-content" ).html(String(text));
+            $( "#dropdown-process" ).removeClass('in');
         },
         error : function(text)
         {
@@ -298,13 +275,12 @@ function importData(search_id){
     $.ajax({ type: "GET",
         url: "http://localhost:8080/data/import",
         data: {
-            "token": readCookie("token"),
             "filters": getFilters(search_id)
         },
         async: false,
         success : function(text)
         {
-            $('#dropdown-lvl3').removeClass('in');
+            $('#dropdown-export').removeClass('in');
             $('#left-nav').addClass('slide-in');
             $( '#import-list' ).html(String(text));
         },
@@ -319,13 +295,12 @@ function exportData(search_id){
     $.ajax({ type: "GET",
         url: "http://localhost:8080/data/export",
         data: {
-            "token": readCookie("token"),
             "filters": getFilters(search_id)
         },
         async: false,
         success : function(text)
         {
-            $('#dropdown-lvl2').removeClass('in');
+            $('#dropdown-import').removeClass('in');
             $('#left-nav').addClass('slide-in');
             $( '#export-list').html(String(text));
         },
@@ -339,7 +314,6 @@ function exportData(search_id){
 function listProcess(search_id){
     $.ajax({ type: "GET",
         data: {
-            "token": readCookie("token"),
             "filters": getFilters(search_id)
         },
         url: "http://localhost:8080/process/processList",
@@ -489,9 +463,6 @@ function readCookie(name) {
 function user_settings(){
     $.ajax({
         type: "GET",
-        data: {
-            "token": readCookie("token")
-        },
         url: "/user/settings",
         async: false,
         success : function(text)
@@ -508,9 +479,6 @@ function user_settings(){
 function log_out(){
     $.ajax({
         type: "GET",
-        data: {
-            "token": readCookie("token")
-        },
         url: "http://localhost:8080/user/logOut",
         async: false,
         success : function(text)
@@ -538,9 +506,6 @@ function toggleDatabaseView(){
     else {
         $.ajax({
             type: "GET",
-            data: {
-                "token": readCookie("token")
-            },
             url: "http://localhost:8080/data/database",
             async: false,
             success : function(text)

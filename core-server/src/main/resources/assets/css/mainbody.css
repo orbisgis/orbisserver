@@ -72,6 +72,9 @@ body .container-fluid {
 #main-body > .row {
     height :100%;
 }
+.is-menu {
+    margin-left: 300px;
+}
 
 #content{
     height :100%;
@@ -308,4 +311,29 @@ table tr td:first-child {
 
 label{
     font-weight: inherit;
+}
+
+@media (max-width: 768px) {
+
+    #main-body {
+        margin-left: 200px;
+    }
+
+    .is-menu {
+        margin-left: 200px;
+    }
+
+    #section-head img{
+        margin-left: 0px;
+        margin-top: 0px;
+    }
+
+    #section-head .logo{
+        top: 0px;
+        left: 0px;
+    }
+
+    #section-head h1{
+        margin-top: 0px;
+    }
 }

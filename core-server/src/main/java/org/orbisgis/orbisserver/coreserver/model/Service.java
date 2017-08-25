@@ -42,6 +42,8 @@ import java.util.List;
 
 /**
  * Interface to define a service which can be plugged to the server
+ *
+ * @author Sylvain PALOMINOS
  */
 public interface Service {
 

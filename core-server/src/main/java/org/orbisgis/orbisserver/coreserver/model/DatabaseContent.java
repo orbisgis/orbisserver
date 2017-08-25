@@ -42,20 +42,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Represent the DataBase content with its table list.
+ * Used to display a view of the DataBase in the client.
+ *
  * @author Sylvain PALOMINOS
  */
 public class DatabaseContent {
 
+    /** List of the tables in the database.*/
     private List<DatabaseTable> tableList;
 
+    /** Main constructor */
     public DatabaseContent(){
         this.tableList = new ArrayList<>();
     }
 
+    /**
+     * Adds a table to the database content.
+     * @param dbTable Table to add.
+     */
     public void addTable(DatabaseTable dbTable) {
         tableList.add(dbTable);
     }
 
+    /**
+     * Returns the list of the table of the database.
+     * @return The list of the table of the database.
+     */
     public List<DatabaseTable> getTableList(){
         return tableList;
     }

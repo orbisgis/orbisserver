@@ -47,75 +47,147 @@ import javax.xml.datatype.XMLGregorianCalendar;
  */
 public class StatusInfo {
 
+    /** Identifier of the job.*/
     private String jobId;
+    /** Identifier of the operation or process. */
     private String processID;
+    /** Title of the process or operation. */
     private String processTitle;
+    /** Status of the job. */
     private String status;
+    /** Percent complete of the job. */
     private Integer percent = 0;
+    /** Estimated date of completion. */
     private XMLGregorianCalendar estimatedCompletion;
+    /** The next poll date. */
     private XMLGregorianCalendar nextPoll;
+    /** Time in millis when the refresh should be done. */
     private long nextRefreshMillis = 0;
 
+    /**
+     * Main constructor.
+     * @param jobId Identifier of the job.
+     */
     public StatusInfo(String jobId){
         this.jobId = jobId;
     }
 
+    /**
+     * Returns the job identifier.
+     * @return The job identifier.
+     */
     public String getJobId() {
         return jobId;
     }
 
+    /**
+     * Returns the process identifier.
+     * @return The process identifier.
+     */
     public String getProcessID() {
         return processID;
     }
 
+    /**
+     * Sets the identifier of the process.
+     * @param processID Identifier of the process.
+     */
     public void setProcessID(String processID) {
         this.processID = processID;
     }
 
+    /**
+     * Returns the process title.
+     * @return The process title.
+     */
     public String getProcessTitle() {
         return processTitle;
     }
 
+    /**
+     * Sets the process title.
+     * @param processTitle The process title.
+     */
     public void setProcessTitle(String processTitle) {
         this.processTitle = processTitle;
     }
 
+    /**
+     * Sets the status of the job.
+     * @param status The job status.
+     */
     public void setStatus(String status){
         this.status = status;
     }
 
+    /**
+     * Returns the job status.
+     * @return The job status.
+     */
     public String getStatus(){
         return status;
     }
 
+    /**
+     * Sets the percent complete.
+     * @param percent The percent complete.
+     */
     public void setPercentCompleted(int percent){
         this.percent = percent;
     }
 
+    /**
+     * Returns the percent complete.
+     * @return The percent complete.
+     */
     public Integer getPercentCompleted(){
         return percent;
     }
 
+    /**
+     * Sets the estimated completion date.
+     * @param date The estimated completion date.
+     */
     public void setEstimatedCompletion(XMLGregorianCalendar date){
         this.estimatedCompletion = date;
     }
 
+    /**
+     * Returns the estimated completion date.
+     * @return The estimated completion date.
+     */
     public XMLGregorianCalendar getEstimatedCompletion(){
         return estimatedCompletion;
     }
 
+    /**
+     * Sets the next poll date.
+     * @param nextPoll The next poll date.
+     */
     public void setNextPoll(XMLGregorianCalendar nextPoll) {
         this.nextPoll = nextPoll;
     }
 
+    /**
+     * returns the next poll date.
+     * @return The next poll date.
+     */
     public XMLGregorianCalendar getNextPoll() {
         return nextPoll;
     }
 
+    /**
+     * Sets the next refresh time in millis.
+     * @param nextRefreshMillis the next refresh time in millis.
+     */
     public void setNextRefreshMillis(long nextRefreshMillis) {
         this.nextRefreshMillis = nextRefreshMillis;
     }
 
+    /**
+     * Returns the next refresh time in millis.
+     * @return The next refresh time in millis.
+     */
     public long getNextRefreshMillis(){
         return nextRefreshMillis;
     }
