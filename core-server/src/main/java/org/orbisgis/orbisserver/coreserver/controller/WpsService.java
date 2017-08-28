@@ -39,12 +39,15 @@
 package org.orbisgis.orbisserver.coreserver.controller;
 
 import net.opengis.ows._2.*;
+import net.opengis.wps._1_0_0.OutputDataType;
 import net.opengis.wps._2_0.*;
 import net.opengis.wps._2_0.GetCapabilitiesType;
 import net.opengis.wps._2_0.ObjectFactory;
 import net.opengis.wps._2_0.ReferenceType;
 import org.orbisgis.orbisserver.coreserver.model.*;
+import org.orbisgis.orbisserver.coreserver.model.Data;
 import org.orbisgis.orbisserver.coreserver.model.Operation;
+import org.orbisgis.orbisserver.coreserver.model.Result;
 import org.orbisgis.orbisserver.coreserver.model.StatusInfo;
 import org.orbiswps.scripts.WpsScriptPlugin;
 import org.orbiswps.server.WpsServer;
@@ -99,7 +102,7 @@ public class WpsService implements Service {
 
             for (Map.Entry<String, String> entry : request.getDataMap().entrySet()) {
                 DataInputType dataInputType = new DataInputType();
-                Data data = new Data();
+                net.opengis.wps._2_0.Data data = new net.opengis.wps._2_0.Data();
                 data.getContent().add(entry.getValue());
                 data.setEncoding("simple");
                 data.setMimeType("text/plain");
@@ -195,6 +198,51 @@ public class WpsService implements Service {
             statusInfo.setProcessID(request.getProcessId());
             statusInfo.setStatus(info.getStatus());
             return statusInfo;
+        }
+        catch(Exception e){
+            LOGGER.error("Unable to get the StatusRequest response.\n"+e.getMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public Result getResult(StatusRequest request) {
+
+        try {
+            Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
+            Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
+            //Get the corresponding GetResult
+            GetResult getResult = new GetResult();
+            getResult.setJobID(request.getId());
+            //Marshall the GetResult object into an OutputStream
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            marshaller.marshal(getResult, out);
+            //Write the OutputStream content into an Input stream before sending it to the wpsService
+            InputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
+            ByteArrayOutputStream xml = (ByteArrayOutputStream) wpsServer.callOperation(in);
+            //Get back the result of the DescribeProcess request as a BufferReader
+            InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
+            //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
+            net.opengis.wps._2_0.Result result = (net.opengis.wps._2_0.Result)unmarshaller.unmarshal(resultXml);
+            Result res = new Result(result.getJobID());
+            res.setExpirationDate(result.getExpirationDate());
+            List<Output> outputList = new ArrayList<>();
+            for(DataOutputType outData : result.getOutput()){
+                Output output = new Output(outData.getId());
+                if(outData.isSetData()){
+                    Data data = new Data();
+                    data.setMimeType(outData.getData().getMimeType());
+                    data.setContent(outData.getData().getContent());
+                    output.setData(data);
+                }
+                else if(outData.isSetReference()) {
+                    output.setReference(outData.getReference().getHref());
+                }
+                outputList.add(output);
+            }
+            res.setOutputList(outputList);
+            return res;
         }
         catch(Exception e){
             LOGGER.error("Unable to get the StatusRequest response.\n"+e.getMessage());

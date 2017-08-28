@@ -38,41 +38,33 @@
  */
 package org.orbisgis.orbisserver.coreserver.model;
 
+import java.util.List;
+
 /**
- * Output of a process.
+ * Data representation.
  *
  * @author Sylvain PALOMINOS
  */
-public class Output {
+public class Data {
 
-    /** Unique identifier of the output.*/
-    private String id;
-    /** The data of the output.*/
-    private Data data;
-    /** The reference of the output.*/
-    private String reference;
+    /** MimeType of the data.*/
+    private String mimeType;
+    /** Content of the data.*/
+    private List<Object> content;
 
     /**
-     * Main constructor.
-     * @param id Unique id of the output.
+     * Sets the mimeType of the data.
+     * @param mimeType MimeType of the data.
      */
-    public Output(String id) {
-        this.id = id;
+    public void setMimeType(String mimeType){
+        this.mimeType = mimeType;
     }
 
     /**
-     * Sets the data of the output.
-     * @param data The output data.
+     * Sets the data content.
+     * @param content The data content.
      */
-    public void setData(Data data) {
-        this.data = data;
-    }
-
-    /**
-     * Sets the reference of the output data.
-     * @param reference Output data reference.
-     */
-    public void setReference(String reference) {
-        this.reference = reference;
+    public void setContent(List<Object> content){
+        this.content = content;
     }
 }

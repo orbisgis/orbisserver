@@ -38,41 +38,44 @@
  */
 package org.orbisgis.orbisserver.coreserver.model;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.util.List;
+
 /**
- * Output of a process.
+ * Object containing the representation of the result of a process execution (job).
  *
  * @author Sylvain PALOMINOS
  */
-public class Output {
+public class Result {
 
-    /** Unique identifier of the output.*/
-    private String id;
-    /** The data of the output.*/
-    private Data data;
-    /** The reference of the output.*/
-    private String reference;
+    /** Unique id of the job linked to the result.*/
+    private String jobId;
+    /** Expiration date of the data of the result.*/
+    private XMLGregorianCalendar expirationDate;
+    /** List of the outputs of the result.*/
+    private List<Output> outputList;
 
     /**
-     * Main constructor.
-     * @param id Unique id of the output.
+     * Main Constructor.
+     * @param jobId Unique id of the job linked to the result.
      */
-    public Output(String id) {
-        this.id = id;
+    public Result(String jobId){
+        jobId = jobId;
     }
 
     /**
-     * Sets the data of the output.
-     * @param data The output data.
+     * Sets the expiration date of the data of the result.
+     * @param expirationDate The expiration date.
      */
-    public void setData(Data data) {
-        this.data = data;
+    public void setExpirationDate(XMLGregorianCalendar expirationDate){
+        this.expirationDate = expirationDate;
     }
 
     /**
-     * Sets the reference of the output data.
-     * @param reference Output data reference.
+     * Sets the list of the output of the result.
+     * @param outputList The list of output.
      */
-    public void setReference(String reference) {
-        this.reference = reference;
+    public void setOutputList(List<Output> outputList){
+        this.outputList = outputList;
     }
 }

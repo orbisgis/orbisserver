@@ -81,6 +81,8 @@ public class Session {
     private List<StatusInfo> statusInfoList;
     /** Map linking the job id with the service executing it. */
     private Map<String, Service> jobIdServiceMap;
+    /** Map with the finished job. */
+    private Map<String, StatusInfo> finishedJobMap;
 
     /**
      * Main constructor.
@@ -88,6 +90,7 @@ public class Session {
      */
     public Session(String username){
         jobIdServiceMap = new HashMap<>();
+        finishedJobMap = new HashMap<>();
         serviceList = new ArrayList<>();
         statusInfoList = new ArrayList<>();
         token = UUID.randomUUID();
@@ -219,7 +222,12 @@ public class Session {
      * @return The cached StatusInfo list.
      */
     public List<StatusInfo> getAllStatusInfo(){
-        return statusInfoList;
+        List<StatusInfo> list = new ArrayList<>();
+        list.addAll(statusInfoList);
+        for(Map.Entry<String, StatusInfo> entry : finishedJobMap.entrySet()){
+            list.add(entry.getValue());
+        }
+        return list;
     }
 
     /**
@@ -228,9 +236,8 @@ public class Session {
      */
     public List<StatusInfo> getAllStatusInfoToRefresh() {
         List<StatusInfo> allStatusInfoToRefresh = new ArrayList<>();
-        List<StatusInfo> list = getAllStatusInfo();
         long timeMillisNow = System.currentTimeMillis();
-        for(StatusInfo statusInfo : list){
+        for(StatusInfo statusInfo : statusInfoList){
             long comparison = -1;
             if(statusInfo.getNextPoll() != null) {
                 long timeMillisPoll = statusInfo.getNextPoll().toGregorianCalendar().getTime().getTime();
@@ -245,15 +252,42 @@ public class Session {
 
     /**
      * Refresh the status of the job with the given identifier.
-     * @param jobId Identifier of the job to refresh.
-     * @return The refreshed StatusInfo of the job.
      */
-    public StatusInfo refreshStatus(String jobId) {
+    public long refreshStatus(StatusInfo statusInfo) {
+        long timeMillisNow = System.currentTimeMillis();
+        long minRefresh = Long.MAX_VALUE;
+        String jobId = statusInfo.getJobId();
         Service service = jobIdServiceMap.get(jobId);
         StatusRequest statusRequest = new StatusRequest(jobId);
 
+        StatusInfo statusInfoToRemove = null;
+        for(StatusInfo info : statusInfoList){
+            if(info.getJobId().equalsIgnoreCase(jobId)){
+                statusInfoToRemove = info;
+            }
+        }
+        statusInfoList.remove(statusInfoToRemove);
+
         StatusInfo info = service.getStatus(statusRequest);
-        return info;
+        if(info != null){
+            info.setProcessID(statusInfo.getProcessID());
+            info.setProcessTitle(statusInfo.getProcessTitle());
+            info.setResult(service.getResult(statusRequest));
+            info.setNextRefreshMillis(-1);
+            if (info.getNextPoll() != null) {
+                long timeMillisPoll = info.getNextPoll().toGregorianCalendar().getTime().getTime();
+                info.setNextRefreshMillis(timeMillisPoll - timeMillisNow);
+            }
+            if(info.getStatus().equalsIgnoreCase("SUCCEEDED")){
+
+                jobIdServiceMap.remove(jobId);
+                finishedJobMap.put(jobId, info);
+            }
+            else{
+                statusInfoList.add(info);
+            }
+        }
+        return minRefresh;
     }
 
     /**

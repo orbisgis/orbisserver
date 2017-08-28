@@ -65,6 +65,8 @@ public interface Service {
      */
     public StatusInfo getStatus(StatusRequest request);
 
+    public Result getResult(StatusRequest request);
+
     public List<Operation> getAllOperation();
 
     boolean hasOperation(String id);

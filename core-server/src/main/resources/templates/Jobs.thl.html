@@ -118,7 +118,14 @@
                     </div>
                 </div>
             </td>
-            <td><p>24h00</p></td>
+            <td>
+                <div th:if="${job.hasResult()}">
+                    <p>dsjfbdsikbhj</p>
+                </div>
+                <p th:if="!${job.hasResult()}">
+                    24h00
+                </p>
+            </td>
         </tr>
     </tbody>
 </table>
