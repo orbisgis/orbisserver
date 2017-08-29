@@ -120,7 +120,7 @@
             </td>
             <td>
                 <div th:if="${job.hasResult()}">
-                    <p>dsjfbdsikbhj</p>
+                    <p th:text="${job.result.getRemainTime()}">time</p>
                 </div>
                 <p th:if="!${job.hasResult()}">
                     24h00

@@ -278,8 +278,7 @@ public class Session {
                 long timeMillisPoll = info.getNextPoll().toGregorianCalendar().getTime().getTime();
                 info.setNextRefreshMillis(timeMillisPoll - timeMillisNow);
             }
-            if(info.getStatus().equalsIgnoreCase("SUCCEEDED")){
-
+            if(info.getStatus().equalsIgnoreCase("SUCCEEDED") || info.getStatus().equalsIgnoreCase("FAILED")){
                 jobIdServiceMap.remove(jobId);
                 finishedJobMap.put(jobId, info);
             }

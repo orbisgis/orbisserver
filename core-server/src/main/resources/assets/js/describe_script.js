@@ -58,4 +58,31 @@
 
 
 
+    /** Submit process scripts */
+    $(function() {
+        $("#form").on("submit", function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: "http://localhost:8080/execute",
+                type: 'POST',
+                data: $("#form").serialize(),
+                beforeSend: function() {
+                    $("#submitText").toggle();
+                },
+                success: function(data) {
+                    $("#Data").removeClass("active");
+                    $("#Process").addClass("active");
+                    $("#Share").removeClass("active");
+                    process();
+                    jobs();
+                    $( "#dropdown-process" ).addClass('in');
+                },
+                error : function(text)
+                {
+                    $( "#content" ).html(String(text.responseText));
+                }
+            });
+        });
+    });
+
 // ]]>

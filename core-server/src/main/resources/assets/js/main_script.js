@@ -360,28 +360,6 @@ function loadFile(id){
     }
 }
 
-function submitForm() {
-    $.ajax({
-        url: "http://localhost:8080/execute",
-        type: 'POST',
-        data: $("#form").serialize(),
-        beforeSend: function() {
-            $("#submitText").toggle();
-        },
-        success: function(data) {
-            $("#Data").removeClass("active");
-            $("#Process").addClass("active");
-            $("#Share").removeClass("active");
-            jobs();
-            processLeftNav();
-        },
-        error : function(text)
-        {
-            $( "#content" ).html(String(text.responseText));
-        }
-    });
-}
-
 /** Login modal scripts */
 $(function() {
     $("#login-form").on("submit", function(e) {
