@@ -162,9 +162,9 @@
                 <div class="row">
                     <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
                         <span th:text="${input.title}">title</span>
-                        <input type="number" class="form-control" th:step="${input.attributes.get('spacing')}" th:name="${input.id}"
-                               th:min="${input.attributes.get('min')}" th:max="${input.attributes.get('max')}"
-                               th:value="${input.attributes.get('value')}" />
+                        <input type="number" class="form-control" th:step="${input.attributes.get('spacing')}"
+                               th:name="${input.id}" th:min="${input.attributes.get('min')}"
+                               th:max="${input.attributes.get('max')}" th:value="${input.attributes.get('value')}" />
                     </div>
                 </div>
             </div>
@@ -249,22 +249,10 @@
 
                         <div class="elements form-group rawdata" th:if="${input.name.equalsIgnoreCase('RawData')
                               and (input.optional)}">
-                            <!--<div class="row">
-                                <div class="col-xs-12 col-sm-10 col-md-8 col-lg-6 elements input-group">
-                                    <label class="input-group-btn" onchange="javascript:nameFile()">
-                                        <span class="btn btn-default">
-                                            Browse&hellip;
-                                            <input id="file-load" th:name="name" type="file" style="display: none;" multiple="true"/>
-                                        </span>
-                                    </label>
-                                    <input id="in-browse" type="text" th:name="${input.id}" class="form-control" readonly="true"
-                                           th:placeholder="${input.title}"/>
-                                </div>
-                            </div>-->
                             <div class="row">
                                 <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
                                     <span th:text="${input.title}">title</span>
-                                    <input class="form-control" type="text" th:name="${input.id}" value="Table name" />
+                                    <input class="form-control" type="text" th:name="${input.id}" placeholder="Table name" />
                                 </div>
                             </div>
                         </div>
@@ -275,7 +263,7 @@
                             <div class="row">
                                 <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
                                     <span th:text="${input.title}">title</span>
-                                    <input class="form-control" type="text" th:name="${input.id}" value="Table name" />
+                                    <input class="form-control" type="text" th:name="${input.id}" placeholder="Table name" />
                                 </div>
                             </div>
                         </div>
@@ -285,7 +273,7 @@
                             <div class="row">
                                 <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
                                     <span th:text="${input.title}">title</span>
-                                    <input class="form-control" type="password" th:name="${input.id}" value="Password" />
+                                    <input class="form-control" type="password" th:name="${input.id}" placeholder="Password" />
                                 </div>
                             </div>
                         </div>
@@ -296,7 +284,7 @@
                             <div class="row">
                                 <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
                                     <span th:text="${input.title}">title</span>
-                                    <input type="text" class="form-control" th:name="${input.id}" value="String value" />
+                                    <input type="text" class="form-control" th:name="${input.id}" placeholder="String value" />
                                 </div>
                             </div>
                         </div>
@@ -319,7 +307,7 @@
                             <div class="row">
                                 <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
                                     <span th:text="${input.title}">title</span>
-                                    <input class="form-control" type="text" th:name="${input.id}" value="Table name" />
+                                    <input class="form-control" type="text" th:name="${input.id}" placeholder="Table name" />
                                 </div>
                             </div>
                         </div>
@@ -329,7 +317,7 @@
                             <div class="row">
                                 <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
                                     <span th:text="${input.title}">title</span>
-                                    <input class="form-control" type="text" th:name="${input.id}" value="Table column"/>
+                                    <input class="form-control" type="text" th:name="${input.id}" placeholder="Table column"/>
                                 </div>
                             </div>
                         </div>
@@ -339,7 +327,7 @@
                             <div class="row">
                                 <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
                                     <span th:text="${input.title}">title</span>
-                                    <input class="form-control" type="text" th:name="${input.id}" value="Table value" />
+                                    <input class="form-control" type="text" th:name="${input.id}" placeholder="Table value" />
                                 </div>
                             </div>
                         </div>
@@ -377,7 +365,8 @@
 
         <input id="submitBtn" class="btn btn-primary" type="submit" value="Submit">
             <span id="submitText" hidden="true"> Sending data
-                <i class="glyphicon glyphicon-refresh gly-spin"></i></span>
+                <i class="glyphicon glyphicon-refresh gly-spin"></i>
+            </span>
         </input>
     </form>
     <script src="/assets/js/describe_script.js"></script>
