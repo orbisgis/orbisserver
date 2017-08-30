@@ -63,6 +63,8 @@ public class StatusInfo {
     private XMLGregorianCalendar nextPoll;
     /** Time in millis when the refresh should be done. */
     private long nextRefreshMillis = 0;
+    /** Job result.*/
+    private Result result;
 
     /**
      * Main constructor.
@@ -190,5 +192,25 @@ public class StatusInfo {
      */
     public long getNextRefreshMillis(){
         return nextRefreshMillis;
+    }
+
+    /**
+     * Sets the job result.
+     * @param result Job result.
+     */
+    public void setResult(Result result) {
+        this.result = result;
+    }
+
+    /**
+     * Returns true if there is a result, false otherwise.
+     * @return True if there is a result, false otherwise.
+     */
+    public boolean hasResult(){
+        return result!=null;
+    }
+
+    public Result getResult() {
+        return result;
     }
 }

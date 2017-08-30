@@ -86,6 +86,9 @@
 
 </style>
 <div class="col-xs-12 col-sm-10 col-sm-push-1 col-md-10 col-md-push-1">
+
+    <form id="upload-form" action="/uploading" enctype="multipart/form-data" method="POST"></form>
+
     <h1 id="title" th:text="${operation.title}" ></h1>
     <hr />
     <div id="description"><p th:text="${operation.abstr}"></p></div>
@@ -103,17 +106,16 @@
 
                      <div class="row">
                         <div th:id="${input.htmlId}" class="col-xs-12 col-sm-10 col-md-8 col-lg-6 elements input-group">
-                            <form id="upload-form" action="/uploading" enctype="multipart/form-data" method="POST">
-                                <label class="input-group-btn control-label" onchange="javascript:nameFile()">
-                                    <span class="btn btn-default">
-                                        Browse
-                                        <input id="file" th:name="file" type="file" style="display: none;" multiple="true"
-                                               th:onchange="'javascript:loadFile(\''+${input.htmlId}+'\')'" class="form-control"/>
-                                    </span>
-                                </label>
-                                <input id="in-browse" type="text" th:name="${input.id}" class="form-control" readonly="true"
-                                       placeholder="Select a file"/>
-                            </form>
+                            <label class="input-group-btn control-label" onchange="javascript:nameFile()">
+                                <span class="btn btn-default">
+                                    Browse
+                                    <input id="file" th:name="file" type="file" style="display: none;" multiple="true"
+                                           th:onchange="'javascript:loadFile(\''+${input.htmlId}+'\')'"
+                                           class="form-control" form="upload-form"/>
+                                </span>
+                            </label>
+                            <input id="in-browse" type="text" th:name="${input.id}" class="form-control" readonly="true"
+                                   placeholder="Select a file"/>
                         </div>
                     </div>
                 </div>
@@ -373,7 +375,7 @@
             </div>
         </div>
 
-        <input id="submitBtn" class="btn btn-primary" type="submit" value="Submit" onclick="javascript:submitForm()">
+        <input id="submitBtn" class="btn btn-primary" type="submit" value="Submit">
             <span id="submitText" hidden="true"> Sending data
                 <i class="glyphicon glyphicon-refresh gly-spin"></i></span>
         </input>

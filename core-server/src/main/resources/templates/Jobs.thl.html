@@ -118,7 +118,14 @@
                     </div>
                 </div>
             </td>
-            <td><p>24h00</p></td>
+            <td>
+                <div th:if="${job.hasResult()}">
+                    <p th:text="${job.result.getRemainTime()}">time</p>
+                </div>
+                <p th:if="!${job.hasResult()}">
+                    24h00
+                </p>
+            </td>
         </tr>
     </tbody>
 </table>

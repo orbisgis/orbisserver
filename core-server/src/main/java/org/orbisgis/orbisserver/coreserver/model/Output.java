@@ -44,4 +44,35 @@ package org.orbisgis.orbisserver.coreserver.model;
  * @author Sylvain PALOMINOS
  */
 public class Output {
+
+    /** Unique identifier of the output.*/
+    private String id;
+    /** The data of the output.*/
+    private Data data;
+    /** The reference of the output.*/
+    private String reference;
+
+    /**
+     * Main constructor.
+     * @param id Unique id of the output.
+     */
+    public Output(String id) {
+        this.id = id;
+    }
+
+    /**
+     * Sets the data of the output.
+     * @param data The output data.
+     */
+    public void setData(Data data) {
+        this.data = data;
+    }
+
+    /**
+     * Sets the reference of the output data.
+     * @param reference Output data reference.
+     */
+    public void setReference(String reference) {
+        this.reference = reference;
+    }
 }

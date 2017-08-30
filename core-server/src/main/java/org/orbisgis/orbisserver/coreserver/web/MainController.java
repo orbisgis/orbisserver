@@ -260,29 +260,11 @@ public class MainController extends DefaultController {
         String token = context().cookieValue("token");
         for(Session session : sessionList) {
             if (session.getToken().toString().equals(token)) {
-                long timeMillisNow = System.currentTimeMillis();
                 List<StatusInfo> statusInfoToRefreshList = session.getAllStatusInfoToRefresh();
                 List<StatusInfo> statusInfoList = session.getAllStatusInfo();
                 long minRefresh = Long.MAX_VALUE;
-
                 for (StatusInfo statusInfo : statusInfoToRefreshList) {
-                    StatusInfo info = session.refreshStatus(statusInfo.getJobId());
-                    statusInfo.setStatus(info.getStatus());
-                    if (info.getPercentCompleted() != null) {
-                        statusInfo.setPercentCompleted(info.getPercentCompleted());
-                    }
-                    statusInfo.setNextPoll(info.getNextPoll());
-                    if (info.getEstimatedCompletion() != null) {
-                        statusInfo.setEstimatedCompletion(info.getEstimatedCompletion());
-                    }
-                    statusInfo.setNextRefreshMillis(-1);
-                    if (statusInfo.getNextPoll() != null) {
-                        long timeMillisPoll = statusInfo.getNextPoll().toGregorianCalendar().getTime().getTime();
-                        statusInfo.setNextRefreshMillis(timeMillisPoll - timeMillisNow);
-                    }
-                    if (statusInfo.getNextRefreshMillis() >= 0) {
-                        minRefresh = Math.min(statusInfo.getNextRefreshMillis(), minRefresh);
-                    }
+                    minRefresh = Math.min(session.refreshStatus(statusInfo), minRefresh);
                 }
 
                 for (StatusInfo statusInfo : statusInfoList) {

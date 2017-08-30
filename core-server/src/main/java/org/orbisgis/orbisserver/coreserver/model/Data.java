@@ -36,53 +36,35 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
+package org.orbisgis.orbisserver.coreserver.model;
 
+import java.util.List;
 
-// <![CDATA[
+/**
+ * Data representation.
+ *
+ * @author Sylvain PALOMINOS
+ */
+public class Data {
 
+    /** MimeType of the data.*/
+    private String mimeType;
+    /** Content of the data.*/
+    private List<Object> content;
 
-
-    $('#a_Optional').click(function (e) {
-        $('html, body').animate({
-            scrollTop: $('#optional').offset().top
-        }, 'slow');
-        $('#icon-chevron').toggleClass("down");
-    });
-
-
-
-
-    if(($('#ListElements').children().length>0) || ($('#checkBoxs_optional').children().length>0)){
-        $('#optional').show();
+    /**
+     * Sets the mimeType of the data.
+     * @param mimeType MimeType of the data.
+     */
+    public void setMimeType(String mimeType){
+        this.mimeType = mimeType;
     }
 
-
-
-    /** Submit process scripts */
-    $(function() {
-        $("#form").on("submit", function(e) {
-            e.preventDefault();
-            $.ajax({
-                url: "http://localhost:8080/execute",
-                type: 'POST',
-                data: $("#form").serialize(),
-                beforeSend: function() {
-                    $("#submitText").toggle();
-                },
-                success: function(data) {
-                    $("#Data").removeClass("active");
-                    $("#Process").addClass("active");
-                    $("#Share").removeClass("active");
-                    process();
-                    jobs();
-                    $( "#dropdown-process" ).addClass('in');
-                },
-                error : function(text)
-                {
-                    $( "#content" ).html(String(text.responseText));
-                }
-            });
-        });
-    });
-
-// ]]>
+    /**
+     * Sets the data content.
+     * @param content The data content.
+     */
+    public void setContent(List<Object> content){
+        this.content = content;
+    }
+}
