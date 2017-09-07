@@ -228,8 +228,21 @@ public class WpsService implements Service {
             Result res = new Result(result.getJobID());
             res.setExpirationDate(result.getExpirationDate());
             List<Output> outputList = new ArrayList<>();
+            Operation currentOp = null;
+            for(Operation op : cachedOpList){
+                if(op.getId().equalsIgnoreCase(request.getProcessId())){
+                    currentOp = op;
+                }
+            }
             for(DataOutputType outData : result.getOutput()){
                 Output output = new Output(outData.getId());
+                if(currentOp != null) {
+                    for (Output currentOpOut : currentOp.getOutputList()) {
+                        if (currentOpOut.getId().equalsIgnoreCase(outData.getId())){
+                            output.setName(currentOpOut.getName());
+                        }
+                    }
+                }
                 if(outData.isSetData()){
                     Data data = new Data();
                     data.setMimeType(outData.getData().getMimeType());
@@ -321,7 +334,7 @@ public class WpsService implements Service {
         Operation operation = null;
         for(Operation op : cachedOpList){
             if(op.getId().equals(id)){
-                operation = new Operation(op.getTitle(), op.getId());
+                operation = op;
                 operation.setAbstr(op.getAbstr());
                 try {
                     Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
@@ -451,6 +464,12 @@ public class WpsService implements Service {
                                 String identifier = idt.getIdentifier().getValue();
                                 Input input = new Input(title, name, identifier, type, attributeMap, optional);
                                 operation.addInput(input);
+                            }
+                            for(OutputDescriptionType odt : processOfferings.getProcessOffering().get(0).getProcess().getOutput()){
+                                String title = odt.getTitle().get(0).getValue();
+                                String identifier = odt.getIdentifier().getValue();
+                                Output output = new Output(title, identifier);
+                                operation.addOutput(output);
                             }
                         }
                     }

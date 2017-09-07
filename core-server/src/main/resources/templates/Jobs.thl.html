@@ -87,6 +87,7 @@
             <th>Status</th>
             <th>Estimated Completion</th>
             <th>Time before deletion</th>
+            <th>Download</th>
         </tr>
     </thead>
     <tbody>
@@ -125,6 +126,16 @@
                 <p th:if="!${job.hasResult()}">
                     24h00
                 </p>
+            </td>
+            <td>
+                <div th:if="${job.hasResult()}">
+                    <form action="/createArchive" method="get" th:id="${job.jobId}">
+                        <input type="hidden" name="jobId" th:value="${job.jobId}" />
+
+                        <input id="createArchiveBtn" class="btn btn-primary" type="submit" value="Download">
+                        </input>
+                    </form>
+                </div>
             </td>
         </tr>
     </tbody>

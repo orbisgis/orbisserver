@@ -51,6 +51,7 @@ public class Output {
     private Data data;
     /** The reference of the output.*/
     private String reference;
+    private String name;
 
     /**
      * Main constructor.
@@ -58,6 +59,11 @@ public class Output {
      */
     public Output(String id) {
         this.id = id;
+    }
+
+    public Output(String title, String id) {
+        this.id = id;
+        this.name = title;
     }
 
     /**
@@ -74,5 +80,25 @@ public class Output {
      */
     public void setReference(String reference) {
         this.reference = reference;
+    }
+
+    public Data getData(){
+        return data;
+    }
+
+    public String getReference(){
+        return reference;
+    }
+
+    public String getId(){
+        return id;
+    }
+
+    public String getName(){
+        return name==null?id:name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

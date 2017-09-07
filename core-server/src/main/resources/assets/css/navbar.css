@@ -283,6 +283,11 @@
 
 
 @media (min-width: 768px) {
+
+    #left-nav .dropdown .dropdown-lvl1 {
+        border-bottom: 1px solid #e7e7e7;
+    }
+
     #left-nav .dropdown > .dropdown-button-lvl1{
         padding: 0px;
         height: 0px;
