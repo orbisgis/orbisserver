@@ -50,10 +50,7 @@ import org.wisdom.api.http.HttpMethod;
 import org.wisdom.api.http.Result;
 import org.wisdom.api.templates.Template;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -482,6 +479,27 @@ public class MainController extends DefaultController {
                     "cell_width_percent", (float)(100)/maxSize));
         }
         else {
+            return badRequest("Unexisting session.");
+        }
+    }
+
+    @Route(method = HttpMethod.GET, uri = "/createArchive")
+    public Result createArchive(@Parameter("jobId") String jobId) {
+        String token = context().cookieValue("token");
+        Session session = null;
+        for(Session s : sessionList){
+            if(s.getToken().toString().equals(token)){
+                session = s;
+            }
+        }
+        if(session != null) {
+            File file = session.getResultAchive(jobId);
+            if(file != null) {
+                return ok(file, true);
+            }
+            return badRequest("Unable to create the result archive.");
+        }
+        else{
             return badRequest("Unexisting session.");
         }
     }

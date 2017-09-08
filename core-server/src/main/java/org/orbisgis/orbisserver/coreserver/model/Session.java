@@ -38,6 +38,7 @@
  */
 package org.orbisgis.orbisserver.coreserver.model;
 
+import org.apache.commons.io.filefilter.NameFileFilter;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
@@ -47,11 +48,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
-import java.io.File;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Session of the server. A session contains a list of Services, a DataSource and a workspace.
@@ -94,7 +101,8 @@ public class Session {
         serviceList = new ArrayList<>();
         statusInfoList = new ArrayList<>();
         token = UUID.randomUUID();
-        workspaceFolder = new File(System.getProperty("java.io.tmpdir"), token.toString());
+        workspaceFolder = new File("workspace", token.toString());
+        workspaceFolder.mkdirs();
         executorService = Executors.newFixedThreadPool(3);
         this.username = username;
 
@@ -270,6 +278,7 @@ public class Session {
 
         StatusInfo info = service.getStatus(statusRequest);
         if(info != null){
+            statusRequest.setProcessId(statusInfo.getProcessID());
             info.setProcessID(statusInfo.getProcessID());
             info.setProcessTitle(statusInfo.getProcessTitle());
             info.setResult(service.getResult(statusRequest));
@@ -330,5 +339,78 @@ public class Session {
             LOGGER.error("Unable to get the database information.\nCause : "+e.getMessage());
         }
         return dbContent;
+    }
+
+    public File getResultAchive(String jobId){
+        File jobFolder = new File(workspaceFolder, jobId);
+        for(StatusInfo statusInfo : getAllStatusInfo()){
+            if(statusInfo.getJobId().equalsIgnoreCase(jobId)){
+                for(Output out : statusInfo.getResult().getOutputList()){
+                    if(out.getData() != null){
+                        try {
+                            for(Object content : out.getData().getContent()) {
+                                File outFile;
+                                if(jobFolder.list(new NameFileFilter(out.getName()))!= null){
+                                    int diff=1;
+                                    while(jobFolder.list(new NameFileFilter(out.getName()+diff)) != null){
+                                        diff++;
+                                    }
+                                    outFile = new File(jobFolder, out.getName().replaceAll(File.separator, "")+diff);
+                                }
+                                else {
+                                    outFile = new File(jobFolder, out.getName().replaceAll(File.separator, ""));
+                                }
+                                if (jobFolder.mkdirs() || outFile.createNewFile()) {
+                                    try (FileWriter fileWriter = new FileWriter(outFile)) {
+                                        try (PrintWriter out1 = new PrintWriter(fileWriter)) {
+                                            out1.append(content.toString());
+                                        }
+                                    }
+                                } else {
+                                    LOGGER.error("Unable to create the output as a file.");
+                                }
+                            }
+                        } catch (IOException e) {
+                            LOGGER.error("Unable to write the output as a file.\n"+e.getMessage());
+                        }
+                    }
+                    else if(out.getReference() != null){
+                        try {
+                            URL url = new URL(out.getReference());
+                            ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream());
+                            FileOutputStream fos = new FileOutputStream(out.getName());
+                            fos.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+                        } catch (IOException e) {
+                            LOGGER.error("Unable to download the result.\n"+e.getMessage());
+                        }
+                    }
+                }
+            }
+        }
+        try {
+            File zipFile = new File(workspaceFolder, "Result.zip");
+            FileOutputStream fos = new FileOutputStream(zipFile);
+            ZipOutputStream zos = new ZipOutputStream(fos);
+            for(File f : jobFolder.listFiles()){
+                FileInputStream fis = new FileInputStream(f);
+                ZipEntry zipEntry = new ZipEntry(f.getName());
+                zos.putNextEntry(zipEntry);
+
+                byte[] bytes = new byte[1024];
+                int length;
+                while ((length = fis.read(bytes)) >= 0) {
+                    zos.write(bytes, 0, length);
+                }
+
+                zos.closeEntry();
+                fis.close();
+            }
+            zos.close();
+            fos.close();
+            return zipFile;
+        } catch (IOException e) {
+            LOGGER.error("Unable to zip the result folder.\n"+e.getMessage());
+        }
+        return null;
     }
 }

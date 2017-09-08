@@ -97,4 +97,12 @@ public class Result {
         String str = "" + days + "j" + hours + ":" + minutes;
         return str;
     }
+
+    /**
+     * Returns the output list.
+     * @return The output list.
+     */
+    public List<Output> getOutputList(){
+        return outputList;
+    }
 }

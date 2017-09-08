@@ -67,4 +67,8 @@ public class Data {
     public void setContent(List<Object> content){
         this.content = content;
     }
+
+    public List<Object> getContent() {
+        return content;
+    }
 }
