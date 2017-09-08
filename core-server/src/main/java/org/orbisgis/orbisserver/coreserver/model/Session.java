@@ -49,6 +49,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -370,8 +374,15 @@ public class Session {
                             LOGGER.error("Unable to write the output as a file.\n"+e.getMessage());
                         }
                     }
-                    else{
-                        //TODO manage the case of href data
+                    else if(out.getReference() != null){
+                        try {
+                            URL url = new URL(out.getReference());
+                            ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream());
+                            FileOutputStream fos = new FileOutputStream(out.getName());
+                            fos.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+                        } catch (IOException e) {
+                            LOGGER.error("Unable to download the result.\n"+e.getMessage());
+                        }
                     }
                 }
             }
