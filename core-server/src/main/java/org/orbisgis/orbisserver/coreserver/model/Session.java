@@ -90,6 +90,10 @@ public class Session {
     private Map<String, Service> jobIdServiceMap;
     /** Map with the finished job. */
     private Map<String, StatusInfo> finishedJobMap;
+    /** Time before expiration of the session. If equals to -1, there is no expiration. */
+    private long expirationTimeMillis;
+    /** Timer for the jobs expiration. */
+    private Timer timer;
 
     /**
      * Main constructor.
@@ -105,6 +109,8 @@ public class Session {
         workspaceFolder.mkdirs();
         executorService = Executors.newFixedThreadPool(3);
         this.username = username;
+        expirationTimeMillis = -1;
+        timer = new Timer();
 
         String dataBaseLocation = new File(workspaceFolder, "h2_db.mv.db").getAbsolutePath();
         try {
@@ -113,6 +119,10 @@ public class Session {
             LOGGER.error("Unable to create the database : \n"+e.getMessage());
         }
         serviceList.add(new WpsService(ds, executorService, workspaceFolder));
+    }
+
+    public void setExpirationTime(long timeInMillis){
+        this.expirationTimeMillis = timeInMillis;
     }
 
     /**
@@ -281,13 +291,14 @@ public class Session {
             statusRequest.setProcessId(statusInfo.getProcessID());
             info.setProcessID(statusInfo.getProcessID());
             info.setProcessTitle(statusInfo.getProcessTitle());
-            info.setResult(service.getResult(statusRequest));
             info.setNextRefreshMillis(-1);
             if (info.getNextPoll() != null) {
                 long timeMillisPoll = info.getNextPoll().toGregorianCalendar().getTime().getTime();
                 info.setNextRefreshMillis(timeMillisPoll - timeMillisNow);
             }
             if(info.getStatus().equalsIgnoreCase("SUCCEEDED") || info.getStatus().equalsIgnoreCase("FAILED")){
+                info.setResult(service.getResult(statusRequest));
+                timer.schedule(new TimerExpirationTask(jobId), info.getResult().getexpirationDate().toGregorianCalendar().getTime());
                 jobIdServiceMap.remove(jobId);
                 finishedJobMap.put(jobId, info);
             }
@@ -412,5 +423,21 @@ public class Session {
             LOGGER.error("Unable to zip the result folder.\n"+e.getMessage());
         }
         return null;
+    }
+
+    private class TimerExpirationTask extends TimerTask{
+
+        private String jobId;
+
+        public TimerExpirationTask(String jobId){
+            this.jobId = jobId;
+            System.out.println("starting : "+jobId);
+        }
+
+        @Override
+        public void run() {
+            System.out.println("removing : "+jobId);
+            finishedJobMap.remove(jobId);
+        }
     }
 }

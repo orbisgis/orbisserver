@@ -105,4 +105,8 @@ public class Result {
     public List<Output> getOutputList(){
         return outputList;
     }
+
+    public XMLGregorianCalendar getexpirationDate() {
+        return expirationDate;
+    }
 }

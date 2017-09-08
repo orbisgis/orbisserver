@@ -125,6 +125,7 @@ public class CoreServerController extends DefaultController {
             }
         }
         Session session = buildSession(username);
+        setSessionProperties(session);
         openSessionList.add(session);
         return session;
     }
@@ -139,6 +140,21 @@ public class CoreServerController extends DefaultController {
     }
 
     /**
+     * sets the session with its properties.
+     * @param session Session to set.
+     */
+    private static void setSessionProperties(Session session){
+        try {
+            ResultSet rs = ds.getConnection().createStatement().executeQuery("SELECT expirationTime FROM session_table WHERE " +
+                    "username LIKE '" + session.getUsername() + "';");
+            rs.first();
+            session.setExpirationTime(rs.getLong(1));
+        } catch (SQLException e) {
+            LOGGER.error("Unable to request the database\n"+e.getMessage());
+        }
+    }
+
+    /**
      * Test if the user name and password are correct.
      * @param username Name of the user.
      * @param password Password of the user.
@@ -146,7 +162,7 @@ public class CoreServerController extends DefaultController {
      */
     private static boolean testUser(String username, String password){
         try {
-            ResultSet rs = ds.getConnection().createStatement().executeQuery("SELECT COUNT(username) FROM users_table WHERE " +
+            ResultSet rs = ds.getConnection().createStatement().executeQuery("SELECT COUNT(username) FROM session_table WHERE " +
                     "username LIKE '" + username + "' AND password LIKE '" + password + "';");
             rs.first();
             return rs.getInt(1) != 0;
@@ -163,7 +179,7 @@ public class CoreServerController extends DefaultController {
      */
     private static boolean testUser(String username){
         try {
-            ResultSet rs = ds.getConnection().createStatement().executeQuery("SELECT COUNT(username) FROM users_table WHERE " +
+            ResultSet rs = ds.getConnection().createStatement().executeQuery("SELECT COUNT(username) FROM session_table WHERE " +
                     "username LIKE '" + username + "';");
             rs.first();
             return rs.getInt(1) != 0;
@@ -181,7 +197,7 @@ public class CoreServerController extends DefaultController {
     public static Session createSession(String username, String password){
         if(!testUser(username, password)) {
             try {
-                ds.getConnection().createStatement().execute("INSERT INTO users_table VALUES ('" + username + "','" + password + "');");
+                ds.getConnection().createStatement().execute("INSERT INTO session_table VALUES ('" + username + "','" + password + "');");
             } catch (SQLException e) {
                 LOGGER.error("Unable to add a user\n" + e.getMessage());
             }
