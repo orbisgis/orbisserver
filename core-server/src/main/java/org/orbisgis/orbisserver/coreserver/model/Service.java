@@ -72,4 +72,6 @@ public interface Service {
     boolean hasOperation(String id);
 
     Operation getOperation(String id);
+
+    void shutdown();
 }

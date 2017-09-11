@@ -149,6 +149,7 @@ public class CoreServerController extends DefaultController {
                     "username LIKE '" + session.getUsername() + "';");
             rs.first();
             session.setExpirationTime(rs.getLong(1));
+            rs.close();
         } catch (SQLException e) {
             LOGGER.error("Unable to request the database\n"+e.getMessage());
         }
@@ -165,9 +166,14 @@ public class CoreServerController extends DefaultController {
             ResultSet rs = ds.getConnection().createStatement().executeQuery("SELECT COUNT(username) FROM session_table WHERE " +
                     "username LIKE '" + username + "' AND password LIKE '" + password + "';");
             rs.first();
-            return rs.getInt(1) != 0;
+            boolean isUser = rs.getInt(1) != 0;
+            rs.close();
+            return isUser;
         } catch (SQLException e) {
-            LOGGER.error("Unable to request the database\n"+e.getMessage());
+            LOGGER.error("Unable to request the database\n"+e.getLocalizedMessage());
+            for(StackTraceElement el : e.getStackTrace()){
+                LOGGER.error(el.toString());
+            }
         }
         return false;
     }
@@ -182,9 +188,14 @@ public class CoreServerController extends DefaultController {
             ResultSet rs = ds.getConnection().createStatement().executeQuery("SELECT COUNT(username) FROM session_table WHERE " +
                     "username LIKE '" + username + "';");
             rs.first();
-            return rs.getInt(1) != 0;
+            boolean isUser = rs.getInt(1) != 0;
+            rs.close();
+            return isUser;
         } catch (SQLException e) {
-            LOGGER.error("Unable to request the database\n"+e.getMessage());
+            LOGGER.error("Unable to request the database\n"+e.getLocalizedMessage());
+            for(StackTraceElement el : e.getStackTrace()){
+                LOGGER.error(el.toString());
+            }
         }
         return false;
     }

@@ -61,6 +61,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -494,5 +495,13 @@ public class WpsService implements Service {
         WpsScriptPlugin scriptPlugin = new WpsScriptPlugin();
         scriptPlugin.setWpsServer(wpsServer);
         scriptPlugin.activate();
+    }
+
+    @Override
+    public void shutdown(){
+        try {
+            ds.getConnection().close();
+        } catch (SQLException ignored) {}
+        executorService.shutdownNow();
     }
 }

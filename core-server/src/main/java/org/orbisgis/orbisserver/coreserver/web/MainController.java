@@ -147,7 +147,10 @@ public class MainController extends DefaultController {
         Session session = CoreServerController.getSession(split[0].replaceAll(".*=", ""),
                 split[1].replaceAll(".*=", ""));
         if(session != null) {
-            sessionList.add(session);
+            session.setMainController(this);
+            if(!sessionList.contains(session)) {
+                sessionList.add(session);
+            }
             return ok(session.getToken().toString());
         }
         else {
@@ -502,5 +505,9 @@ public class MainController extends DefaultController {
         else{
             return badRequest("Unexisting session.");
         }
+    }
+
+    public void endSession(Session session) {
+        sessionList.remove(session);
     }
 }

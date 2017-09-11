@@ -44,12 +44,15 @@ import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.orbisserver.coreserver.controller.WpsService;
+import org.orbisgis.orbisserver.coreserver.web.MainController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
+import javax.swing.event.ChangeListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -94,6 +97,7 @@ public class Session {
     private long expirationTimeMillis;
     /** Timer for the jobs expiration. */
     private Timer timer;
+    private MainController mainController;
 
     /**
      * Main constructor.
@@ -111,14 +115,27 @@ public class Session {
         this.username = username;
         expirationTimeMillis = -1;
         timer = new Timer();
+        executorService.submit(new SessionInitializer());
+    }
 
-        String dataBaseLocation = new File(workspaceFolder, "h2_db.mv.db").getAbsolutePath();
-        try {
-            ds = SFSUtilities.wrapSpatialDataSource(H2GISDBFactory.createDataSource(dataBaseLocation, true));
-        } catch (SQLException e) {
-            LOGGER.error("Unable to create the database : \n"+e.getMessage());
+    private class SessionInitializer implements Runnable{
+        @Override
+        public void run() {
+            String dataBaseLocation = new File(workspaceFolder, "h2_db.mv.db").getAbsolutePath();
+            try {
+                ds = SFSUtilities.wrapSpatialDataSource(H2GISDBFactory.createDataSource(dataBaseLocation, true));
+            } catch (SQLException e) {
+                LOGGER.error("Unable to create the database : \n"+e.getMessage());
+            }
+            WpsService wpsService = new WpsService(ds, executorService, workspaceFolder);
+            //initiate the wpsService with a first request
+            wpsService.getAllOperation();
+            serviceList.add(wpsService);
         }
-        serviceList.add(new WpsService(ds, executorService, workspaceFolder));
+    }
+
+    public void setMainController(MainController mainController){
+        this.mainController = mainController;
     }
 
     public void setExpirationTime(long timeInMillis){
@@ -298,7 +315,8 @@ public class Session {
             }
             if(info.getStatus().equalsIgnoreCase("SUCCEEDED") || info.getStatus().equalsIgnoreCase("FAILED")){
                 info.setResult(service.getResult(statusRequest));
-                timer.schedule(new TimerExpirationTask(jobId), info.getResult().getexpirationDate().toGregorianCalendar().getTime());
+                timer.schedule(new TimerExpirationTask(jobId, this),
+                        info.getResult().getexpirationDate().toGregorianCalendar().getTime());
                 jobIdServiceMap.remove(jobId);
                 finishedJobMap.put(jobId, info);
             }
@@ -425,19 +443,52 @@ public class Session {
         return null;
     }
 
+    private void checkExpiration() {
+        if(statusInfoList.isEmpty() && finishedJobMap.isEmpty()){
+            timer.schedule(new TimerKillSessionTask(this), expirationTimeMillis);
+        }
+    }
+
+    private void shutdown(){
+        try {
+            ds.getConnection().close();
+        } catch (SQLException ignored) {}
+        executorService.shutdownNow();
+        for(Service service : serviceList){
+            service.shutdown();
+        }
+        timer.purge();
+        mainController.endSession(this);
+    }
+
     private class TimerExpirationTask extends TimerTask{
 
         private String jobId;
+        private Session session;
 
-        public TimerExpirationTask(String jobId){
+        public TimerExpirationTask(String jobId, Session session){
             this.jobId = jobId;
-            System.out.println("starting : "+jobId);
+            this.session = session;
         }
 
         @Override
         public void run() {
-            System.out.println("removing : "+jobId);
             finishedJobMap.remove(jobId);
+            session.checkExpiration();
+        }
+    }
+
+    private class TimerKillSessionTask extends TimerTask{
+
+        private Session session;
+
+        public TimerKillSessionTask(Session session){
+            this.session = session;
+        }
+
+        @Override
+        public void run() {
+            session.shutdown();
         }
     }
 }
