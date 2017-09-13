@@ -64,7 +64,7 @@ public class Result {
      * @param jobId Unique id of the job linked to the result.
      */
     public Result(String jobId){
-        jobId = jobId;
+        this.jobId = jobId;
     }
 
     /**
@@ -98,6 +98,15 @@ public class Result {
         return str;
     }
 
+    public long getRemainTimeMillis(){
+        Date date = new Date();
+        Date expDate = expirationDate.toGregorianCalendar().getTime();
+        SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy hh:mm");
+        formatter.setTimeZone(expirationDate.toGregorianCalendar().getTimeZone());
+        long diff = expDate.getTime()-date.getTime();
+        return diff;
+    }
+
     /**
      * Returns the output list.
      * @return The output list.
@@ -108,5 +117,9 @@ public class Result {
 
     public XMLGregorianCalendar getexpirationDate() {
         return expirationDate;
+    }
+
+    public String getJobId(){
+        return jobId;
     }
 }
