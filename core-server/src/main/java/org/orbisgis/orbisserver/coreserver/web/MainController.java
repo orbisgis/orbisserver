@@ -45,6 +45,7 @@ import org.wisdom.api.annotations.Controller;
 import org.wisdom.api.annotations.Parameter;
 import org.wisdom.api.annotations.Route;
 import org.wisdom.api.annotations.View;
+import org.wisdom.api.annotations.scheduler.Async;
 import org.wisdom.api.http.FileItem;
 import org.wisdom.api.http.HttpMethod;
 import org.wisdom.api.http.Result;
@@ -141,6 +142,7 @@ public class MainController extends DefaultController {
     }
 
     @Route(method = HttpMethod.POST, uri = "/login")
+    @Async
     public Result login() throws IOException {
         String urlContent = URLDecoder.decode(context().reader().readLine(), "UTF-8");
         String[] split = urlContent.split("&");

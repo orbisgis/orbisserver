@@ -40,6 +40,8 @@ package org.orbisgis.orbisserver.coreserver.controller;
 
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.SFSUtilities;
+import org.orbisgis.orbisserver.coreserver.model.Service;
+import org.orbisgis.orbisserver.coreserver.model.ServiceFactory;
 import org.orbisgis.orbisserver.coreserver.model.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,8 +53,9 @@ import java.io.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Main controller of the module. This class is the core managing the user auth.
@@ -72,11 +75,15 @@ public class CoreServerController extends DefaultController {
     /** Cache list of the opened sessions. */
     private static List<Session> openSessionList;
 
+    private static List<ServiceFactory> serviceFactoryList;
+
     /**
      * Main Constructor. It initiate the administration database.
      */
     public CoreServerController(){
         openSessionList = new ArrayList<>();
+        serviceFactoryList = new ArrayList<>();
+        serviceFactoryList.add(new WpsServiceFactory());
         String dataBaseLocation = new File("main_h2_db.mv.db").getAbsolutePath();
         try {
             ds = SFSUtilities.wrapSpatialDataSource(H2GISDBFactory.createDataSource(dataBaseLocation, true));
@@ -125,7 +132,7 @@ public class CoreServerController extends DefaultController {
             }
         }
         Session session = buildSession(username);
-        setSessionProperties(session);
+        setSessionOptions(session);
         openSessionList.add(session);
         return session;
     }
@@ -136,14 +143,43 @@ public class CoreServerController extends DefaultController {
      * @return An instantiated session.
      */
     private static Session buildSession(String username){
-        return new Session(username);
+        Map<String, Object> propertyMap = new HashMap<>();
+
+        propertyMap.put(ServiceFactory.USERNAME_PROP, username);
+
+        UUID token = UUID.randomUUID();
+        propertyMap.put(ServiceFactory.TOKEN_PROP, token);
+
+        File workspaceFolder = new File("workspace", token.toString());
+        workspaceFolder.mkdirs();
+        propertyMap.put(ServiceFactory.WORKSPACE_FOLDER_PROP, workspaceFolder);
+
+        ExecutorService executorService = Executors.newFixedThreadPool(3);
+        propertyMap.put(ServiceFactory.EXECUTOR_SERVICE_PROP, executorService);
+
+        DataSource dataSource = null;
+        String dataBaseLocation = new File(workspaceFolder, "h2_db.mv.db").getAbsolutePath();
+        try {
+            dataSource = SFSUtilities.wrapSpatialDataSource(H2GISDBFactory.createDataSource(dataBaseLocation, true));
+        } catch (SQLException e) {
+            LOGGER.error("Unable to create the database : \n"+e.getMessage());
+        }
+        propertyMap.put(ServiceFactory.DATA_SOURCE_PROP, dataSource);
+
+
+        List<Service> serviceList = new ArrayList<>();
+        for(ServiceFactory factory : serviceFactoryList) {
+            serviceList.add(factory.createService(propertyMap));
+        }
+
+        return new Session(propertyMap, serviceList);
     }
 
     /**
      * sets the session with its properties.
      * @param session Session to set.
      */
-    private static void setSessionProperties(Session session){
+    private static void setSessionOptions(Session session){
         try {
             ResultSet rs = ds.getConnection().createStatement().executeQuery("SELECT expirationTime FROM session_table WHERE " +
                     "username LIKE '" + session.getUsername() + "';");

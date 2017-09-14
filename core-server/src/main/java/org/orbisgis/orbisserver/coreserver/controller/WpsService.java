@@ -39,13 +39,13 @@
 package org.orbisgis.orbisserver.coreserver.controller;
 
 import net.opengis.ows._2.*;
-import net.opengis.wps._1_0_0.OutputDataType;
 import net.opengis.wps._2_0.*;
 import net.opengis.wps._2_0.GetCapabilitiesType;
 import net.opengis.wps._2_0.ObjectFactory;
-import net.opengis.wps._2_0.ReferenceType;
-import org.orbisgis.orbisserver.coreserver.model.*;
+import org.apache.felix.ipojo.annotations.Invalidate;
+import org.apache.felix.ipojo.annotations.Validate;
 import org.orbisgis.orbisserver.coreserver.model.Data;
+import org.orbisgis.orbisserver.coreserver.model.*;
 import org.orbisgis.orbisserver.coreserver.model.Operation;
 import org.orbisgis.orbisserver.coreserver.model.Result;
 import org.orbisgis.orbisserver.coreserver.model.StatusInfo;
@@ -61,7 +61,6 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -86,14 +85,6 @@ public class WpsService implements Service {
     private DataSource ds;
     /** Cached list of operations available.*/
     private List<Operation> cachedOpList;
-
-    public WpsService(DataSource ds, ExecutorService executorService, File workspaceFolder){
-        this.ds = ds;
-        this.executorService = executorService;
-        this.workspaceFolder = workspaceFolder;
-        this.cachedOpList = new ArrayList<>();
-        createWpsServerInstance();
-    }
 
     @Override
     public StatusInfo executeOperation(ExecuteRequest request) {
@@ -500,11 +491,19 @@ public class WpsService implements Service {
         scriptPlugin.activate();
     }
 
+    @Invalidate
     @Override
     public void shutdown(){
-        try {
-            ds.getConnection().close();
-        } catch (SQLException ignored) {}
-        executorService.shutdownNow();
+        //Nothing to do
+    }
+
+    @Validate
+    @Override
+    public void start(Map<String, Object> propertyMap) {
+        this.ds = (DataSource)propertyMap.get(ServiceFactory.DATA_SOURCE_PROP);
+        this.executorService = (ExecutorService) propertyMap.get(ServiceFactory.EXECUTOR_SERVICE_PROP);
+        this.workspaceFolder = (File)propertyMap.get(ServiceFactory.WORKSPACE_FOLDER_PROP);
+        this.cachedOpList = new ArrayList<>();
+        createWpsServerInstance();
     }
 }

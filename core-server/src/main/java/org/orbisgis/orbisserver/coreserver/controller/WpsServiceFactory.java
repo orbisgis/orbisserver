@@ -36,18 +36,13 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisserver.wpsservice;
+package org.orbisgis.orbisserver.coreserver.controller;
 
-import org.orbisgis.orbisserver.coreserver.controller.WpsService;
 import org.orbisgis.orbisserver.coreserver.model.Service;
 import org.orbisgis.orbisserver.coreserver.model.ServiceFactory;
-import org.orbisgis.orbisserver.coreserver.model.Session;
 import org.osgi.service.component.annotations.Component;
 
-import javax.sql.DataSource;
-import java.io.File;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
 
 /**
  * Service factory for the WPS.
@@ -58,11 +53,11 @@ import java.util.concurrent.ExecutorService;
 public class WpsServiceFactory implements ServiceFactory {
 
     @Override
-    public Service createService(Map<String, Object> properties, Session session) {
-        DataSource ds = session.getDataSource();
-        ExecutorService executorService = session.getExecutorService();
-        File workspaceFolder = session.getWorkspaceFolder();
-        WpsService wpsService = new WpsService(ds, executorService, workspaceFolder);
+    public Service createService(Map<String, Object> properties) {
+        WpsService wpsService = new WpsService();
+        wpsService.start(properties);
+        //initiate the wpsService with a first request
+        wpsService.getAllOperation();
         return wpsService;
     }
 }

@@ -47,10 +47,16 @@ import java.util.Map;
  */
 public interface ServiceFactory {
 
+    String DATA_SOURCE_PROP = "DATA_SOURCE_PROP";
+    String EXECUTOR_SERVICE_PROP = "EXECUTOR_SERVICE_PROP";
+    String WORKSPACE_FOLDER_PROP = "WORKSPACE_FOLDER_PROP";
+    String USERNAME_PROP = "USERNAME_PROP";
+    String TOKEN_PROP = "TOKEN_PROP";
+
     /**
      * Instantiate, set and returns the service
      * @param properties Map of the properties to set the service with a String as key and an Object as Value.
      * @return A service instance
      */
-    public Service createService(Map<String, Object> properties, Session session);
+    Service createService(Map<String, Object> properties);
 }

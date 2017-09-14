@@ -44,14 +44,12 @@ import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.orbisserver.coreserver.controller.WpsService;
+import org.orbisgis.orbisserver.coreserver.controller.WpsServiceFactory;
 import org.orbisgis.orbisserver.coreserver.web.MainController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
-import javax.swing.event.ChangeListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.URL;
 import java.nio.channels.Channels;
@@ -101,37 +99,19 @@ public class Session {
 
     /**
      * Main constructor.
-     * @param username Username associated to the session.
      */
-    public Session(String username){
+    public Session(Map<String, Object> propertyMap, List<Service> serviceList){
         jobIdServiceMap = new HashMap<>();
         finishedJobMap = new HashMap<>();
-        serviceList = new ArrayList<>();
         statusInfoList = new ArrayList<>();
-        token = UUID.randomUUID();
-        workspaceFolder = new File("workspace", token.toString());
-        workspaceFolder.mkdirs();
-        executorService = Executors.newFixedThreadPool(3);
-        this.username = username;
+        this.token = (UUID)propertyMap.get(ServiceFactory.TOKEN_PROP);
+        this.username = (String)propertyMap.get(ServiceFactory.USERNAME_PROP);
+        this.ds = (DataSource) propertyMap.get(ServiceFactory.DATA_SOURCE_PROP);
+        this.executorService = (ExecutorService) propertyMap.get(ServiceFactory.EXECUTOR_SERVICE_PROP);
+        this.workspaceFolder = (File)propertyMap.get(ServiceFactory.WORKSPACE_FOLDER_PROP);
         expirationTimeMillis = -1;
         timer = new Timer();
-        executorService.submit(new SessionInitializer());
-    }
-
-    private class SessionInitializer implements Runnable{
-        @Override
-        public void run() {
-            String dataBaseLocation = new File(workspaceFolder, "h2_db.mv.db").getAbsolutePath();
-            try {
-                ds = SFSUtilities.wrapSpatialDataSource(H2GISDBFactory.createDataSource(dataBaseLocation, true));
-            } catch (SQLException e) {
-                LOGGER.error("Unable to create the database : \n"+e.getMessage());
-            }
-            WpsService wpsService = new WpsService(ds, executorService, workspaceFolder);
-            //initiate the wpsService with a first request
-            wpsService.getAllOperation();
-            serviceList.add(wpsService);
-        }
+        this.serviceList = serviceList;
     }
 
     public void setMainController(MainController mainController){

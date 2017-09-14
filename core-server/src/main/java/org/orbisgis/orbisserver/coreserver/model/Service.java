@@ -39,6 +39,7 @@
 package org.orbisgis.orbisserver.coreserver.model;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Interface to define a service which can be plugged to the server
@@ -74,4 +75,6 @@ public interface Service {
     Operation getOperation(String id);
 
     void shutdown();
+
+    void start(Map<String, Object> propertyMap);
 }
