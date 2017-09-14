@@ -38,10 +38,8 @@
  */
 package org.orbisgis.orbisserver.coreserver.model;
 
-import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -94,8 +92,7 @@ public class Result {
         long days = diff/(60*60*24);
         long hours = (diff-days*(60*60*24))/(60*60);
         long minutes = (diff-days*(60*60*24)-hours*(60*60))/60;
-        String str = "" + days + "j" + hours + ":" + minutes;
-        return str;
+        return "" + days + "j" + hours + ":" + minutes;
     }
 
     public long getRemainTimeMillis(){
@@ -103,8 +100,7 @@ public class Result {
         Date expDate = expirationDate.toGregorianCalendar().getTime();
         SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy hh:mm");
         formatter.setTimeZone(expirationDate.toGregorianCalendar().getTimeZone());
-        long diff = expDate.getTime()-date.getTime();
-        return diff;
+        return expDate.getTime()-date.getTime();
     }
 
     /**

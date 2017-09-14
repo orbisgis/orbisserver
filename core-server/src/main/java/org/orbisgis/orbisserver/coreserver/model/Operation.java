@@ -165,4 +165,12 @@ public class Operation {
      * @param keyWord Keyword to add.
      */
     public void setKeyWord(List<String> keyWord) {this.keyWord = keyWord;}
+
+    public void setInputList(List<Input> inputList) {
+        this.inputList = inputList;
+    }
+
+    public void setOutputList(List<Output> outputList) {
+        this.outputList = outputList;
+    }
 }

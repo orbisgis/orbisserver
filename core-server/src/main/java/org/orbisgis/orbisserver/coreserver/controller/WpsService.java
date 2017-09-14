@@ -337,6 +337,9 @@ public class WpsService implements Service {
             if(op.getId().equals(id)){
                 operation = op;
                 operation.setAbstr(op.getAbstr());
+                operation.setInputList(new ArrayList<Input>());
+                operation.setOutputList(new ArrayList<Output>());
+                operation.setKeyWord(new ArrayList<String>());
                 try {
                     Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
                     Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
