@@ -39,12 +39,9 @@
 package org.orbisgis.orbisserver.coreserver.model;
 
 import org.apache.commons.io.filefilter.NameFileFilter;
-import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.orbisserver.coreserver.controller.WpsService;
-import org.orbisgis.orbisserver.coreserver.controller.WpsServiceFactory;
 import org.orbisgis.orbisserver.coreserver.web.MainController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +54,6 @@ import java.nio.channels.ReadableByteChannel;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -441,6 +437,18 @@ public class Session {
         mainController.endSession(this);
     }
 
+    public void setWorkspace(File workspace) {
+        this.workspaceFolder = workspace;
+    }
+
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
+
+    public void setDataSource(DataSource dataSource) {
+        this.ds = dataSource;
+    }
+
     private class TimerExpirationTask extends TimerTask{
 
         private String jobId;
@@ -470,5 +478,9 @@ public class Session {
         public void run() {
             session.shutdown();
         }
+    }
+
+    public void setServiceList(List<Service> serviceList){
+        this.serviceList = serviceList;
     }
 }

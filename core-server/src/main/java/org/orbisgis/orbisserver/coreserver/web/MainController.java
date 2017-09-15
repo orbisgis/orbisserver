@@ -38,6 +38,7 @@
  */
 package org.orbisgis.orbisserver.coreserver.web;
 
+import org.apache.felix.ipojo.annotations.Requires;
 import org.orbisgis.orbisserver.coreserver.controller.CoreServerController;
 import org.orbisgis.orbisserver.coreserver.model.*;
 import org.wisdom.api.DefaultController;
@@ -67,6 +68,9 @@ import java.util.Map;
 public class MainController extends DefaultController {
 
     private List<Session> sessionList = new ArrayList<>();
+
+    @Requires
+    private CoreServerController coreServerController;
 
     @View("Home")
     private Template home;
@@ -146,13 +150,14 @@ public class MainController extends DefaultController {
     public Result login() throws IOException {
         String urlContent = URLDecoder.decode(context().reader().readLine(), "UTF-8");
         String[] split = urlContent.split("&");
-        Session session = CoreServerController.getSession(split[0].replaceAll(".*=", ""),
+        Session session = coreServerController.getSession(split[0].replaceAll(".*=", ""),
                 split[1].replaceAll(".*=", ""));
         if(session != null) {
             session.setMainController(this);
             if(!sessionList.contains(session)) {
                 sessionList.add(session);
             }
+
             return ok(session.getToken().toString());
         }
         else {
@@ -288,7 +293,7 @@ public class MainController extends DefaultController {
     public Result signIn() throws IOException {
         String urlContent = URLDecoder.decode(context().reader().readLine(), "UTF-8");
         String[] split = urlContent.split("&");
-        Session session = CoreServerController.createSession(split[0].replaceAll(".*=", ""),
+        Session session = coreServerController.createSession(split[0].replaceAll(".*=", ""),
                 split[1].replaceAll(".*=", ""));
         if(session != null) {
             sessionList.add(session);
@@ -438,7 +443,7 @@ public class MainController extends DefaultController {
             }
         }
         if(newPassword.equals(newPasswordRepeat) && token != null) {
-            CoreServerController.changePassword(token, newPassword);
+            coreServerController.changePassword(token, newPassword);
             return ok("Password changed.");
         }
         else{

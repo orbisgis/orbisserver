@@ -40,6 +40,7 @@ package org.orbisgis.orbisserver.coreserver.controller;
 
 import org.apache.felix.ipojo.annotations.Instantiate;
 import org.apache.felix.ipojo.annotations.Provides;
+import org.apache.felix.ipojo.annotations.Requires;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.SFSUtilities;
 import org.orbisgis.orbisserver.coreserver.model.Service;
@@ -49,6 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wisdom.api.DefaultController;
 import org.wisdom.api.annotations.Controller;
+import org.wisdom.api.concurrent.ManagedExecutorService;
 
 import javax.sql.DataSource;
 import java.io.*;
@@ -74,12 +76,16 @@ public class CoreServerController extends DefaultController {
     private static final Logger LOGGER = LoggerFactory.getLogger(CoreServerController.class);
 
     /** Administration DataSource.*/
-    private static DataSource ds;
+    private DataSource ds;
 
     /** Cache list of the opened sessions. */
-    private static List<Session> openSessionList;
+    private List<Session> openSessionList;
 
-    private static List<ServiceFactory> serviceFactoryList;
+    private List<ServiceFactory> serviceFactoryList;
+
+    @Requires(filter = "(name=" + ManagedExecutorService.SYSTEM + ")", proxy = false)
+    ExecutorService executor;
+
     /**
      * Main Constructor. It initiate the administration database.
      */
@@ -128,7 +134,7 @@ public class CoreServerController extends DefaultController {
      * @param password Password to use to log in.
      * @return The session of the user.
      */
-    public static Session getSession(String username, String password){
+    public Session getSession(String username, String password){
         if(!testUser(username, password)){
             return null;
         }
@@ -148,7 +154,7 @@ public class CoreServerController extends DefaultController {
      * @param username User name.
      * @return An instantiated session.
      */
-    private static Session buildSession(String username){
+    private Session buildSession(String username){
         Map<String, Object> propertyMap = new HashMap<>();
 
         propertyMap.put(ServiceFactory.USERNAME_PROP, username);
@@ -156,36 +162,64 @@ public class CoreServerController extends DefaultController {
         UUID token = UUID.randomUUID();
         propertyMap.put(ServiceFactory.TOKEN_PROP, token);
 
-        File workspaceFolder = new File("workspace", token.toString());
-        workspaceFolder.mkdirs();
-        propertyMap.put(ServiceFactory.WORKSPACE_FOLDER_PROP, workspaceFolder);
+        Session session = new Session(propertyMap, new ArrayList<Service>());
 
-        ExecutorService executorService = Executors.newFixedThreadPool(3);
-        propertyMap.put(ServiceFactory.EXECUTOR_SERVICE_PROP, executorService);
+        SessionInitializer init = new SessionInitializer(session, propertyMap, token);
+        executor.submit(init);
 
-        DataSource dataSource = null;
-        String dataBaseLocation = new File(workspaceFolder, "h2_db.mv.db").getAbsolutePath();
-        try {
-            dataSource = SFSUtilities.wrapSpatialDataSource(H2GISDBFactory.createDataSource(dataBaseLocation, true));
-        } catch (SQLException e) {
-            LOGGER.error("Unable to create the database : \n"+e.getMessage());
-        }
-        propertyMap.put(ServiceFactory.DATA_SOURCE_PROP, dataSource);
+        return session;
+    }
 
+    private class SessionInitializer implements Runnable {
 
-        List<Service> serviceList = new ArrayList<>();
-        for(ServiceFactory factory : serviceFactoryList) {
-            serviceList.add(factory.createService(propertyMap));
+        private Session session;
+        private Map<String, Object> propertyMap;
+        private UUID token;
+
+        public SessionInitializer(Session session, Map<String, Object> propertyMap, UUID token){
+            this.session = session;
+            this.propertyMap = propertyMap;
+            this.token = token;
         }
 
-        return new Session(propertyMap, serviceList);
+        @Override
+        public void run() {
+            File workspaceFolder = new File("workspace", token.toString());
+            workspaceFolder.mkdirs();
+            session.setWorkspace(workspaceFolder);
+            propertyMap.put(ServiceFactory.WORKSPACE_FOLDER_PROP, workspaceFolder);
+
+            ExecutorService executorService = Executors.newFixedThreadPool(3);
+            session.setExecutorService(executorService);
+            propertyMap.put(ServiceFactory.EXECUTOR_SERVICE_PROP, executorService);
+
+            DataSource dataSource = null;
+            String dataBaseLocation = new File(workspaceFolder, "h2_db.mv.db").getAbsolutePath();
+            try {
+                dataSource = SFSUtilities.wrapSpatialDataSource(H2GISDBFactory.createDataSource(dataBaseLocation, true));
+            } catch (SQLException e) {
+                LOGGER.error("Unable to create the database : \n"+e.getMessage());
+            }
+            LOGGER.info("Session database started.");
+            session.setDataSource(dataSource);
+            propertyMap.put(ServiceFactory.DATA_SOURCE_PROP, dataSource);
+
+
+            List<Service> serviceList = new ArrayList<>();
+            for(ServiceFactory factory : serviceFactoryList) {
+                Service service = factory.createService(propertyMap);
+                serviceList.add(service);
+                LOGGER.info("Service "+service.getClass().getSimpleName()+" started.");
+            }
+            session.setServiceList(serviceList);
+        }
     }
 
     /**
      * sets the session with its properties.
      * @param session Session to set.
      */
-    private static void setSessionOptions(Session session){
+    private void setSessionOptions(Session session){
         try {
             ResultSet rs = ds.getConnection().createStatement().executeQuery("SELECT expirationTime FROM session_table WHERE " +
                     "username LIKE '" + session.getUsername() + "';");
@@ -203,7 +237,7 @@ public class CoreServerController extends DefaultController {
      * @param password Password of the user.
      * @return True if the user is correct, false otherwise.
      */
-    private static boolean testUser(String username, String password){
+    private boolean testUser(String username, String password){
         try {
             ResultSet rs = ds.getConnection().createStatement().executeQuery("SELECT COUNT(username) FROM session_table WHERE " +
                     "username LIKE '" + username + "' AND password LIKE '" + password + "';");
@@ -225,7 +259,7 @@ public class CoreServerController extends DefaultController {
      * @param username Name of the user.
      * @return True if the user is correct, false otherwise.
      */
-    private static boolean testUser(String username){
+    private boolean testUser(String username){
         try {
             ResultSet rs = ds.getConnection().createStatement().executeQuery("SELECT COUNT(username) FROM session_table WHERE " +
                     "username LIKE '" + username + "';");
@@ -247,7 +281,7 @@ public class CoreServerController extends DefaultController {
      * @param username Name of the user.
      * @return The user session.
      */
-    public static Session createSession(String username, String password){
+    public Session createSession(String username, String password){
         if(!testUser(username, password)) {
             try {
                 ds.getConnection().createStatement().execute("INSERT INTO session_table VALUES ('" + username + "','" + password + "');");
@@ -263,7 +297,7 @@ public class CoreServerController extends DefaultController {
      * @param username User name.
      * @param newPassword New password.
      */
-    public static void changePassword(String username, String newPassword) {
+    public void changePassword(String username, String newPassword) {
         if(testUser(username)) {
             try {
                 ds.getConnection().createStatement().execute("UPDATE user_table SET password = " + newPassword +
