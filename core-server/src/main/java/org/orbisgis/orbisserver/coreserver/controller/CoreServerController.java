@@ -38,6 +38,8 @@
  */
 package org.orbisgis.orbisserver.coreserver.controller;
 
+import org.apache.felix.ipojo.annotations.Instantiate;
+import org.apache.felix.ipojo.annotations.Provides;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.SFSUtilities;
 import org.orbisgis.orbisserver.coreserver.model.Service;
@@ -64,6 +66,8 @@ import java.util.concurrent.Executors;
  */
 
 @Controller
+@Provides(specifications={CoreServerController.class})
+@Instantiate
 public class CoreServerController extends DefaultController {
 
     /** Logger of the class. */
@@ -76,14 +80,12 @@ public class CoreServerController extends DefaultController {
     private static List<Session> openSessionList;
 
     private static List<ServiceFactory> serviceFactoryList;
-
     /**
      * Main Constructor. It initiate the administration database.
      */
     public CoreServerController(){
         openSessionList = new ArrayList<>();
         serviceFactoryList = new ArrayList<>();
-        serviceFactoryList.add(new WpsServiceFactory());
         String dataBaseLocation = new File("main_h2_db.mv.db").getAbsolutePath();
         try {
             ds = SFSUtilities.wrapSpatialDataSource(H2GISDBFactory.createDataSource(dataBaseLocation, true));
@@ -114,6 +116,10 @@ public class CoreServerController extends DefaultController {
         } catch (IOException e) {
             LOGGER.error("Unable to read the database initiation script\n"+e.getMessage());
         }
+    }
+
+    public void addServiceFactory(ServiceFactory serviceFactory){
+        serviceFactoryList.add(serviceFactory);
     }
 
     /**

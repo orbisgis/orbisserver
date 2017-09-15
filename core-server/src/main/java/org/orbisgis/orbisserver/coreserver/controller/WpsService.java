@@ -42,8 +42,7 @@ import net.opengis.ows._2.*;
 import net.opengis.wps._2_0.*;
 import net.opengis.wps._2_0.GetCapabilitiesType;
 import net.opengis.wps._2_0.ObjectFactory;
-import org.apache.felix.ipojo.annotations.Invalidate;
-import org.apache.felix.ipojo.annotations.Validate;
+import org.apache.felix.ipojo.annotations.*;
 import org.orbisgis.orbisserver.coreserver.model.Data;
 import org.orbisgis.orbisserver.coreserver.model.*;
 import org.orbisgis.orbisserver.coreserver.model.Operation;
@@ -491,13 +490,11 @@ public class WpsService implements Service {
         scriptPlugin.activate();
     }
 
-    @Invalidate
     @Override
     public void shutdown(){
         //Nothing to do
     }
 
-    @Validate
     @Override
     public void start(Map<String, Object> propertyMap) {
         this.ds = (DataSource)propertyMap.get(ServiceFactory.DATA_SOURCE_PROP);
