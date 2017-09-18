@@ -39,7 +39,9 @@
 package org.orbisgis.orbisserver.coreserver.web;
 
 import org.apache.felix.ipojo.annotations.Requires;
-import org.orbisgis.orbisserver.coreserver.controller.CoreServerController;
+import org.orbisgis.orbisserver.api.model.Operation;
+import org.orbisgis.orbisserver.api.model.StatusInfo;
+import org.orbisgis.orbisserver.coreserver.controller.CoreServerControllerImpl;
 import org.orbisgis.orbisserver.coreserver.model.*;
 import org.wisdom.api.DefaultController;
 import org.wisdom.api.annotations.Controller;
@@ -60,7 +62,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Main orbisserver controller containing all the rpute for the web wps client.
+ * Main orbisserver controller containing all the route for the web wps client.
  *
  * @author Sylvain PALOMINOS
  */
@@ -70,7 +72,7 @@ public class MainController extends DefaultController {
     private List<Session> sessionList = new ArrayList<>();
 
     @Requires
-    private CoreServerController coreServerController;
+    private CoreServerControllerImpl coreServerController;
 
     @View("Home")
     private Template home;

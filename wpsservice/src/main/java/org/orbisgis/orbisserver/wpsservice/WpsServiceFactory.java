@@ -36,39 +36,44 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisserver.coreserver.model;
+package org.orbisgis.orbisserver.wpsservice;
 
-import java.util.List;
+import org.apache.felix.ipojo.annotations.*;
+import org.orbisgis.orbisserver.api.CoreServerController;
+import org.orbisgis.orbisserver.api.service.Service;
+import org.orbisgis.orbisserver.api.service.ServiceFactory;
+
+import java.util.Map;
 
 /**
- * Data representation.
+ * Service factory for the WPS.
  *
  * @author Sylvain PALOMINOS
  */
-public class Data {
 
-    /** MimeType of the data.*/
-    private String mimeType;
-    /** Content of the data.*/
-    private List<Object> content;
+@Component
+@Provides
+@Instantiate
+public class WpsServiceFactory implements ServiceFactory {
 
-    /**
-     * Sets the mimeType of the data.
-     * @param mimeType MimeType of the data.
-     */
-    public void setMimeType(String mimeType){
-        this.mimeType = mimeType;
+    @Requires
+    private CoreServerController coreServerController;
+
+    @Override
+    public Service createService(Map<String, Object> properties) {
+        WpsService wpsService = new WpsService();
+        wpsService.start(properties);
+        //initiate the wpsService with a first request
+        wpsService.getAllOperation();
+        return wpsService;
     }
 
-    /**
-     * Sets the data content.
-     * @param content The data content.
-     */
-    public void setContent(List<Object> content){
-        this.content = content;
+    @Validate
+    public void start(){
+        coreServerController.addServiceFactory(this);
     }
 
-    public List<Object> getContent() {
-        return content;
+    @Invalidate
+    public void stop(){
     }
 }

@@ -43,8 +43,9 @@ import org.apache.felix.ipojo.annotations.Provides;
 import org.apache.felix.ipojo.annotations.Requires;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.SFSUtilities;
-import org.orbisgis.orbisserver.coreserver.model.Service;
-import org.orbisgis.orbisserver.coreserver.model.ServiceFactory;
+import org.orbisgis.orbisserver.api.CoreServerController;
+import org.orbisgis.orbisserver.api.service.Service;
+import org.orbisgis.orbisserver.api.service.ServiceFactory;
 import org.orbisgis.orbisserver.coreserver.model.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,12 +69,12 @@ import java.util.concurrent.Executors;
  */
 
 @Controller
-@Provides(specifications={CoreServerController.class})
+@Provides(specifications={CoreServerControllerImpl.class})
 @Instantiate
-public class CoreServerController extends DefaultController {
+public class CoreServerControllerImpl extends DefaultController implements CoreServerController {
 
     /** Logger of the class. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(CoreServerController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CoreServerControllerImpl.class);
 
     /** Administration DataSource.*/
     private DataSource ds;
@@ -89,7 +90,7 @@ public class CoreServerController extends DefaultController {
     /**
      * Main Constructor. It initiate the administration database.
      */
-    public CoreServerController(){
+    public CoreServerControllerImpl(){
         openSessionList = new ArrayList<>();
         serviceFactoryList = new ArrayList<>();
         String dataBaseLocation = new File("main_h2_db.mv.db").getAbsolutePath();
@@ -124,6 +125,7 @@ public class CoreServerController extends DefaultController {
         }
     }
 
+    @Override
     public void addServiceFactory(ServiceFactory serviceFactory){
         serviceFactoryList.add(serviceFactory);
     }

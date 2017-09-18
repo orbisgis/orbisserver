@@ -36,18 +36,19 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisserver.coreserver.controller;
+package org.orbisgis.orbisserver.wpsservice;
 
 import net.opengis.ows._2.*;
 import net.opengis.wps._2_0.*;
 import net.opengis.wps._2_0.GetCapabilitiesType;
 import net.opengis.wps._2_0.ObjectFactory;
-import org.apache.felix.ipojo.annotations.*;
-import org.orbisgis.orbisserver.coreserver.model.Data;
-import org.orbisgis.orbisserver.coreserver.model.*;
-import org.orbisgis.orbisserver.coreserver.model.Operation;
-import org.orbisgis.orbisserver.coreserver.model.Result;
-import org.orbisgis.orbisserver.coreserver.model.StatusInfo;
+import org.orbisgis.orbisserver.api.model.*;
+import org.orbisgis.orbisserver.api.model.Data;
+import org.orbisgis.orbisserver.api.model.Operation;
+import org.orbisgis.orbisserver.api.model.Result;
+import org.orbisgis.orbisserver.api.model.StatusInfo;
+import org.orbisgis.orbisserver.api.service.Service;
+import org.orbisgis.orbisserver.api.service.ServiceFactory;
 import org.orbiswps.scripts.WpsScriptPlugin;
 import org.orbiswps.server.WpsServer;
 import org.orbiswps.server.WpsServerImpl;
