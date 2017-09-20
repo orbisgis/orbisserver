@@ -36,21 +36,67 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisserver.coreserver.model;
-
-import java.util.Map;
+package org.orbisgis.orbisserver.api.model;
 
 /**
- * Interface for the definition of the factory creating and configuring a service.
+ * Request for the status of the execution of an operation
  *
  * @author Sylvain PALOMINOS
  */
-public interface ServiceFactory {
+public class StatusRequest {
+
+    /** Identifier of the running job. */
+    private String id;
+    /** Title of the process executed. */
+    private String processTitle;
+    /** Id of the process executed. */
+    private String processId;
 
     /**
-     * Instantiate, set and returns the service
-     * @param properties Map of the properties to set the service with a String as key and an Object as Value.
-     * @return A service instance
+     * Main constructor.
+     * @param id Identifier of the running job.
      */
-    public Service createService(Map<String, Object> properties, Session session);
+    public StatusRequest(String id){
+        this.id = id;
+    }
+
+    /**
+     * Returns the identifier.
+     * @return The identifier.
+     */
+    public String getId(){
+        return id;
+    }
+
+    /**
+     * Returns the process title.
+     * @return The process title.
+     */
+    public String getProcessTitle() {
+        return processTitle;
+    }
+
+    /**
+     * Sets the process title.
+     * @param processTitle The process title.
+     */
+    public void setProcessTitle(String processTitle) {
+        this.processTitle = processTitle;
+    }
+
+    /**
+     * Returns the process identifier.
+     * @return The process identifier.
+     */
+    public String getProcessId() {
+        return processId;
+    }
+
+    /**
+     * Sets the process identifier.
+     * @param processId Process identifier.
+     */
+    public void setProcessId(String processId) {
+        this.processId = processId;
+    }
 }

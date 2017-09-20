@@ -36,19 +36,19 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisserver.coreserver.controller;
+package org.orbisgis.orbisserver.wpsservice;
 
 import net.opengis.ows._2.*;
-import net.opengis.wps._1_0_0.OutputDataType;
 import net.opengis.wps._2_0.*;
 import net.opengis.wps._2_0.GetCapabilitiesType;
 import net.opengis.wps._2_0.ObjectFactory;
-import net.opengis.wps._2_0.ReferenceType;
-import org.orbisgis.orbisserver.coreserver.model.*;
-import org.orbisgis.orbisserver.coreserver.model.Data;
-import org.orbisgis.orbisserver.coreserver.model.Operation;
-import org.orbisgis.orbisserver.coreserver.model.Result;
-import org.orbisgis.orbisserver.coreserver.model.StatusInfo;
+import org.orbisgis.orbisserver.api.model.*;
+import org.orbisgis.orbisserver.api.model.Data;
+import org.orbisgis.orbisserver.api.model.Operation;
+import org.orbisgis.orbisserver.api.model.Result;
+import org.orbisgis.orbisserver.api.model.StatusInfo;
+import org.orbisgis.orbisserver.api.service.Service;
+import org.orbisgis.orbisserver.api.service.ServiceFactory;
 import org.orbiswps.scripts.WpsScriptPlugin;
 import org.orbiswps.server.WpsServer;
 import org.orbiswps.server.WpsServerImpl;
@@ -85,14 +85,6 @@ public class WpsService implements Service {
     private DataSource ds;
     /** Cached list of operations available.*/
     private List<Operation> cachedOpList;
-
-    public WpsService(DataSource ds, ExecutorService executorService, File workspaceFolder){
-        this.ds = ds;
-        this.executorService = executorService;
-        this.workspaceFolder = workspaceFolder;
-        this.cachedOpList = new ArrayList<>();
-        createWpsServerInstance();
-    }
 
     @Override
     public StatusInfo executeOperation(ExecuteRequest request) {
@@ -336,6 +328,9 @@ public class WpsService implements Service {
             if(op.getId().equals(id)){
                 operation = op;
                 operation.setAbstr(op.getAbstr());
+                operation.setInputList(new ArrayList<Input>());
+                operation.setOutputList(new ArrayList<Output>());
+                operation.setKeyWord(new ArrayList<String>());
                 try {
                     Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
                     Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
@@ -494,5 +489,19 @@ public class WpsService implements Service {
         WpsScriptPlugin scriptPlugin = new WpsScriptPlugin();
         scriptPlugin.setWpsServer(wpsServer);
         scriptPlugin.activate();
+    }
+
+    @Override
+    public void shutdown(){
+        //Nothing to do
+    }
+
+    @Override
+    public void start(Map<String, Object> propertyMap) {
+        this.ds = (DataSource)propertyMap.get(ServiceFactory.DATA_SOURCE_PROP);
+        this.executorService = (ExecutorService) propertyMap.get(ServiceFactory.EXECUTOR_SERVICE_PROP);
+        this.workspaceFolder = (File)propertyMap.get(ServiceFactory.WORKSPACE_FOLDER_PROP);
+        this.cachedOpList = new ArrayList<>();
+        createWpsServerInstance();
     }
 }

@@ -24,6 +24,7 @@
                 <version>2</version>
         </parent>
         <modules>
+                <module>coreserver-api</module>
                 <module>core-server</module>
                 <module>wpsservice</module>
         </modules>

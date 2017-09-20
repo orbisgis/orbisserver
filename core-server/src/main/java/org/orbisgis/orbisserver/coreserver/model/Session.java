@@ -39,24 +39,24 @@
 package org.orbisgis.orbisserver.coreserver.model;
 
 import org.apache.commons.io.filefilter.NameFileFilter;
-import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.orbisserver.coreserver.controller.WpsService;
+import org.orbisgis.orbisserver.api.model.*;
+import org.orbisgis.orbisserver.api.service.Service;
+import org.orbisgis.orbisserver.api.service.ServiceFactory;
+import org.orbisgis.orbisserver.coreserver.web.MainController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.io.*;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -90,29 +90,35 @@ public class Session {
     private Map<String, Service> jobIdServiceMap;
     /** Map with the finished job. */
     private Map<String, StatusInfo> finishedJobMap;
+    /** Time before expiration of the session. If equals to -1, there is no expiration. */
+    private long expirationTimeMillis;
+    /** Timer for the jobs expiration. */
+    private Timer timer;
+    private MainController mainController;
 
     /**
      * Main constructor.
-     * @param username Username associated to the session.
      */
-    public Session(String username){
+    public Session(Map<String, Object> propertyMap, List<Service> serviceList){
         jobIdServiceMap = new HashMap<>();
         finishedJobMap = new HashMap<>();
-        serviceList = new ArrayList<>();
         statusInfoList = new ArrayList<>();
-        token = UUID.randomUUID();
-        workspaceFolder = new File("workspace", token.toString());
-        workspaceFolder.mkdirs();
-        executorService = Executors.newFixedThreadPool(3);
-        this.username = username;
+        this.token = (UUID)propertyMap.get(ServiceFactory.TOKEN_PROP);
+        this.username = (String)propertyMap.get(ServiceFactory.USERNAME_PROP);
+        this.ds = (DataSource) propertyMap.get(ServiceFactory.DATA_SOURCE_PROP);
+        this.executorService = (ExecutorService) propertyMap.get(ServiceFactory.EXECUTOR_SERVICE_PROP);
+        this.workspaceFolder = (File)propertyMap.get(ServiceFactory.WORKSPACE_FOLDER_PROP);
+        expirationTimeMillis = -1;
+        timer = new Timer();
+        this.serviceList = serviceList;
+    }
 
-        String dataBaseLocation = new File(workspaceFolder, "h2_db.mv.db").getAbsolutePath();
-        try {
-            ds = SFSUtilities.wrapSpatialDataSource(H2GISDBFactory.createDataSource(dataBaseLocation, true));
-        } catch (SQLException e) {
-            LOGGER.error("Unable to create the database : \n"+e.getMessage());
-        }
-        serviceList.add(new WpsService(ds, executorService, workspaceFolder));
+    public void setMainController(MainController mainController){
+        this.mainController = mainController;
+    }
+
+    public void setExpirationTime(long timeInMillis){
+        this.expirationTimeMillis = timeInMillis;
     }
 
     /**
@@ -281,13 +287,15 @@ public class Session {
             statusRequest.setProcessId(statusInfo.getProcessID());
             info.setProcessID(statusInfo.getProcessID());
             info.setProcessTitle(statusInfo.getProcessTitle());
-            info.setResult(service.getResult(statusRequest));
             info.setNextRefreshMillis(-1);
             if (info.getNextPoll() != null) {
                 long timeMillisPoll = info.getNextPoll().toGregorianCalendar().getTime().getTime();
                 info.setNextRefreshMillis(timeMillisPoll - timeMillisNow);
             }
             if(info.getStatus().equalsIgnoreCase("SUCCEEDED") || info.getStatus().equalsIgnoreCase("FAILED")){
+                info.setResult(service.getResult(statusRequest));
+                timer.schedule(new TimerExpirationTask(jobId, this),
+                        info.getResult().getexpirationDate().toGregorianCalendar().getTime());
                 jobIdServiceMap.remove(jobId);
                 finishedJobMap.put(jobId, info);
             }
@@ -412,5 +420,70 @@ public class Session {
             LOGGER.error("Unable to zip the result folder.\n"+e.getMessage());
         }
         return null;
+    }
+
+    private void checkExpiration() {
+        if(statusInfoList.isEmpty() && finishedJobMap.isEmpty()){
+            timer.schedule(new TimerKillSessionTask(this), expirationTimeMillis);
+        }
+    }
+
+    private void shutdown(){
+        try {
+            ds.getConnection().close();
+        } catch (SQLException ignored) {}
+        executorService.shutdownNow();
+        for(Service service : serviceList){
+            service.shutdown();
+        }
+        timer.purge();
+        mainController.endSession(this);
+    }
+
+    public void setWorkspace(File workspace) {
+        this.workspaceFolder = workspace;
+    }
+
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
+
+    public void setDataSource(DataSource dataSource) {
+        this.ds = dataSource;
+    }
+
+    private class TimerExpirationTask extends TimerTask{
+
+        private String jobId;
+        private Session session;
+
+        public TimerExpirationTask(String jobId, Session session){
+            this.jobId = jobId;
+            this.session = session;
+        }
+
+        @Override
+        public void run() {
+            finishedJobMap.remove(jobId);
+            session.checkExpiration();
+        }
+    }
+
+    private class TimerKillSessionTask extends TimerTask{
+
+        private Session session;
+
+        public TimerKillSessionTask(Session session){
+            this.session = session;
+        }
+
+        @Override
+        public void run() {
+            session.shutdown();
+        }
+    }
+
+    public void setServiceList(List<Service> serviceList){
+        this.serviceList = serviceList;
     }
 }

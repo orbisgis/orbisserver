@@ -38,13 +38,17 @@
  */
 package org.orbisgis.orbisserver.coreserver.web;
 
-import org.orbisgis.orbisserver.coreserver.controller.CoreServerController;
+import org.apache.felix.ipojo.annotations.Requires;
+import org.orbisgis.orbisserver.api.model.Operation;
+import org.orbisgis.orbisserver.api.model.StatusInfo;
+import org.orbisgis.orbisserver.coreserver.controller.CoreServerControllerImpl;
 import org.orbisgis.orbisserver.coreserver.model.*;
 import org.wisdom.api.DefaultController;
 import org.wisdom.api.annotations.Controller;
 import org.wisdom.api.annotations.Parameter;
 import org.wisdom.api.annotations.Route;
 import org.wisdom.api.annotations.View;
+import org.wisdom.api.annotations.scheduler.Async;
 import org.wisdom.api.http.FileItem;
 import org.wisdom.api.http.HttpMethod;
 import org.wisdom.api.http.Result;
@@ -58,7 +62,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Main orbisserver controller containing all the rpute for the web wps client.
+ * Main orbisserver controller containing all the route for the web wps client.
  *
  * @author Sylvain PALOMINOS
  */
@@ -66,6 +70,9 @@ import java.util.Map;
 public class MainController extends DefaultController {
 
     private List<Session> sessionList = new ArrayList<>();
+
+    @Requires
+    private CoreServerControllerImpl coreServerController;
 
     @View("Home")
     private Template home;
@@ -141,13 +148,18 @@ public class MainController extends DefaultController {
     }
 
     @Route(method = HttpMethod.POST, uri = "/login")
+    @Async
     public Result login() throws IOException {
         String urlContent = URLDecoder.decode(context().reader().readLine(), "UTF-8");
         String[] split = urlContent.split("&");
-        Session session = CoreServerController.getSession(split[0].replaceAll(".*=", ""),
+        Session session = coreServerController.getSession(split[0].replaceAll(".*=", ""),
                 split[1].replaceAll(".*=", ""));
         if(session != null) {
-            sessionList.add(session);
+            session.setMainController(this);
+            if(!sessionList.contains(session)) {
+                sessionList.add(session);
+            }
+
             return ok(session.getToken().toString());
         }
         else {
@@ -283,7 +295,7 @@ public class MainController extends DefaultController {
     public Result signIn() throws IOException {
         String urlContent = URLDecoder.decode(context().reader().readLine(), "UTF-8");
         String[] split = urlContent.split("&");
-        Session session = CoreServerController.createSession(split[0].replaceAll(".*=", ""),
+        Session session = coreServerController.createSession(split[0].replaceAll(".*=", ""),
                 split[1].replaceAll(".*=", ""));
         if(session != null) {
             sessionList.add(session);
@@ -433,7 +445,7 @@ public class MainController extends DefaultController {
             }
         }
         if(newPassword.equals(newPasswordRepeat) && token != null) {
-            CoreServerController.changePassword(token, newPassword);
+            coreServerController.changePassword(token, newPassword);
             return ok("Password changed.");
         }
         else{
@@ -502,5 +514,9 @@ public class MainController extends DefaultController {
         else{
             return badRequest("Unexisting session.");
         }
+    }
+
+    public void endSession(Session session) {
+        sessionList.remove(session);
     }
 }

@@ -38,31 +38,42 @@
  */
 package org.orbisgis.orbisserver.wpsservice;
 
-import org.orbisgis.orbisserver.coreserver.controller.WpsService;
-import org.orbisgis.orbisserver.coreserver.model.Service;
-import org.orbisgis.orbisserver.coreserver.model.ServiceFactory;
-import org.orbisgis.orbisserver.coreserver.model.Session;
-import org.osgi.service.component.annotations.Component;
+import org.apache.felix.ipojo.annotations.*;
+import org.orbisgis.orbisserver.api.CoreServerController;
+import org.orbisgis.orbisserver.api.service.Service;
+import org.orbisgis.orbisserver.api.service.ServiceFactory;
 
-import javax.sql.DataSource;
-import java.io.File;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
 
 /**
  * Service factory for the WPS.
  *
  * @author Sylvain PALOMINOS
  */
+
 @Component
+@Provides
+@Instantiate
 public class WpsServiceFactory implements ServiceFactory {
 
+    @Requires
+    private CoreServerController coreServerController;
+
     @Override
-    public Service createService(Map<String, Object> properties, Session session) {
-        DataSource ds = session.getDataSource();
-        ExecutorService executorService = session.getExecutorService();
-        File workspaceFolder = session.getWorkspaceFolder();
-        WpsService wpsService = new WpsService(ds, executorService, workspaceFolder);
+    public Service createService(Map<String, Object> properties) {
+        WpsService wpsService = new WpsService();
+        wpsService.start(properties);
+        //initiate the wpsService with a first request
+        wpsService.getAllOperation();
         return wpsService;
+    }
+
+    @Validate
+    public void start(){
+        coreServerController.addServiceFactory(this);
+    }
+
+    @Invalidate
+    public void stop(){
     }
 }

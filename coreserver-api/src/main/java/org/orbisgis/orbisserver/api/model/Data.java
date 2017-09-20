@@ -36,69 +36,39 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisserver.coreserver.model;
+package org.orbisgis.orbisserver.api.model;
+
+import java.util.List;
 
 /**
- * Output of a process.
+ * Data representation.
  *
  * @author Sylvain PALOMINOS
  */
-public class Output {
+public class Data {
 
-    /** Unique identifier of the output.*/
-    private String id;
-    /** The data of the output.*/
-    private Data data;
-    /** The reference of the output.*/
-    private String reference;
-    private String name;
+    /** MimeType of the data.*/
+    private String mimeType;
+    /** Content of the data.*/
+    private List<Object> content;
 
     /**
-     * Main constructor.
-     * @param id Unique id of the output.
+     * Sets the mimeType of the data.
+     * @param mimeType MimeType of the data.
      */
-    public Output(String id) {
-        this.id = id;
-    }
-
-    public Output(String title, String id) {
-        this.id = id;
-        this.name = title;
+    public void setMimeType(String mimeType){
+        this.mimeType = mimeType;
     }
 
     /**
-     * Sets the data of the output.
-     * @param data The output data.
+     * Sets the data content.
+     * @param content The data content.
      */
-    public void setData(Data data) {
-        this.data = data;
+    public void setContent(List<Object> content){
+        this.content = content;
     }
 
-    /**
-     * Sets the reference of the output data.
-     * @param reference Output data reference.
-     */
-    public void setReference(String reference) {
-        this.reference = reference;
-    }
-
-    public Data getData(){
-        return data;
-    }
-
-    public String getReference(){
-        return reference;
-    }
-
-    public String getId(){
-        return id;
-    }
-
-    public String getName(){
-        return name==null?id:name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public List<Object> getContent() {
+        return content;
     }
 }

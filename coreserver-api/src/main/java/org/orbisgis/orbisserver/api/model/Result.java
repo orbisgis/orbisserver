@@ -36,12 +36,10 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisserver.coreserver.model;
+package org.orbisgis.orbisserver.api.model;
 
-import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -64,7 +62,7 @@ public class Result {
      * @param jobId Unique id of the job linked to the result.
      */
     public Result(String jobId){
-        jobId = jobId;
+        this.jobId = jobId;
     }
 
     /**
@@ -94,8 +92,15 @@ public class Result {
         long days = diff/(60*60*24);
         long hours = (diff-days*(60*60*24))/(60*60);
         long minutes = (diff-days*(60*60*24)-hours*(60*60))/60;
-        String str = "" + days + "j" + hours + ":" + minutes;
-        return str;
+        return "" + days + "j" + hours + ":" + minutes;
+    }
+
+    public long getRemainTimeMillis(){
+        Date date = new Date();
+        Date expDate = expirationDate.toGregorianCalendar().getTime();
+        SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy hh:mm");
+        formatter.setTimeZone(expirationDate.toGregorianCalendar().getTimeZone());
+        return expDate.getTime()-date.getTime();
     }
 
     /**
@@ -104,5 +109,13 @@ public class Result {
      */
     public List<Output> getOutputList(){
         return outputList;
+    }
+
+    public XMLGregorianCalendar getexpirationDate() {
+        return expirationDate;
+    }
+
+    public String getJobId(){
+        return jobId;
     }
 }

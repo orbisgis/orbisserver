@@ -36,7 +36,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisserver.coreserver.model;
+package org.orbisgis.orbisserver.api.model;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 

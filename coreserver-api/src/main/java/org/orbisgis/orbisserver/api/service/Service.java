@@ -36,9 +36,12 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisserver.coreserver.model;
+package org.orbisgis.orbisserver.api.service;
+
+import org.orbisgis.orbisserver.api.model.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Interface to define a service which can be plugged to the server
@@ -54,7 +57,7 @@ public interface Service {
      *
      * @return A statusInfo object containing all the information about the execution
      */
-    public StatusInfo executeOperation(ExecuteRequest request);
+    StatusInfo executeOperation(ExecuteRequest request);
 
     /**
      * Gets the status of an execution
@@ -63,13 +66,17 @@ public interface Service {
      *
      * @return A statusInfo object containing all the information about the execution
      */
-    public StatusInfo getStatus(StatusRequest request);
+    StatusInfo getStatus(StatusRequest request);
 
-    public Result getResult(StatusRequest request);
+    Result getResult(StatusRequest request);
 
-    public List<Operation> getAllOperation();
+    List<Operation> getAllOperation();
 
     boolean hasOperation(String id);
 
     Operation getOperation(String id);
+
+    void shutdown();
+
+    void start(Map<String, Object> propertyMap);
 }

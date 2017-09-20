@@ -138,6 +138,11 @@
             <version>0.10.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.orbisgis.orbisserver</groupId>
+            <artifactId>coreserver-api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
