@@ -295,7 +295,7 @@ public class Session {
             if(info.getStatus().equalsIgnoreCase("SUCCEEDED") || info.getStatus().equalsIgnoreCase("FAILED")){
                 info.setResult(service.getResult(statusRequest));
                 timer.schedule(new TimerExpirationTask(jobId, this),
-                        info.getResult().getexpirationDate().toGregorianCalendar().getTime());
+                        info.getResult().getExpirationDate().toGregorianCalendar().getTime());
                 jobIdServiceMap.remove(jobId);
                 finishedJobMap.put(jobId, info);
             }
@@ -358,15 +358,15 @@ public class Session {
                         try {
                             for(Object content : out.getData().getContent()) {
                                 File outFile;
-                                if(jobFolder.list(new NameFileFilter(out.getName()))!= null){
+                                if(jobFolder.list(new NameFileFilter(out.getTitle()))!= null){
                                     int diff=1;
-                                    while(jobFolder.list(new NameFileFilter(out.getName()+diff)) != null){
+                                    while(jobFolder.list(new NameFileFilter(out.getTitle()+diff)) != null){
                                         diff++;
                                     }
-                                    outFile = new File(jobFolder, out.getName().replaceAll(File.separator, "")+diff);
+                                    outFile = new File(jobFolder, out.getTitle().replaceAll(File.separator, "")+diff);
                                 }
                                 else {
-                                    outFile = new File(jobFolder, out.getName().replaceAll(File.separator, ""));
+                                    outFile = new File(jobFolder, out.getTitle().replaceAll(File.separator, ""));
                                 }
                                 if (jobFolder.mkdirs() || outFile.createNewFile()) {
                                     try (FileWriter fileWriter = new FileWriter(outFile)) {
@@ -386,7 +386,7 @@ public class Session {
                         try {
                             URL url = new URL(out.getReference());
                             ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream());
-                            FileOutputStream fos = new FileOutputStream(out.getName());
+                            FileOutputStream fos = new FileOutputStream(out.getTitle());
                             fos.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
                         } catch (IOException e) {
                             LOGGER.error("Unable to download the result.\n"+e.getMessage());

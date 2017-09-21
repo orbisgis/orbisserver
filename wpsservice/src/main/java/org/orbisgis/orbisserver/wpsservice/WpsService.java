@@ -231,7 +231,7 @@ public class WpsService implements Service {
                 if(currentOp != null) {
                     for (Output currentOpOut : currentOp.getOutputList()) {
                         if (currentOpOut.getId().equalsIgnoreCase(outData.getId())){
-                            output.setName(currentOpOut.getName());
+                            output.setTitle(currentOpOut.getTitle());
                         }
                     }
                 }

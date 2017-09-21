@@ -14,7 +14,7 @@
     <artifactId>wpsservice</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <name>wpsservice</name>
+    <title>wpsservice</title>
 
     <packaging>wisdom</packaging>
 
@@ -114,7 +114,7 @@
                         <configuration>
                             <properties>
                                 <property>
-                                    <name>listener</name>
+                                    <title>listener</title>
                                     <value>org.wisdom.test.WisdomRunListener</value>
                                 </property>
                             </properties>

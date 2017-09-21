@@ -81,6 +81,11 @@ public class Result {
         this.outputList = outputList;
     }
 
+    /**
+     * Gets the string representation of time remaining before the destruction of the Result.
+     * The string is structured this way : MM/dd/yyyy hh:mm.
+     * @return The string representation of the remaining time before destruction.
+     */
     public String getRemainTime(){
         Date date = new Date();
         Date expDate = expirationDate.toGregorianCalendar().getTime();
@@ -95,6 +100,10 @@ public class Result {
         return "" + days + "j" + hours + ":" + minutes;
     }
 
+    /**
+     * Get the time remaining before the destruction of the Result in milliseconds.
+     * @return the time remaining before the destruction.
+     */
     public long getRemainTimeMillis(){
         Date date = new Date();
         Date expDate = expirationDate.toGregorianCalendar().getTime();
@@ -111,10 +120,18 @@ public class Result {
         return outputList;
     }
 
-    public XMLGregorianCalendar getexpirationDate() {
+    /**
+     * Returns the XMLGregorianCalendar object of the expiration date.
+     * @return The XMLGregorianCalendar object.
+     */
+    public XMLGregorianCalendar getExpirationDate() {
         return expirationDate;
     }
 
+    /**
+     * Returns the unique id of the Job linked to the result.
+     * @return The unique id of the Job.
+     */
     public String getJobId(){
         return jobId;
     }

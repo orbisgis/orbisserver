@@ -36,14 +36,14 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisserver.coreserver.controller;
+package org.orbisgis.orbisserver.coreserver;
 
 import org.apache.felix.ipojo.annotations.Instantiate;
 import org.apache.felix.ipojo.annotations.Provides;
 import org.apache.felix.ipojo.annotations.Requires;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.SFSUtilities;
-import org.orbisgis.orbisserver.api.CoreServerController;
+import org.orbisgis.orbisserver.api.CoreServer;
 import org.orbisgis.orbisserver.api.service.Service;
 import org.orbisgis.orbisserver.api.service.ServiceFactory;
 import org.orbisgis.orbisserver.coreserver.model.Session;
@@ -63,18 +63,18 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Main controller of the module. This class is the core managing the user auth.
+ * Main class of the module. This class is the core managing the user auth.
  *
  * @author Sylvain PALOMINOS
  */
 
 @Controller
-@Provides(specifications={CoreServerControllerImpl.class})
+@Provides(specifications={CoreServerImpl.class})
 @Instantiate
-public class CoreServerControllerImpl extends DefaultController implements CoreServerController {
+public class CoreServerImpl extends DefaultController implements CoreServer {
 
     /** Logger of the class. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(CoreServerControllerImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CoreServerImpl.class);
 
     /** Administration DataSource.*/
     private DataSource ds;
@@ -90,7 +90,7 @@ public class CoreServerControllerImpl extends DefaultController implements CoreS
     /**
      * Main Constructor. It initiate the administration database.
      */
-    public CoreServerControllerImpl(){
+    public CoreServerImpl(){
         openSessionList = new ArrayList<>();
         serviceFactoryList = new ArrayList<>();
         String dataBaseLocation = new File("main_h2_db.mv.db").getAbsolutePath();
@@ -126,8 +126,13 @@ public class CoreServerControllerImpl extends DefaultController implements CoreS
     }
 
     @Override
-    public void addServiceFactory(ServiceFactory serviceFactory){
+    public void registerServiceFactory(ServiceFactory serviceFactory){
         serviceFactoryList.add(serviceFactory);
+    }
+
+    @Override
+    public void unregisterServiceFactory(ServiceFactory serviceFactory) {
+
     }
 
     /**

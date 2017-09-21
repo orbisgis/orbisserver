@@ -59,4 +59,10 @@ public interface ServiceFactory {
      * @return A service instance
      */
     Service createService(Map<String, Object> properties);
+
+    /**
+     * Returns the Class object of the class implementing the Service interface and instantiated by the factory.
+     * @return The class object of the instantiated Service.
+     */
+    Class getServiceClass();
 }

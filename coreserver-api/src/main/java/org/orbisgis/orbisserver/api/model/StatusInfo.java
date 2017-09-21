@@ -210,6 +210,10 @@ public class StatusInfo {
         return result!=null;
     }
 
+    /**
+     * Returns the Result.
+     * @return The Result.
+     */
     public Result getResult() {
         return result;
     }

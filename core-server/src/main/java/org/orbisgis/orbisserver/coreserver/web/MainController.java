@@ -41,7 +41,7 @@ package org.orbisgis.orbisserver.coreserver.web;
 import org.apache.felix.ipojo.annotations.Requires;
 import org.orbisgis.orbisserver.api.model.Operation;
 import org.orbisgis.orbisserver.api.model.StatusInfo;
-import org.orbisgis.orbisserver.coreserver.controller.CoreServerControllerImpl;
+import org.orbisgis.orbisserver.coreserver.CoreServerImpl;
 import org.orbisgis.orbisserver.coreserver.model.*;
 import org.wisdom.api.DefaultController;
 import org.wisdom.api.annotations.Controller;
@@ -72,7 +72,7 @@ public class MainController extends DefaultController {
     private List<Session> sessionList = new ArrayList<>();
 
     @Requires
-    private CoreServerControllerImpl coreServerController;
+    private CoreServerImpl coreServerController;
 
     @View("Home")
     private Template home;
