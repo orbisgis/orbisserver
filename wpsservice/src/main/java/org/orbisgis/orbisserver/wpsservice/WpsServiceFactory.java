@@ -68,6 +68,11 @@ public class WpsServiceFactory implements ServiceFactory {
         return wpsService;
     }
 
+    @Override
+    public Class getServiceClass() {
+        return WpsService.class;
+    }
+
     @Validate
     public void start(){
         coreServer.registerServiceFactory(this);

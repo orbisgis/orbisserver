@@ -45,6 +45,7 @@ import org.h2gis.utilities.TableLocation;
 import org.orbisgis.orbisserver.api.model.*;
 import org.orbisgis.orbisserver.api.service.Service;
 import org.orbisgis.orbisserver.api.service.ServiceFactory;
+import org.orbisgis.orbisserver.coreserver.CoreServerImpl;
 import org.orbisgis.orbisserver.coreserver.web.MainController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,8 +84,7 @@ public class Session {
     /** List of services instance for the Session. */
     private List<Service> serviceList;
     /** List of StatusInfo. This list is used as a cache saving all the process executed and waiting for the data
-     * retrieving.
-     */
+     * retrieving.*/
     private List<StatusInfo> statusInfoList;
     /** Map linking the job id with the service executing it. */
     private Map<String, Service> jobIdServiceMap;
@@ -94,12 +94,14 @@ public class Session {
     private long expirationTimeMillis;
     /** Timer for the jobs expiration. */
     private Timer timer;
-    private MainController mainController;
+    private CoreServerImpl coreServerImpl;
+    private boolean isActive;
 
     /**
      * Main constructor.
      */
-    public Session(Map<String, Object> propertyMap, List<Service> serviceList){
+    public Session(Map<String, Object> propertyMap, List<Service> serviceList, CoreServerImpl coreServerImpl){
+        isActive = false;
         jobIdServiceMap = new HashMap<>();
         finishedJobMap = new HashMap<>();
         statusInfoList = new ArrayList<>();
@@ -111,10 +113,7 @@ public class Session {
         expirationTimeMillis = -1;
         timer = new Timer();
         this.serviceList = serviceList;
-    }
-
-    public void setMainController(MainController mainController){
-        this.mainController = mainController;
+        this.coreServerImpl = coreServerImpl;
     }
 
     public void setExpirationTime(long timeInMillis){
@@ -189,6 +188,7 @@ public class Session {
      * @param inputData Input data Map to use on the execution.
      */
     public void executeOperation(String id, Map<String, String> inputData) {
+        isActive = true;
         Operation operation = getOperation(id);
         Map<String, String> tmpMap = new HashMap<>();
         for(Input input : operation.getInputList()){
@@ -428,7 +428,7 @@ public class Session {
         }
     }
 
-    private void shutdown(){
+    public void shutdown(){
         try {
             ds.getConnection().close();
         } catch (SQLException ignored) {}
@@ -437,7 +437,7 @@ public class Session {
             service.shutdown();
         }
         timer.purge();
-        mainController.endSession(this);
+        isActive = false;
     }
 
     public void setWorkspace(File workspace) {
@@ -450,6 +450,29 @@ public class Session {
 
     public void setDataSource(DataSource dataSource) {
         this.ds = dataSource;
+    }
+
+    /**
+     * Shutdown the service with the given class.
+     * @param serviceClass The class of the service to shutdown.
+     */
+    public void shutdownService(Class serviceClass){
+        Service toRemove = null;
+        for(Service service : serviceList){
+            if(serviceClass.isInstance(service)){
+                service.shutdown();
+                toRemove = service;
+            }
+        }
+        serviceList.remove(toRemove);
+    }
+
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public boolean isActive() {
+        return isActive;
     }
 
     private class TimerExpirationTask extends TimerTask{
@@ -479,7 +502,8 @@ public class Session {
 
         @Override
         public void run() {
-            session.shutdown();
+            session.setIsActive(false);
+            coreServerImpl.inactiveSession(session);
         }
     }
 

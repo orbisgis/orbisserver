@@ -14,7 +14,7 @@
     <artifactId>coreserver-api</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <title>coreserver-api</title>
+    <name>coreserver-api</name>
 
     <packaging>bundle</packaging>
 

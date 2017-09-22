@@ -61,11 +61,15 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 /**
  * Service managing the wps part for the core-server module
@@ -481,7 +485,21 @@ public class WpsService implements Service {
      * Creates an  instance of the WpsServer.
      */
     private void createWpsServerInstance(){
-        wpsServer = new WpsServerImpl(workspaceFolder.getAbsolutePath(), ds);
+        File f = new File(workspaceFolder,"wpsServer.properties");
+        InputStream is = null;
+        try {
+            is = this.getClass().getResource("wpsServer.properties").openStream();
+        } catch (IOException e) {
+            LOGGER.error("Unable to load the wps server properties file.\n"+e.getMessage());
+            return;
+        }
+        try {
+            Files.copy(is, f.toPath(), REPLACE_EXISTING);
+        } catch (IOException e) {
+            LOGGER.error("Unable to copy the wps server properties file.\n"+e.getMessage());
+            return;
+        }
+        wpsServer = new WpsServerImpl(workspaceFolder.getAbsolutePath(), ds, f.getAbsolutePath());
         wpsServer.setExecutorService(executorService);
         wpsServer.setDatabase(WpsServer.Database.H2GIS);
         wpsServer.setDataSource(ds);

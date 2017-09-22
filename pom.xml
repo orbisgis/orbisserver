@@ -5,16 +5,16 @@
         <artifactId>orbisserver</artifactId>
         <packaging>pom</packaging>
         <version>1.0-SNAPSHOT</version>
-        <title>orbisserver</title>
+        <name>orbisserver</name>
         <description>Server for OrbisGIS</description>
         <organization>
-                <title>Lab-STICC - UMR CNRS 6285</title>
+                <name>Lab-STICC - UMR CNRS 6285</name>
                 <url>http://www.labsticc.fr/</url>
         </organization>
         <url>http://www.orbisgis.org</url>
         <licenses>
                 <license>
-                    <title>GNU Lesser General Public License (LGPLV3)</title>
+                    <name>GNU Lesser General Public License (LGPLV3)</name>
                     <url>http://www.gnu.org/licenses/gpl-3.0.html</url>
                 </license>
         </licenses>
@@ -66,23 +66,23 @@
         </scm>
         <developers>
                 <developer>
-                        <title>Erwan Bocher</title>
+                        <name>Erwan Bocher</name>
                         <organization>Lab-STICC - CNRS UMR 6285</organization>
                 </developer>
                 <developer>
-                        <title>Sylvain Palominos</title>
+                        <name>Sylvain Palominos</name>
                         <organization>Lab-STICC - CNRS UMR 6285</organization>
                 </developer>
         </developers>
         <repositories>
                 <repository>
                         <id>OrbisGIS</id>
-                        <title>OrbisGIS repository</title>
+                        <name>OrbisGIS repository</name>
                         <url>http://repo.orbisgis.org</url>
                 </repository>
                 <repository>
                         <id>repo2.maven.org</id>
-                        <title>Maven2 repository 2</title>
+                        <name>Maven2 repository 2</name>
                         <url>http://repo2.maven.org/maven2</url>
                 </repository>
         </repositories>

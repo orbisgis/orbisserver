@@ -12,10 +12,10 @@
     <tbody>
         <tr th:each="table : ${databaseContent.tableList}">
             <td>
-                <p class="table-row-title" th:text="${table.title}"></p>
+                <p class="table-row-title" th:text="${table.name}"></p>
             </td>
             <td th:each="field : ${table.fieldList}">
-                <span th:text="${field.title}"></span>
+                <span th:text="${field.name}"></span>
             </td>
         </tr>
     </tbody>
