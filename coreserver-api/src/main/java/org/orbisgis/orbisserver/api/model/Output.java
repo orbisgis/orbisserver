@@ -51,7 +51,8 @@ public class Output {
     private Data data;
     /** The reference of the output.*/
     private String reference;
-    private String name;
+    /** Title of the output. */
+    private String title;
 
     /**
      * Main constructor.
@@ -61,9 +62,14 @@ public class Output {
         this.id = id;
     }
 
+    /**
+     * Constructor with the title of the output.
+     * @param title Title of the output.
+     * @param id Unique id of the output.
+     */
     public Output(String title, String id) {
         this.id = id;
-        this.name = title;
+        this.title = title;
     }
 
     /**
@@ -82,23 +88,42 @@ public class Output {
         this.reference = reference;
     }
 
+    /**
+     * Returns the Data of the Output.
+     * @return The Data of the Output
+     */
     public Data getData(){
         return data;
     }
 
+    /**
+     * Returns the reference of the Output.
+     * @return The reference of the Output.
+     */
     public String getReference(){
         return reference;
     }
 
+    /**
+     * Returns the unique id of the Output.
+     * @return The unique id of the Output.
+     */
     public String getId(){
         return id;
     }
 
-    public String getName(){
-        return name==null?id:name;
+    /**
+     * Returns the title of the Output.
+     * @return The title of the Output.
+     */
+    public String getTitle(){
+        return title ==null?id: title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    /**
+     * Sets the title of the Output.
+     */
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

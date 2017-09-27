@@ -68,10 +68,7 @@ public class Input {
         this.type = type;
         this.attributes = attributes;
         this.optional = optional;
-        htmlId = id.replaceAll(" ", "");
-        htmlId = htmlId.replaceAll(":", "");
-        htmlId = htmlId.replaceAll("/", "");
-        htmlId = htmlId.replaceAll("\\.", "");
+        htmlId = id.replaceAll("[ :/.\\\\]", "");
     }
 
     /**

@@ -39,7 +39,7 @@
 package org.orbisgis.orbisserver.wpsservice;
 
 import org.apache.felix.ipojo.annotations.*;
-import org.orbisgis.orbisserver.api.CoreServerController;
+import org.orbisgis.orbisserver.api.CoreServer;
 import org.orbisgis.orbisserver.api.service.Service;
 import org.orbisgis.orbisserver.api.service.ServiceFactory;
 
@@ -57,7 +57,7 @@ import java.util.Map;
 public class WpsServiceFactory implements ServiceFactory {
 
     @Requires
-    private CoreServerController coreServerController;
+    private CoreServer coreServer;
 
     @Override
     public Service createService(Map<String, Object> properties) {
@@ -68,9 +68,14 @@ public class WpsServiceFactory implements ServiceFactory {
         return wpsService;
     }
 
+    @Override
+    public Class getServiceClass() {
+        return WpsService.class;
+    }
+
     @Validate
     public void start(){
-        coreServerController.addServiceFactory(this);
+        coreServer.registerServiceFactory(this);
     }
 
     @Invalidate

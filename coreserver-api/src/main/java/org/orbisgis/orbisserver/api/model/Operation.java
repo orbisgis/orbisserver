@@ -166,10 +166,19 @@ public class Operation {
      */
     public void setKeyWord(List<String> keyWord) {this.keyWord = keyWord;}
 
+    /**
+     * Sets the list of Input of the Operation.
+     * @param inputList List of the Input.
+     */
     public void setInputList(List<Input> inputList) {
         this.inputList = inputList;
     }
 
+
+    /**
+     * Sets the list of Output of the Operation.
+     * @param outputList List of the Output.
+     */
     public void setOutputList(List<Output> outputList) {
         this.outputList = outputList;
     }

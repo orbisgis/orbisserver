@@ -57,6 +57,7 @@
                 <org.osgi.core-version>4.3.1</org.osgi.core-version>
                 <org.apache.felix.scr.ds-annotations-version>1.2.4</org.apache.felix.scr.ds-annotations-version>
                 <commons-io-version>2.4</commons-io-version>
+                <wisdom.version>0.10.0</wisdom.version>
         </properties>
         <scm>
                 <connection>scm:git:https://github.com/orbisgis/orbiswps.git</connection>

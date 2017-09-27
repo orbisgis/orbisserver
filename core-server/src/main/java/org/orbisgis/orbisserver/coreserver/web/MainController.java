@@ -41,7 +41,7 @@ package org.orbisgis.orbisserver.coreserver.web;
 import org.apache.felix.ipojo.annotations.Requires;
 import org.orbisgis.orbisserver.api.model.Operation;
 import org.orbisgis.orbisserver.api.model.StatusInfo;
-import org.orbisgis.orbisserver.coreserver.controller.CoreServerControllerImpl;
+import org.orbisgis.orbisserver.coreserver.CoreServerImpl;
 import org.orbisgis.orbisserver.coreserver.model.*;
 import org.wisdom.api.DefaultController;
 import org.wisdom.api.annotations.Controller;
@@ -69,10 +69,8 @@ import java.util.Map;
 @Controller
 public class MainController extends DefaultController {
 
-    private List<Session> sessionList = new ArrayList<>();
-
     @Requires
-    private CoreServerControllerImpl coreServerController;
+    private CoreServerImpl coreServerController;
 
     @View("Home")
     private Template home;
@@ -132,19 +130,8 @@ public class MainController extends DefaultController {
     @Route(method = HttpMethod.GET, uri = "/user/logOut")
     public Result logOut() {
         String token = context().cookieValue("token");
-        Session session = null;
-        for(Session s : sessionList){
-            if(s.getToken().toString().equals(token)){
-                session = s;
-            }
-        }
-        if(session != null) {
-            sessionList.remove(session);
-            return ok();
-        }
-        else {
-            return badRequest("Unexisting session.");
-        }
+        coreServerController.closeSession(token);
+        return ok();
     }
 
     @Route(method = HttpMethod.POST, uri = "/login")
@@ -155,11 +142,6 @@ public class MainController extends DefaultController {
         Session session = coreServerController.getSession(split[0].replaceAll(".*=", ""),
                 split[1].replaceAll(".*=", ""));
         if(session != null) {
-            session.setMainController(this);
-            if(!sessionList.contains(session)) {
-                sessionList.add(session);
-            }
-
             return ok(session.getToken().toString());
         }
         else {
@@ -170,7 +152,7 @@ public class MainController extends DefaultController {
     @Route(method = HttpMethod.GET, uri = "/process/processList")
     public Result processList(@Parameter("filters") String filters) throws IOException {
         String token = context().cookieValue("token");
-        for(Session session : sessionList) {
+        for(Session session : coreServerController.getOpenSessionList()) {
             if (session.getToken().toString().equals(token)) {
                 List<Operation> processList = session.getOperationList();
                 List<Operation> importExportList = new ArrayList<>();
@@ -199,7 +181,7 @@ public class MainController extends DefaultController {
     public Result describeProcess(@Parameter("id") String id) throws IOException {
         String token = context().cookieValue("token");
         Session session = null;
-        for(Session s : sessionList) {
+        for(Session s : coreServerController.getOpenSessionList()) {
             if (s.getToken().toString().equals(token)) {
                 session = s;
                 Operation op = session.getOperation(id);
@@ -211,7 +193,7 @@ public class MainController extends DefaultController {
 
     @Route(method = HttpMethod.POST, uri = "/execute")
     public Result execute() throws IOException {
-        for(Session session : sessionList) {
+        for(Session session : coreServerController.getOpenSessionList()) {
             String urlContent = URLDecoder.decode(context().reader().readLine(), "UTF-8");
             String[] split = urlContent.split("&");
             String token = context().cookieValue("token");
@@ -240,7 +222,7 @@ public class MainController extends DefaultController {
     @Route(method = HttpMethod.POST, uri = "/uploading")
     public Result upload() throws IOException {
         String cookie = context().cookieValue("token");
-        for(Session session : sessionList) {
+        for(Session session : coreServerController.getOpenSessionList()) {
             if(session.getToken().toString().equalsIgnoreCase(cookie)){
 
                 if(!context().files().isEmpty()){
@@ -267,7 +249,7 @@ public class MainController extends DefaultController {
     @Route(method = HttpMethod.GET, uri = "/jobs")
     public Result jobs() throws IOException {
         String token = context().cookieValue("token");
-        for(Session session : sessionList) {
+        for(Session session : coreServerController.getOpenSessionList()) {
             if (session.getToken().toString().equals(token)) {
                 List<StatusInfo> statusInfoToRefreshList = session.getAllStatusInfoToRefresh();
                 List<StatusInfo> statusInfoList = session.getAllStatusInfo();
@@ -298,7 +280,6 @@ public class MainController extends DefaultController {
         Session session = coreServerController.createSession(split[0].replaceAll(".*=", ""),
                 split[1].replaceAll(".*=", ""));
         if(session != null) {
-            sessionList.add(session);
             return ok(session.getToken().toString());
         }
         else {
@@ -314,7 +295,7 @@ public class MainController extends DefaultController {
     @Route(method = HttpMethod.GET, uri = "/data")
     public Result data() {
         String token = context().cookieValue("token");
-        for (Session session : sessionList) {
+        for (Session session : coreServerController.getOpenSessionList()) {
             if (session.getToken().toString().equals(token)) {
                 return ok(render(data));
             }
@@ -325,7 +306,7 @@ public class MainController extends DefaultController {
     @Route(method = HttpMethod.GET, uri = "/dataleftnav")
     public Result dataLeftNav() {
         String token = context().cookieValue("token");
-        for (Session session : sessionList) {
+        for (Session session : coreServerController.getOpenSessionList()) {
             if (session.getToken().toString().equals(token)) {
                 return ok(render(dataLeftNav));
             }
@@ -336,7 +317,7 @@ public class MainController extends DefaultController {
     @Route(method = HttpMethod.GET, uri = "/data/import")
     public Result Import(@Parameter("filters") String filters) {
         String token = context().cookieValue("token");
-        for(Session session : sessionList) {
+        for(Session session : coreServerController.getOpenSessionList()) {
             if (session.getToken().toString().equals(token)) {
                 List<Operation> opList = session.getOperationList();
                 List<Operation> importList = new ArrayList<>();
@@ -349,6 +330,7 @@ public class MainController extends DefaultController {
                         }
                     }
                 }
+
                 for(Operation op : importList){
                     if(op.getTitle().toLowerCase().contains(filters.toLowerCase())) {
                         filteredList.add(op);
@@ -364,7 +346,7 @@ public class MainController extends DefaultController {
     @Route(method = HttpMethod.GET, uri = "/data/export")
     public Result export(@Parameter("filters") String filters) {
         String token = context().cookieValue("token");
-        for(Session session : sessionList) {
+        for(Session session : coreServerController.getOpenSessionList()) {
             if (session.getToken().toString().equals(token)) {
                 List<Operation> opList = session.getOperationList();
                 List<Operation> exportList = new ArrayList<>();
@@ -392,7 +374,7 @@ public class MainController extends DefaultController {
     @Route(method = HttpMethod.GET, uri = "/process")
     public Result process() {
         String token = context().cookieValue("token");
-        for(Session session : sessionList) {
+        for(Session session : coreServerController.getOpenSessionList()) {
             if (session.getToken().toString().equals(token)) {
                 return ok(render(process));
             }
@@ -404,7 +386,7 @@ public class MainController extends DefaultController {
     @Route(method = HttpMethod.GET, uri = "/process/leftNavContent")
     public Result leftNavContent() {
         String token = context().cookieValue("token");
-        for(Session session : sessionList) {
+        for(Session session : coreServerController.getOpenSessionList()) {
             if (session.getToken().toString().equals(token)) {
                 return ok(render(leftNavContent));
             }
@@ -415,7 +397,7 @@ public class MainController extends DefaultController {
     @Route(method = HttpMethod.GET, uri = "/user")
     public Result user() {
         String token = context().cookieValue("token");
-        for(Session session : sessionList) {
+        for(Session session : coreServerController.getOpenSessionList()) {
             if (session.getToken().toString().equals(token)) {
                 return ok(render(user, "session", session));
             }
@@ -457,13 +439,12 @@ public class MainController extends DefaultController {
     public Result settings() {
         String token = context().cookieValue("token");
         Session session = null;
-        for(Session s : sessionList){
+        for(Session s : coreServerController.getOpenSessionList()){
             if(s.getToken().toString().equals(token)){
                 session = s;
             }
         }
         if(session != null) {
-            sessionList.remove(session);
             return ok(render(userSettings, "session", session));
         }
         else {
@@ -475,7 +456,7 @@ public class MainController extends DefaultController {
     public Result database() {
         String token = context().cookieValue("token");
         Session session = null;
-        for(Session s : sessionList){
+        for(Session s : coreServerController.getOpenSessionList()){
             if(s.getToken().toString().equals(token)){
                 session = s;
             }
@@ -499,7 +480,7 @@ public class MainController extends DefaultController {
     public Result createArchive(@Parameter("jobId") String jobId) {
         String token = context().cookieValue("token");
         Session session = null;
-        for(Session s : sessionList){
+        for(Session s : coreServerController.getOpenSessionList()){
             if(s.getToken().toString().equals(token)){
                 session = s;
             }
@@ -514,9 +495,5 @@ public class MainController extends DefaultController {
         else{
             return badRequest("Unexisting session.");
         }
-    }
-
-    public void endSession(Session session) {
-        sessionList.remove(session);
     }
 }

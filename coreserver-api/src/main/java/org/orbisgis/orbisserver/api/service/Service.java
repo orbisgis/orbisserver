@@ -45,10 +45,23 @@ import java.util.Map;
 
 /**
  * Interface to define a service which can be plugged to the server
+ * Each Session will contains a Service instance.
  *
  * @author Sylvain PALOMINOS
  */
 public interface Service {
+
+    /**
+     * Starts the service and configure it with the given property Map.
+     *
+     * @param propertyMap Map containing the properties to set the service.
+     */
+    void start(Map<String, Object> propertyMap);
+
+    /**
+     * Shutdown the service and free resources.
+     */
+    void shutdown();
 
     /**
      * Execute an operation with the given data
@@ -68,15 +81,37 @@ public interface Service {
      */
     StatusInfo getStatus(StatusRequest request);
 
+    /**
+     * Returns the result according to the data contained in the StatusRequest.
+     *
+     * @param request Object containing all the data to get the result.
+     *
+     * @return Result object containing the results.
+     */
     Result getResult(StatusRequest request);
 
+    /**
+     * Returns all the operation available throw the Service.
+     *
+     * @return List of all the available operations.
+     */
     List<Operation> getAllOperation();
 
+    /**
+     * Test if the service offer an operation with the given id.
+     *
+     * @param id Id of the operation to find.
+     *
+     * @return True if the service contains the operation, false otherwise.
+     */
     boolean hasOperation(String id);
 
+    /**
+     * Returns the operation with the given id. If no operation is found, returns null;
+     *
+     * @param id Id of the operation to get.
+     *
+     * @return An Operation object if it is found, null otherwise.
+     */
     Operation getOperation(String id);
-
-    void shutdown();
-
-    void start(Map<String, Object> propertyMap);
 }
