@@ -46,7 +46,6 @@ import org.orbisgis.orbisserver.api.model.*;
 import org.orbisgis.orbisserver.api.service.Service;
 import org.orbisgis.orbisserver.api.service.ServiceFactory;
 import org.orbisgis.orbisserver.coreserver.CoreServerImpl;
-import org.orbisgis.orbisserver.coreserver.web.MainController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +57,8 @@ import java.nio.channels.ReadableByteChannel;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -70,6 +71,12 @@ public class Session {
 
     /** Logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(Session.class);
+
+    public static final String PROPERTY_EXPIRATION_TIME_MILLIS = "PROPERTY_EXPIRATION_TIME_MILLIS";
+    public static final String JOB_POOL_SIZE = "JOB_POOL_SIZE";
+    public static final String SERVICE_LIST = "SERVICE_LIST";
+
+    private static final int BASE_POOL_SIZE = 5;
 
     /** Token associated to the session. It is used for the identification of the web client requests. */
     private UUID token;
@@ -92,32 +99,66 @@ public class Session {
     private Map<String, StatusInfo> finishedJobMap;
     /** Time before expiration of the session. If equals to -1, there is no expiration. */
     private long expirationTimeMillis;
-    /** Timer for the jobs expiration. */
-    private Timer timer;
+    /** ScheduledThreadPoolExecutor for the jobs results expiration and the session inactivity. */
+    private ScheduledThreadPoolExecutor resultExpirationExecutor;
+    /** Instance of the CoreServerImpl. */
     private CoreServerImpl coreServerImpl;
+    /** Indicates if the session is active or not. */
     private boolean isActive;
 
     /**
      * Main constructor.
      */
-    public Session(Map<String, Object> propertyMap, List<Service> serviceList, CoreServerImpl coreServerImpl){
+    public Session(String username, UUID token, CoreServerImpl coreServerImpl){
+        this.token = token;
+        this.username = username;
         isActive = false;
         jobIdServiceMap = new HashMap<>();
         finishedJobMap = new HashMap<>();
         statusInfoList = new ArrayList<>();
-        this.token = (UUID)propertyMap.get(ServiceFactory.TOKEN_PROP);
-        this.username = (String)propertyMap.get(ServiceFactory.USERNAME_PROP);
-        this.ds = (DataSource) propertyMap.get(ServiceFactory.DATA_SOURCE_PROP);
-        this.executorService = (ExecutorService) propertyMap.get(ServiceFactory.EXECUTOR_SERVICE_PROP);
-        this.workspaceFolder = (File)propertyMap.get(ServiceFactory.WORKSPACE_FOLDER_PROP);
         expirationTimeMillis = -1;
-        timer = new Timer();
-        this.serviceList = serviceList;
+        this.serviceList = new ArrayList<>();
         this.coreServerImpl = coreServerImpl;
     }
 
-    public void setExpirationTime(long timeInMillis){
-        this.expirationTimeMillis = timeInMillis;
+    /**
+     * Sets the properties of the Session.
+     * @param propertyMap Map containing the properties of the session.
+     */
+    public void setProperties(Map<String, Object> propertyMap){
+        if(propertyMap.containsKey(PROPERTY_EXPIRATION_TIME_MILLIS)){
+            this.expirationTimeMillis = (long)propertyMap.get(PROPERTY_EXPIRATION_TIME_MILLIS);
+        }
+        else{
+            this.expirationTimeMillis = -1;
+        }
+
+        if(propertyMap.containsKey(ServiceFactory.DATA_SOURCE_PROP)) {
+            this.ds = (DataSource) propertyMap.get(ServiceFactory.DATA_SOURCE_PROP);
+        }
+
+        if(propertyMap.containsKey(ServiceFactory.EXECUTOR_SERVICE_PROP)) {
+            this.executorService = (ExecutorService) propertyMap.get(ServiceFactory.EXECUTOR_SERVICE_PROP);
+        }
+
+        if(propertyMap.containsKey(ServiceFactory.WORKSPACE_FOLDER_PROP)) {
+            this.workspaceFolder = (File) propertyMap.get(ServiceFactory.WORKSPACE_FOLDER_PROP);
+        }
+
+        if(propertyMap.containsKey(JOB_POOL_SIZE)) {
+            this.resultExpirationExecutor = new ScheduledThreadPoolExecutor((int) propertyMap.get(JOB_POOL_SIZE));
+        }
+        else{
+            this.resultExpirationExecutor = new ScheduledThreadPoolExecutor(BASE_POOL_SIZE);
+        }
+
+        if(propertyMap.containsKey(ServiceFactory.DATA_SOURCE_PROP)) {
+            this.serviceList = (List<Service>) propertyMap.get(SERVICE_LIST);
+        }
+        else{
+            this.serviceList = new ArrayList<>();
+            LOGGER.info("No services available on starting the session.");
+        }
     }
 
     /**
@@ -150,6 +191,22 @@ public class Session {
      */
     public String getUsername(){
         return username;
+    }
+
+    /**
+     * Sets the state of the session : true the session is active( process running or results available), false inactive.
+     * @param active State of the session : true active, false inactive.
+     */
+    public void setActive(boolean active) {
+        this.isActive = active;
+    }
+
+    /**
+     * Returns the state of the session : true the session is active( process running or results available), false inactive.
+     * @return State of the session : true active, false inactive.
+     */
+    public boolean isActive() {
+        return isActive;
     }
 
     /**
@@ -294,8 +351,10 @@ public class Session {
             }
             if(info.getStatus().equalsIgnoreCase("SUCCEEDED") || info.getStatus().equalsIgnoreCase("FAILED")){
                 info.setResult(service.getResult(statusRequest));
-                timer.schedule(new TimerExpirationTask(jobId, this),
-                        info.getResult().getExpirationDate().toGregorianCalendar().getTime());
+                //Schedule the expiration of the result
+                resultExpirationExecutor.schedule(new ResultExpirationTask(jobId, this),
+                        info.getResult().getExpirationDate().toGregorianCalendar().getTimeInMillis()-timeMillisNow,
+                        TimeUnit.MILLISECONDS);
                 jobIdServiceMap.remove(jobId);
                 finishedJobMap.put(jobId, info);
             }
@@ -335,8 +394,8 @@ public class Session {
                 }
                 //Once the non geometric columns are get, do the same with the geometric one.
                 Statement statement = connection.createStatement();
-                String query = "SELECT * FROM GEOMETRY_COLUMNS WHERE F_TABLE_NAME LIKE '" +
-                        TableLocation.parse(dbTable.getName()).getTable() + "';";
+                String query = String.format("SELECT * FROM GEOMETRY_COLUMNS WHERE F_TABLE_NAME LIKE '%s';",
+                        TableLocation.parse(dbTable.getName()).getTable());
                 ResultSet rs = statement.executeQuery(query);
                 while (rs.next()) {
                     dbTable.addField(rs.getString(4), SFSUtilities.getGeometryTypeNameFromCode(rs.getInt(6)));
@@ -349,15 +408,23 @@ public class Session {
         return dbContent;
     }
 
+    /**
+     * Generate an archive with the result of the job available on the server.
+     * @param jobId Id of the job which has generated the results.
+     * @return File object of the archive containing the results. If an error appends in the archive creation, returns null.
+     */
     public File getResultAchive(String jobId){
         File jobFolder = new File(workspaceFolder, jobId);
         for(StatusInfo statusInfo : getAllStatusInfo()){
             if(statusInfo.getJobId().equalsIgnoreCase(jobId)){
+                //Once the good StatusInfo in found, for each output store its data in the archive
                 for(Output out : statusInfo.getResult().getOutputList()){
+                    //In the case of plain data, write it into a file
                     if(out.getData() != null){
                         try {
                             for(Object content : out.getData().getContent()) {
                                 File outFile;
+                                //If a file with the output name already exists, adds a number to it
                                 if(jobFolder.list(new NameFileFilter(out.getTitle()))!= null){
                                     int diff=1;
                                     while(jobFolder.list(new NameFileFilter(out.getTitle()+diff)) != null){
@@ -368,6 +435,7 @@ public class Session {
                                 else {
                                     outFile = new File(jobFolder, out.getTitle().replaceAll(File.separator, ""));
                                 }
+                                //Create the file and write data inside
                                 if (jobFolder.mkdirs() || outFile.createNewFile()) {
                                     try (FileWriter fileWriter = new FileWriter(outFile)) {
                                         try (PrintWriter out1 = new PrintWriter(fileWriter)) {
@@ -382,6 +450,7 @@ public class Session {
                             LOGGER.error("Unable to write the output as a file.\n"+e.getMessage());
                         }
                     }
+                    //If the result is a reference, copy if to the archive folder
                     else if(out.getReference() != null){
                         try {
                             URL url = new URL(out.getReference());
@@ -396,6 +465,7 @@ public class Session {
             }
         }
         try {
+            //Create a zip file with the archive folder
             File zipFile = new File(workspaceFolder, "Result.zip");
             FileOutputStream fos = new FileOutputStream(zipFile);
             ZipOutputStream zos = new ZipOutputStream(fos);
@@ -422,12 +492,18 @@ public class Session {
         return null;
     }
 
-    private void checkExpiration() {
+    /**
+     * If there is no more running job and no result in the cache list, schedule the session inactivity
+     */
+    private void scheduleInactivity() {
         if(statusInfoList.isEmpty() && finishedJobMap.isEmpty()){
-            timer.schedule(new TimerKillSessionTask(this), expirationTimeMillis);
+            resultExpirationExecutor.schedule(new InactiveSessionTask(this), expirationTimeMillis, TimeUnit.MILLISECONDS);
         }
     }
 
+    /**
+     * Shutdown the session of free resources.
+     */
     public void shutdown(){
         try {
             ds.getConnection().close();
@@ -436,20 +512,8 @@ public class Session {
         for(Service service : serviceList){
             service.shutdown();
         }
-        timer.purge();
+        resultExpirationExecutor.purge();
         isActive = false;
-    }
-
-    public void setWorkspace(File workspace) {
-        this.workspaceFolder = workspace;
-    }
-
-    public void setExecutorService(ExecutorService executorService) {
-        this.executorService = executorService;
-    }
-
-    public void setDataSource(DataSource dataSource) {
-        this.ds = dataSource;
     }
 
     /**
@@ -467,47 +531,44 @@ public class Session {
         serviceList.remove(toRemove);
     }
 
-    public void setIsActive(boolean isActive) {
-        this.isActive = isActive;
-    }
+    /**
+     * TimerTask implementation which is called once a result expiration date is reached.
+     */
+    private class ResultExpirationTask implements Runnable {
 
-    public boolean isActive() {
-        return isActive;
-    }
-
-    private class TimerExpirationTask extends TimerTask{
-
+        /** Unique id of the job which results are tracked; */
         private String jobId;
+        /** Session which run the job. */
         private Session session;
 
-        public TimerExpirationTask(String jobId, Session session){
+        public ResultExpirationTask(String jobId, Session session){
             this.jobId = jobId;
             this.session = session;
         }
 
         @Override
         public void run() {
+            //Removes the job from the finished map
             finishedJobMap.remove(jobId);
-            session.checkExpiration();
+            session.scheduleInactivity();
         }
     }
 
-    private class TimerKillSessionTask extends TimerTask{
+    /**
+     * Task making the session inactive.
+     */
+    private class InactiveSessionTask implements Runnable{
 
         private Session session;
 
-        public TimerKillSessionTask(Session session){
+        public InactiveSessionTask(Session session){
             this.session = session;
         }
 
         @Override
         public void run() {
-            session.setIsActive(false);
+            session.setActive(false);
             coreServerImpl.inactiveSession(session);
         }
-    }
-
-    public void setServiceList(List<Service> serviceList){
-        this.serviceList = serviceList;
     }
 }

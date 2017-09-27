@@ -80,6 +80,7 @@ public class CoreServerImpl extends DefaultController implements CoreServer {
 
     /** Cache list of the opened sessions. */
     private List<Session> openSessionList;
+    /** Cache list of the alive session. */
     private List<Session> aliveSessionList;
 
     /** List of the service factory registered. */
@@ -118,7 +119,7 @@ public class CoreServerImpl extends DefaultController implements CoreServer {
             if(queryCount != 0){
                 st.executeBatch();
             }
-            LOGGER.info("Unable to start the database\n");
+            LOGGER.info("Database script loaded");
         } catch (SQLException e) {
             LOGGER.error("Unable to start the database\n"+e.getMessage());
         } catch (IOException e) {
@@ -163,7 +164,6 @@ public class CoreServerImpl extends DefaultController implements CoreServer {
         }
         //Otherwise create a new session and return it
         Session session = buildSession(username);
-        setSessionOptions(session);
         openSessionList.add(session);
         return session;
     }
@@ -174,15 +174,12 @@ public class CoreServerImpl extends DefaultController implements CoreServer {
      * @return An instantiated session.
      */
     private Session buildSession(String username){
-        //Build the session properties map
-        Map<String, Object> propertyMap = new HashMap<>();
-        propertyMap.put(ServiceFactory.USERNAME_PROP, username);
         UUID token = UUID.randomUUID();
-        propertyMap.put(ServiceFactory.TOKEN_PROP, token);
 
         //Instantiate the session and initialize it
-        Session session = new Session(propertyMap, new ArrayList<Service>(), this);
-        SessionInitializer init = new SessionInitializer(session, propertyMap, token, serviceFactoryList);
+        Session session = new Session(username, token, this);
+        SessionInitializer init = new SessionInitializer(
+                session, getSessionOptions(session), token, serviceFactoryList);
         executor.submit(init);
 
         return session;
@@ -192,18 +189,21 @@ public class CoreServerImpl extends DefaultController implements CoreServer {
      * Gets the properties of a session in the administration database and give it to the session.
      * @param session Session to set.
      */
-    private void setSessionOptions(Session session){
+    private Map<String, Object> getSessionOptions(Session session){
+        Map<String, Object> optionMap = new HashMap<>();
         try {
             PreparedStatement ps = ds.getConnection().prepareStatement(
-                    "SELECT expirationTime FROM session_table WHERE username LIKE ?;");
+                    "SELECT expirationTime, poolSize FROM session_table WHERE username LIKE ?;");
             ps.setString(1, session.getUsername());
             ResultSet rs = ps.executeQuery();
             rs.first();
-            session.setExpirationTime(rs.getLong(1));
+            optionMap.put(Session.PROPERTY_EXPIRATION_TIME_MILLIS, rs.getLong(1));
+            optionMap.put(Session.JOB_POOL_SIZE, rs.getInt(2));
             rs.close();
         } catch (SQLException e) {
             LOGGER.error("Unable to request the database in order to get the session options.\n"+e.getMessage());
         }
+        return optionMap;
     }
 
     /**
@@ -310,6 +310,7 @@ public class CoreServerImpl extends DefaultController implements CoreServer {
      * @param id Id of the session to close
      */
     public void closeSession(String id) {
+        //Get the session
         Session session = null;
         for(Session s : openSessionList){
             if(s.getToken().toString().equals(id)){
@@ -317,21 +318,33 @@ public class CoreServerImpl extends DefaultController implements CoreServer {
             }
         }
         if(session != null){
+            //If the session is active (some process or result are running), move it to the alive session list
             if(session.isActive()) {
                 aliveSessionList.add(session);
             }
+            //Else (nor more results or process), shutdown the session
             else{
-                session.shutdown();
-                openSessionList.remove(session);
-                aliveSessionList.remove(session);
+                killSession(session);
             }
         }
     }
 
+    /**
+     * Method called when a session became inactive. If the session is in the alive list, the session should be killed.
+     * @param session Session which became inactive.
+     */
     public void inactiveSession(Session session) {
         if(!aliveSessionList.contains(session)){
             return;
         }
+        killSession(session);
+    }
+
+    /**
+     * Kill a session and free resources.
+     * @param session Session to kill.
+     */
+    public void killSession(Session session){
         session.shutdown();
         openSessionList.remove(session);
         aliveSessionList.remove(session);

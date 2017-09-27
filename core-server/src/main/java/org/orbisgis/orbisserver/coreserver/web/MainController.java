@@ -330,6 +330,7 @@ public class MainController extends DefaultController {
                         }
                     }
                 }
+
                 for(Operation op : importList){
                     if(op.getTitle().toLowerCase().contains(filters.toLowerCase())) {
                         filteredList.add(op);

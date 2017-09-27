@@ -50,12 +50,10 @@ public class SessionInitializer implements Runnable {
         //Creates the session workspace
         File workspaceFolder = new File("workspace", token.toString());
         workspaceFolder.mkdirs();
-        session.setWorkspace(workspaceFolder);
         propertyMap.put(ServiceFactory.WORKSPACE_FOLDER_PROP, workspaceFolder);
 
         //Creates the session ExecutorService
         ExecutorService executorService = Executors.newFixedThreadPool(3);
-        session.setExecutorService(executorService);
         propertyMap.put(ServiceFactory.EXECUTOR_SERVICE_PROP, executorService);
 
         //Creates the session DataSource
@@ -67,7 +65,6 @@ public class SessionInitializer implements Runnable {
             LOGGER.error("Unable to create the database : \n"+e.getMessage());
         }
         LOGGER.info("Session database started.");
-        session.setDataSource(dataSource);
         propertyMap.put(ServiceFactory.DATA_SOURCE_PROP, dataSource);
 
 
@@ -78,6 +75,8 @@ public class SessionInitializer implements Runnable {
             serviceList.add(service);
             LOGGER.info("Service "+service.getClass().getSimpleName()+" started.");
         }
-        session.setServiceList(serviceList);
+        propertyMap.put(Session.SERVICE_LIST, serviceList);
+
+        session.setProperties(propertyMap);
     }
 }
