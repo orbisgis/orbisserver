@@ -41,10 +41,7 @@ package org.orbisgis.orbisserver.coreserver;
 import org.apache.felix.ipojo.annotations.Instantiate;
 import org.apache.felix.ipojo.annotations.Provides;
 import org.apache.felix.ipojo.annotations.Requires;
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.h2gis.utilities.SFSUtilities;
 import org.orbisgis.orbisserver.api.CoreServer;
-import org.orbisgis.orbisserver.api.service.Service;
 import org.orbisgis.orbisserver.api.service.ServiceFactory;
 import org.orbisgis.orbisserver.coreserver.model.Session;
 import org.orbisgis.orbisserver.coreserver.utils.SessionInitializer;
@@ -55,14 +52,16 @@ import org.wisdom.api.annotations.Controller;
 import org.wisdom.api.concurrent.ManagedExecutorService;
 
 import javax.sql.DataSource;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Main class of the module. This class is the core managing the user auth and the sessions.
