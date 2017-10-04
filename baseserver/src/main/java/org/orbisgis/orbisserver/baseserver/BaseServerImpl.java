@@ -38,6 +38,7 @@
  */
 package org.orbisgis.orbisserver.baseserver;
 
+import org.apache.felix.ipojo.annotations.Component;
 import org.apache.felix.ipojo.annotations.Instantiate;
 import org.apache.felix.ipojo.annotations.Provides;
 import org.apache.felix.ipojo.annotations.Requires;

@@ -36,11 +36,12 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisserver.baseserver;
+package org.orbisgis.orbisserver.baseserver.web;
 
 import org.apache.felix.ipojo.annotations.Requires;
 import org.orbisgis.orbisserver.api.model.Operation;
 import org.orbisgis.orbisserver.api.model.StatusInfo;
+import org.orbisgis.orbisserver.baseserver.BaseServerImpl;
 import org.orbisgis.orbisserver.baseserver.model.DatabaseContent;
 import org.orbisgis.orbisserver.baseserver.model.DatabaseTable;
 import org.orbisgis.orbisserver.baseserver.model.Session;
