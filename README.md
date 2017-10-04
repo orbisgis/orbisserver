@@ -37,7 +37,7 @@ Once started, you can open your browser at `http://localhost:8080`.
 
 ## Core module
 
-This module is the base of the application. It includes an instance of the Wisdom-Framework.
+The core module is the entry point of the application which include the Wisdom-Framework.
 
 ### Configuration
 
