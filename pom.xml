@@ -130,6 +130,19 @@
                 <artifactId>gettext-commons</artifactId>
                 <version>${gettext-commons-version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.wisdom-framework</groupId>
+                <artifactId>h2</artifactId>
+                <version>1.4.193_1-SNAPSHOT</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wisdom-framework</groupId>
+                <artifactId>wisdom-jdbc-datasources</artifactId>
+                <version>0.5</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
