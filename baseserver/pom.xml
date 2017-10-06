@@ -11,14 +11,23 @@
     </parent>
 
     <groupId>org.orbisgis.orbisserver</groupId>
-    <artifactId>wpsservice</artifactId>
+    <artifactId>baseserver</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <name>wpsservice</name>
+    <name>baseserver</name>
 
     <packaging>wisdom</packaging>
 
     <dependencies>
+        <dependency>
+            <groupId>org.wisdom-framework</groupId>
+            <artifactId>wisdom-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.felix</groupId>
@@ -38,38 +47,91 @@
         </dependency>
 
         <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>bootstrap</artifactId>
+            <version>3.1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>jquery</artifactId>
+            <version>2.1.0-2</version>
+        </dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>org.wisdom-framework</groupId>
+            <artifactId>wisdom-test</artifactId>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.fluentlenium</groupId>
+            <artifactId>fluentlenium-assertj</artifactId>
+        </dependency>
+        <dependency>
+            <!-- slf4j binding used for tests -->
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jcl</artifactId>
+            <version>1.7.6</version>
+            <scope>test</scope>
+        </dependency>
+
+
+
 
         <dependency>
             <groupId>org.orbiswps</groupId>
             <artifactId>server</artifactId>
             <version>5.1.0-SNAPSHOT</version>
         </dependency>
-
         <dependency>
             <groupId>org.orbiswps</groupId>
             <artifactId>scripts</artifactId>
             <version>5.1.0-SNAPSHOT</version>
         </dependency>
-
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>jts-core-osgi</artifactId>
             <version>5.1.0-SNAPSHOT</version>
         </dependency>
-
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>jts-io-osgi</artifactId>
             <version>5.1.0-SNAPSHOT</version>
         </dependency>
-
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>h2gis-functions</artifactId>
             <version>1.3.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.wisdom-framework</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.193_1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.wisdom-framework</groupId>
+            <artifactId>wisdom-jdbc-datasources</artifactId>
+            <version>0.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.wisdom-framework</groupId>
+            <artifactId>wisdom-vertx-engine</artifactId>
+            <version>0.10.0</version>
         </dependency>
 
         <dependency>
@@ -78,6 +140,11 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.orbisgis.orbisserver</groupId>
+            <artifactId>wpsservice</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
@@ -115,8 +182,8 @@
                 </executions>
                 <artifactId>gettext-maven-plugin</artifactId>
                 <configuration>
-                    <poDirectory>src/main/resources/org/orbisgis/orbisserver/wpsservice/translation/</poDirectory>
-                    <targetBundle>org.orbisgis.orbisserver.wpsservice.Messages</targetBundle>
+                    <poDirectory>src/main/resources/org/orbisgis/orbisserver/translation/</poDirectory>
+                    <targetBundle>org.orbisgis.orbisserver.Messages</targetBundle>
                     <keywords>-ktr -kmarktr</keywords>
                     <outputFormat>properties</outputFormat>
                 </configuration>

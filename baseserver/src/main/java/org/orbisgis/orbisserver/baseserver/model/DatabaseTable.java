@@ -36,49 +36,56 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisserver.wpsservice;
+package org.orbisgis.orbisserver.baseserver.model;
 
-import org.apache.felix.ipojo.annotations.*;
-import org.orbisgis.orbisserver.api.BaseServer;
-import org.orbisgis.orbisserver.api.service.Service;
-import org.orbisgis.orbisserver.api.service.ServiceFactory;
+import org.h2gis.utilities.TableLocation;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Service factory for the WPS.
+ * Representation of a table from a database.
  *
  * @author Sylvain PALOMINOS
  */
+public class DatabaseTable {
 
-@Component
-@Provides
-@Instantiate
-public class WpsServiceFactory implements ServiceFactory {
+    /** TableLocation object of the table. */
+    private TableLocation tableLocation;
+    /** List of fields of the table. */
+    private List<DatabaseField> fieldList;
 
-    @Requires
-    private BaseServer baseServer;
-
-    @Override
-    public Service createService(Map<String, Object> properties) {
-        WpsService wpsService = new WpsService();
-        wpsService.start(properties);
-        //initiate the wpsService with a first request
-        wpsService.getAllOperation();
-        return wpsService;
+    /**
+     * Main constructor.
+     * @param tableLocation TableLocation of the table.
+     */
+    public DatabaseTable(TableLocation tableLocation){
+        this.tableLocation = tableLocation;
+        this.fieldList = new ArrayList();
     }
 
-    @Override
-    public Class getServiceClass() {
-        return WpsService.class;
+    /**
+     * Returns the name of the table.
+     * @return The table name.
+     */
+    public String getName() {
+        return tableLocation.getTable();
     }
 
-    @Validate
-    public void start(){
-        baseServer.registerServiceFactory(this);
+    /**
+     * Adds a field.
+     * @param columnLabel Name of the field.
+     * @param columnTypeName Type of the field.
+     */
+    public void addField(String columnLabel, String columnTypeName) {
+        fieldList.add(new DatabaseField(columnLabel, columnTypeName));
     }
 
-    @Invalidate
-    public void stop(){
+    /**
+     * Returns the list of the fields.
+     * @return The field list.
+     */
+    public List<DatabaseField> getFieldList(){
+        return fieldList;
     }
 }

@@ -36,49 +36,12 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisserver.wpsservice;
-
-import org.apache.felix.ipojo.annotations.*;
-import org.orbisgis.orbisserver.api.BaseServer;
-import org.orbisgis.orbisserver.api.service.Service;
-import org.orbisgis.orbisserver.api.service.ServiceFactory;
-
-import java.util.Map;
+package org.orbisgis.orbisserver.baseserver.model;
 
 /**
- * Service factory for the WPS.
+ * User registered in the server
  *
  * @author Sylvain PALOMINOS
  */
-
-@Component
-@Provides
-@Instantiate
-public class WpsServiceFactory implements ServiceFactory {
-
-    @Requires
-    private BaseServer baseServer;
-
-    @Override
-    public Service createService(Map<String, Object> properties) {
-        WpsService wpsService = new WpsService();
-        wpsService.start(properties);
-        //initiate the wpsService with a first request
-        wpsService.getAllOperation();
-        return wpsService;
-    }
-
-    @Override
-    public Class getServiceClass() {
-        return WpsService.class;
-    }
-
-    @Validate
-    public void start(){
-        baseServer.registerServiceFactory(this);
-    }
-
-    @Invalidate
-    public void stop(){
-    }
+public class User {
 }

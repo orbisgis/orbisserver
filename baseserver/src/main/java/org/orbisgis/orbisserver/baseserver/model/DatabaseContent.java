@@ -36,49 +36,40 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisserver.wpsservice;
+package org.orbisgis.orbisserver.baseserver.model;
 
-import org.apache.felix.ipojo.annotations.*;
-import org.orbisgis.orbisserver.api.BaseServer;
-import org.orbisgis.orbisserver.api.service.Service;
-import org.orbisgis.orbisserver.api.service.ServiceFactory;
-
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Service factory for the WPS.
+ * Represent the DataBase content with its table list.
+ * Used to display a view of the DataBase in the client.
  *
  * @author Sylvain PALOMINOS
  */
+public class DatabaseContent {
 
-@Component
-@Provides
-@Instantiate
-public class WpsServiceFactory implements ServiceFactory {
+    /** List of the tables in the database.*/
+    private List<DatabaseTable> tableList;
 
-    @Requires
-    private BaseServer baseServer;
-
-    @Override
-    public Service createService(Map<String, Object> properties) {
-        WpsService wpsService = new WpsService();
-        wpsService.start(properties);
-        //initiate the wpsService with a first request
-        wpsService.getAllOperation();
-        return wpsService;
+    /** Main constructor */
+    public DatabaseContent(){
+        this.tableList = new ArrayList<>();
     }
 
-    @Override
-    public Class getServiceClass() {
-        return WpsService.class;
+    /**
+     * Adds a table to the database content.
+     * @param dbTable Table to add.
+     */
+    public void addTable(DatabaseTable dbTable) {
+        tableList.add(dbTable);
     }
 
-    @Validate
-    public void start(){
-        baseServer.registerServiceFactory(this);
-    }
-
-    @Invalidate
-    public void stop(){
+    /**
+     * Returns the list of the table of the database.
+     * @return The list of the table of the database.
+     */
+    public List<DatabaseTable> getTableList(){
+        return tableList;
     }
 }

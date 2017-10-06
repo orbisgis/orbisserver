@@ -36,49 +36,35 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisserver.wpsservice;
-
-import org.apache.felix.ipojo.annotations.*;
-import org.orbisgis.orbisserver.api.BaseServer;
-import org.orbisgis.orbisserver.api.service.Service;
-import org.orbisgis.orbisserver.api.service.ServiceFactory;
-
-import java.util.Map;
+package org.orbisgis.orbisserver.baseserver.model;
 
 /**
- * Service factory for the WPS.
+ * Representation of a field of a table of the database.
  *
  * @author Sylvain PALOMINOS
  */
+public class DatabaseField {
 
-@Component
-@Provides
-@Instantiate
-public class WpsServiceFactory implements ServiceFactory {
+    /** Name of the field. */
+    private String name;
+    /** Type of the field. */
+    private String type;
 
-    @Requires
-    private BaseServer baseServer;
-
-    @Override
-    public Service createService(Map<String, Object> properties) {
-        WpsService wpsService = new WpsService();
-        wpsService.start(properties);
-        //initiate the wpsService with a first request
-        wpsService.getAllOperation();
-        return wpsService;
+    /**
+     * Main constructor.
+     * @param name Name of the field.
+     * @param type Type of the field.
+     */
+    public DatabaseField(String name, String type){
+        this.name = name;
+        this.type = type;
     }
 
-    @Override
-    public Class getServiceClass() {
-        return WpsService.class;
-    }
-
-    @Validate
-    public void start(){
-        baseServer.registerServiceFactory(this);
-    }
-
-    @Invalidate
-    public void stop(){
+    /**
+     * Return the name of the field.
+     * @return The name of the field.
+     */
+    public String getName(){
+        return name;
     }
 }
