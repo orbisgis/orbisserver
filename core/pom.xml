@@ -12,7 +12,6 @@
         The core module is the entry point of the application which include the Wisdom-Framework.
         The core module is part of the OrbisServer platform
     </description>
-    <url>https://github.com/orbisgis/orbisserver/core</url>
 
     <!-- - - - - - -
     -  The basics  -
@@ -59,7 +58,6 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
-
 
     <!-- - - - - - - - -
     -  Build Settings  -
