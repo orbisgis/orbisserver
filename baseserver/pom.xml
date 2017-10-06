@@ -4,25 +4,37 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- - - - - - - - - - - -
+    -   Project Information  -
+    - - - - - - - - - - - - -->
+    <name>baseserver</name>
+    <description>
+        Basic server based on the baseserver-api. It contains the main route, the administration system and
+        the service managing. The server offer the different operations from the services in a website dived in three
+        part : Data, Process and Share.
+        The Data part is use to manage the available data in the user workspace.
+        The Process part which contains the operations to process the data.
+        The Share part contains the operations to open data like cartographic representation.
+        The baseserver module is part of the OrbisServer platform.
+    </description>
+
+    <!-- - - - - - -
+    -  The basics  -
+    - - - - - - - -->
+    <groupId>org.orbisgis.orbisserver</groupId>
+    <artifactId>baseserver</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>wisdom</packaging>
     <parent>
         <groupId>org.orbisgis</groupId>
         <artifactId>orbisserver</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.orbisgis.orbisserver</groupId>
-    <artifactId>baseserver</artifactId>
-    <version>1.0-SNAPSHOT</version>
-
-    <name>baseserver</name>
-
-    <packaging>wisdom</packaging>
-
+    <!-- - - - - - - -
+    -  Dependencies  -
+    - - - - - - - - -->
     <dependencies>
-        <dependency>
-            <groupId>org.wisdom-framework</groupId>
-            <artifactId>wisdom-api</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -43,78 +55,19 @@
         <dependency>
             <groupId>com.googlecode.gettext-commons</groupId>
             <artifactId>gettext-commons</artifactId>
-            <version>${gettext-commons-version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>bootstrap</artifactId>
-            <version>3.1.1</version>
         </dependency>
 
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>jquery</artifactId>
-            <version>2.1.0-2</version>
         </dependency>
 
-        <!-- Test dependencies -->
-        <dependency>
-            <groupId>org.wisdom-framework</groupId>
-            <artifactId>wisdom-test</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.fluentlenium</groupId>
-            <artifactId>fluentlenium-assertj</artifactId>
-        </dependency>
-        <dependency>
-            <!-- slf4j binding used for tests -->
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-jcl</artifactId>
-            <version>1.7.6</version>
-            <scope>test</scope>
-        </dependency>
-
-
-
-
-        <dependency>
-            <groupId>org.orbiswps</groupId>
-            <artifactId>server</artifactId>
-            <version>5.1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.orbiswps</groupId>
-            <artifactId>scripts</artifactId>
-            <version>5.1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.orbisgis</groupId>
-            <artifactId>jts-core-osgi</artifactId>
-            <version>5.1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.orbisgis</groupId>
-            <artifactId>jts-io-osgi</artifactId>
-            <version>5.1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.orbisgis</groupId>
-            <artifactId>h2gis-functions</artifactId>
-            <version>1.3.1-SNAPSHOT</version>
-        </dependency>
+        <!-- orbiswps dependencies -->
 
         <dependency>
             <groupId>org.wisdom-framework</groupId>
@@ -134,6 +87,8 @@
             <version>0.10.0</version>
         </dependency>
 
+        <!-- orbisserver dependencies -->
+
         <dependency>
             <groupId>org.orbisgis.orbisserver</groupId>
             <artifactId>baseserver-api</artifactId>
@@ -147,39 +102,17 @@
         </dependency>
     </dependencies>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <!-- Define all the versions of the dependencies provided by Wisdom -->
-                <groupId>org.wisdom-framework</groupId>
-                <artifactId>wisdom-bom</artifactId>
-                <version>${wisdom.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
+    <!-- - - - - - - - -
+    -  Build Settings  -
+    - - - - - - - - - -->
     <build>
         <plugins>
             <plugin>
                 <groupId>org.wisdom-framework</groupId>
                 <artifactId>wisdom-maven-plugin</artifactId>
-                <version>${wisdom.version}</version>
-                <extensions>true</extensions>
             </plugin>
             <plugin>
                 <groupId>com.googlecode.gettext-commons</groupId>
-                <version>${gettext-maven-plugin-version}</version>
-                <executions>
-                    <execution>
-                        <id>convert-po-class</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>dist</goal>
-                        </goals>
-                    </execution>
-                </executions>
                 <artifactId>gettext-maven-plugin</artifactId>
                 <configuration>
                     <poDirectory>src/main/resources/org/orbisgis/orbisserver/translation/</poDirectory>

@@ -4,29 +4,35 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- - - - - - - - - - - -
+    -   Project Information  -
+    - - - - - - - - - - - - -->
+    <name>core</name>
+    <description>
+        The core module is the entry point of the application which include the Wisdom-Framework.
+        The core module is part of the OrbisServer platform
+    </description>
+
+    <!-- - - - - - -
+    -  The basics  -
+    - - - - - - - -->
+    <groupId>org.orbisgis.orbisserver</groupId>
+    <artifactId>core</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>wisdom</packaging>
     <parent>
         <groupId>org.orbisgis</groupId>
         <artifactId>orbisserver</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.orbisgis.orbisserver</groupId>
-    <artifactId>core</artifactId>
-    <version>1.0-SNAPSHOT</version>
-
-    <name>core</name>
-
-    <packaging>wisdom</packaging>
-
+    <!-- - - - - - - -
+    -  Dependencies  -
+    - - - - - - - - -->
     <dependencies>
         <dependency>
             <groupId>org.wisdom-framework</groupId>
             <artifactId>wisdom-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
         </dependency>
 
         <dependency>
@@ -40,55 +46,11 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>com.googlecode.gettext-commons</groupId>
-            <artifactId>gettext-commons</artifactId>
-            <version>${gettext-commons-version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>bootstrap</artifactId>
-            <version>3.1.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>jquery</artifactId>
-            <version>2.1.0-2</version>
-        </dependency>
-
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.wisdom-framework</groupId>
             <artifactId>wisdom-test</artifactId>
         </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.fluentlenium</groupId>
-            <artifactId>fluentlenium-assertj</artifactId>
-        </dependency>
-        <dependency>
-            <!-- slf4j binding used for tests -->
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-jcl</artifactId>
-            <version>1.7.6</version>
-            <scope>test</scope>
-        </dependency>
-
-
-
 
         <dependency>
             <groupId>org.orbisgis.orbisserver</groupId>
@@ -97,43 +59,21 @@
         </dependency>
     </dependencies>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <!-- Define all the versions of the dependencies provided by Wisdom -->
-                <groupId>org.wisdom-framework</groupId>
-                <artifactId>wisdom-bom</artifactId>
-                <version>${wisdom.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
+    <!-- - - - - - - - -
+    -  Build Settings  -
+    - - - - - - - - - -->
     <build>
         <plugins>
             <plugin>
                 <groupId>org.wisdom-framework</groupId>
                 <artifactId>wisdom-maven-plugin</artifactId>
-                <version>${wisdom.version}</version>
-                <extensions>true</extensions>
             </plugin>
             <plugin>
                 <groupId>com.googlecode.gettext-commons</groupId>
-                <version>${gettext-maven-plugin-version}</version>
-                <executions>
-                    <execution>
-                        <id>convert-po-class</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>dist</goal>
-                        </goals>
-                    </execution>
-                </executions>
                 <artifactId>gettext-maven-plugin</artifactId>
                 <configuration>
-                    <poDirectory>src/main/resources/org/orbisgis/orbisserver/translation/</poDirectory>
-                    <targetBundle>org.orbisgis.orbisserver.Messages</targetBundle>
+                    <poDirectory>src/main/resources/org/orbisgis/orbisserver/core/translation/</poDirectory>
+                    <targetBundle>org.orbisgis.orbisserver.core.Messages</targetBundle>
                     <keywords>-ktr -kmarktr</keywords>
                     <outputFormat>properties</outputFormat>
                 </configuration>
