@@ -61,6 +61,40 @@ Use these properties to configure the ports:
 
 ## BaseServer API
 
+The baseserver-api module contains all the interfaces and abstract classes for the creation of a basic web
+server working on the core module. The created server will be able to manage all the services
+based on this api.
+
+####Creation of a service
+
+A service is created by implementing the two classes `Service` and `ServiceFactory`.
+
+The `Service` implementation is the core of the service, it contains the main mecanism.
+The `ServiceFactory` implementation is aimed to create an register the service. For the service registering, 
+the impementation should get the `BaseServer` class this way : 
+``` java
+@Requires private BaseServer baseServer;
+```
+and then, once the service started, register it in the start method, annotated `@Validate`, this way : 
+``` java
+@Validate
+public void start(){
+    baseServer.registerServiceFactory(this);
+}
+```
+
+So, the application will load the bundle, start the `ServiceFactory` and register the `Service` making it available.
+
 ## BaseServer
 
+Basic server based on the baseserver-api. It contains the main route, the administration system and
+the service managing. The server offer the different operations from the services in a website dived in three
+part : Data, Process and Share.
+The Data part is use to manage the available data in the user workspace.
+The Process part which contains the operations to process the data.
+The Share part contains the operations to open data like cartographic representation.
+
 ## WpsService
+
+Service implementing the baseserver-api and distributing the wps processes as operation.
+The process loaded comes from the OrbisGIS wps script bundle.

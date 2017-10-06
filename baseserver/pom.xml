@@ -15,6 +15,7 @@
         The Data part is use to manage the available data in the user workspace.
         The Process part which contains the operations to process the data.
         The Share part contains the operations to open data like cartographic representation.
+        The baseserver module is part of the OrbisServer platform.
     </description>
 
     <!-- - - - - - -
@@ -67,36 +68,6 @@
         </dependency>
 
         <!-- orbiswps dependencies -->
-
-        <dependency>
-            <groupId>org.orbiswps</groupId>
-            <artifactId>server</artifactId>
-            <version>5.1.0-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.orbiswps</groupId>
-            <artifactId>scripts</artifactId>
-            <version>5.1.0-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.orbisgis</groupId>
-            <artifactId>jts-core-osgi</artifactId>
-            <version>5.1.0-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.orbisgis</groupId>
-            <artifactId>jts-io-osgi</artifactId>
-            <version>5.1.0-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.orbisgis</groupId>
-            <artifactId>h2gis-functions</artifactId>
-            <version>1.3.1-SNAPSHOT</version>
-        </dependency>
 
         <dependency>
             <groupId>org.wisdom-framework</groupId>
