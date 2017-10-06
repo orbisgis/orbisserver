@@ -1,4 +1,4 @@
-# OrbisServer
+# OrbisServer [![Build Status](https://travis-ci.org/orbisgis/orbisserver.png?branch=master)](https://travis-ci.org/orbisgis/orbisserver)
 Orbisserver is Web Java OSGI application for data loading, process execution and data sharing, based on the Wisdom framework, OGC 
 services and OrbisGIS libraries. The application includes a base built on the [Wisdom-Framework](http://wisdom-framework.org) library, a basic server, 
 its api allowing the creation of different services and services implementing OGC standards.OrbisServer is part of the OrbisGIS platform
