@@ -87,7 +87,7 @@ So, the application will load the bundle, start the `ServiceFactory` and registe
 
 ## BaseServer
 
-Basic server based on the baseserver-api. It contains the main route, the administration system and
+Basic server based on the BaseServer API. It contains the main route, the administration system and
 the service managing. The server offer the different operations from the services in a website dived in three
 part : Data, Process and Share.
 The Data part is use to manage the available data in the user workspace.
@@ -96,5 +96,8 @@ The Share part contains the operations to open data like cartographic representa
 
 ## WpsService
 
-Service implementing the baseserver-api and distributing the wps processes as operation.
-The process loaded comes from the OrbisGIS wps script bundle.
+Service implementing the BaseServer API and distributing WPS processes as operation. The WPS service mechanism is 
+provided by the [OrbisWPS](https://github.com/orbisgis/orbiswps) library which includes a WPS 2.0 server, a bundle of basic 
+scripts which are distributed as operations and a groovy api used for the script writing.
+
+More information about the OrbisWPS can be found [here](https://github.com/orbisgis/orbiswps). 
