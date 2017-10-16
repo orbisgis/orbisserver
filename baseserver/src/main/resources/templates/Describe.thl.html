@@ -1,128 +1,87 @@
-<style type="text/css">
-      .list-group-item-process{
-        background:#FFF;
-        font-size: 15px;
-        border-style: solid;
-        border-bottom: none;
-      }
-</style>
-<style type="text/css">
-    .gly-spin {
-        -webkit-animation: spin 2s infinite linear;
-        -moz-animation: spin 2s infinite linear;
-        -o-animation: spin 2s infinite linear;
-        animation: spin 2s infinite linear;
-    }
-    @-moz-keyframes spin {
-        0% {
-            -moz-transform: rotate(0deg);
-        }
-        100% {
-            -moz-transform: rotate(359deg);
-        }
-    }
-    @-webkit-keyframes spin {
-        0% {
-            -webkit-transform: rotate(0deg);
-        }
-        100% {
-            -webkit-transform: rotate(359deg);
-        }
-    }
-    @-o-keyframes spin {
-        0% {
-            -o-transform: rotate(0deg);
-        }
-        100% {
-            -o-transform: rotate(359deg);
-        }
-    }
-    @keyframes spin {
-        0% {
-            -webkit-transform: rotate(0deg);
-            transform: rotate(0deg);
-        }
-        100% {
-            -webkit-transform: rotate(359deg);
-            transform: rotate(359deg);
-        }
-    }
-    .rotate{
-        -moz-transition: all 0.3s linear;
-        -webkit-transition: all 0.3s linear;
-        -o-animation: all 0.3s linear;
-        transition: all 0.3s linear;
-    }
+<!--
+- OrbisServer is an OSGI web application to expose OGC services.
+-
+- OrbisServer Is a part of the OrbisGIS platform.
+-
+- OrbisGIS is a java GIS application dedicated to research in GIScience.
+- OrbisGIS is developed by the GIS group of the DECIDE team of the
+- Lab-STICC CNRS laboratory, see <http://www.lab-sticc.fr/>.
+-
+- The GIS group of the DECIDE team is located at :
+-
+- Laboratoire Lab-STICC – CNRS UMR 6285
+- Equipe DECIDE
+- UNIVERSITÉ DE BRETAGNE-SUD
+- Institut Universitaire de Technologie de Vannes
+- 8, Rue Montaigne - BP 561 56017 Vannes Cedex
+-
+- OrbisServer is distributed under LGPL 3 license.
+-
+- Copyright (C) 2015-2017 CNRS (Lab-STICC UMR CNRS 6285)
+-
+-
+- OrbisServer is free software: you can redistribute it and/or modify it under the
+- terms of the GNU Lesser General Public License as published by the Free Software
+- Foundation, either version 3 of the License, or (at your option) any later
+- version.
+-
+- OrbisServer is distributed in the hope that it will be useful, but WITHOUT ANY
+- WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+- A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+-
+- You should have received a copy of the GNU Lesser General Public License along with
+- OrbisServer. If not, see <http://www.gnu.org/licenses/>.
+-
+- For more information, please consult: <http://www.orbisgis.org/>
+- or contact directly:
+- info_at_ orbisgis.org
+-->
 
-    .rotate.down{
-        -moz-transform:rotate(180deg);
-        -webkit-transform:rotate(180deg);
-        -o-animation: rotate(180deg);
-        transform:rotate(180deg);
-    }
-    .tilte{
-        padding-top:50px;
-    }
-    .description{
-        padding-top:20px;
-        padding-bottom:20px;
-    }
-    .hidden{
-        border-bottom: solid 2px;
-        border-color : #999;
-        margin-bottom : 20px
-    }
-    #submitBtn{
-        margin-top:20px;
-    }
-    #checkBoxs{
-        padding-top:20px;
-        padding-bottom:20px;
-    }
-    #checkBoxs-optional{
-        padding-top:20px;
-        padding-bottom:20px;
-    }
-
-</style>
 <div class="col-xs-12 col-sm-10 col-sm-push-1 col-md-10 col-md-push-1">
 
+    <!-- Declaration of the form for the data uploading -->
     <form id="upload-form" action="/uploading" enctype="multipart/form-data" method="POST"></form>
 
+    <!-- Process title -->
     <h1 id="title" th:text="${operation.title}" ></h1>
     <hr />
-    <div id="description"><p th:text="${operation.abstr}"></p></div>
+    <!-- Process description -->
+    <div id="description">
+        <p th:text="${operation.abstr}"></p>
+    </div>
 
+    <!-- Process form with the configurable input -->
     <form action="/execute" method="post" id="form">
-        <div id="hidden">
-            <input type="hidden" name="processId" th:value="${operation.id}" />
-        </div>
+        <!-- Hidden input containing the process id which should be transmitter on the process execution -->
+        <input id="hidden" type="hidden" name="processId" th:value="${operation.id}" />
 
-        <div class="NoOptional" th:each="input : ${operation.inputList}" th:if="${!(input.optional)}">
-            <!--RawData-->
-            <div class="elements" th:if="${input.name.equalsIgnoreCase('RawData') and !(input.optional)}">
+        <!-- Not optional inputs -->
+        <div class="input-element" th:each="input : ${operation.inputList}" th:if="${!(input.optional)}">
+            <!-- RawData with file browsing and auto upload -->
+            <div class="input-element" th:if="${input.name.equalsIgnoreCase('RawData') and !(input.optional)}">
+                <!-- Title of the input -->
                 <span th:text="${input.title}">title</span>
-                <div class="elements form-group rawdata">
-
-                     <div class="row">
-                        <div th:id="${input.htmlId}" class="col-xs-12 col-sm-10 col-md-8 col-lg-6 elements input-group">
-                            <label class="input-group-btn control-label" onchange="javascript:nameFile()">
-                                <span class="btn btn-default">
-                                    Browse
-                                    <input id="file" th:name="file" type="file" style="display: none;" multiple="true"
-                                           th:onchange="'javascript:loadFile(\''+${input.htmlId}+'\')'"
-                                           class="form-control" form="upload-form"/>
-                                </span>
-                            </label>
-                            <input id="in-browse" type="text" th:name="${input.id}" class="form-control" readonly="true"
-                                   placeholder="Select a file"/>
-                        </div>
+                <!-- UI components -->
+                <div class="input-element form-group rawdata row">
+                    <div th:id="${input.htmlId}" class="col-xs-12 col-sm-10 col-md-8 col-lg-6 input-element input-group">
+                        <!-- Browse button -->
+                        <label class="input-group-btn control-label" onchange="javascript:nameFile()">
+                            <span class="btn btn-default">
+                                Browse
+                                <input id="file" th:name="file" type="file" style="display: none;" multiple="true"
+                                       th:onchange="'javascript:loadFile(\''+${input.htmlId}+'\')'"
+                                       class="form-control" form="upload-form"/>
+                            </span>
+                        </label>
+                        <!-- File name field -->
+                        <input id="in-browse" type="text" th:name="${input.id}" class="form-control" readonly="true"
+                               placeholder="Select a file"/>
                     </div>
                 </div>
             </div>
 
-
-            <div class=" elements form-group geometrydata"
+            <!-- GeometryData -->
+            <div class=" input-element form-group geometrydata"
                  th:if="${input.name.equalsIgnoreCase('GeometryData') and !(input.optional)}">
                 <div class="row">
                     <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
@@ -132,8 +91,8 @@
                 </div>
             </div>
 
-            <!--Password-->
-            <div class=" elements form-group password"
+            <!-- Password -->
+            <div class=" input-element form-group password"
                  th:if="${input.name.equalsIgnoreCase('Password') and !(input.optional)}">
                 <div class="row">
                     <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
@@ -143,8 +102,8 @@
                 </div>
             </div>
 
-            <!--LiteralDataType:String-->
-            <div class=" elements form-group string"
+            <!-- LiteralDataType:String -->
+            <div class=" input-element form-group string"
                  th:if="${input.name.equalsIgnoreCase('LiteralDataType') and input.type.equalsIgnoreCase('String')
                   and !(input.optional)}">
                 <div class="row">
@@ -155,8 +114,8 @@
                 </div>
             </div>
 
-            <!--LiteralDataType:Number-->
-            <div id="number" class=" elements form-group "
+            <!-- LiteralDataType:Number -->
+            <div id="number" class=" input-element form-group "
                  th:if="${input.name.equalsIgnoreCase('LiteralDataType') and input.type.equalsIgnoreCase('Number')
                   and !(input.optional)}">
                 <div class="row">
@@ -169,8 +128,8 @@
                 </div>
             </div>
 
-            <!--JDBCTable-->
-            <div class=" elements form-group "
+            <!-- JDBCTable -->
+            <div class=" input-element form-group "
                  th:if="${input.name.equalsIgnoreCase('JDBCTable') and !(input.optional)}">
                 <div class="row">
                     <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
@@ -180,8 +139,8 @@
                 </div>
             </div>
 
-            <!--JDBCColumn-->
-            <div class=" elements form-group jdbccolumn"
+            <!-- JDBCColumn -->
+            <div class=" input-element form-group jdbccolumn"
                  th:if="${input.name.equalsIgnoreCase('JDBCColumn') and !(input.optional)}">
                 <div class="row">
                     <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
@@ -191,8 +150,8 @@
                 </div>
             </div>
 
-            <!--JDBCValue-->
-            <div class=" elements form-group jdbcvalue"
+            <!-- JDBCValue -->
+            <div class=" input-element form-group jdbcvalue"
                  th:if="${input.name.equalsIgnoreCase('JDBCValue') and !(input.optional)}">
                 <div class="row">
                     <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
@@ -202,8 +161,8 @@
                 </div>
             </div>
 
-            <!--Enumertion-->
-            <div class=" form-group elements enumeration"
+            <!-- Enumertion -->
+            <div class=" form-group input-element enumeration"
                  th:if="${input.name.equalsIgnoreCase('Enumeration')  and !(input.optional)}">
                 <div class="row">
                     <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
@@ -217,11 +176,10 @@
                     </div>
                 </div>
             </div>
-            <!--/Enumertion-->
         </div>
 
-        <!--CheckBoxs-->
-        <div class="elements" id="checkBoxs">
+        <!-- Optional inputs -->
+        <div class="input-element" id="checkBoxs">
             <div class="row">
                 <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 form-check form-check-inline" th:each="input : ${operation.inputList}"
                      th:if="${input.name.equalsIgnoreCase('LiteralDataType') and input.type.equalsIgnoreCase('Boolean')
@@ -247,7 +205,7 @@
                 <div id="ListElements" class="panel-body">
                     <div class="optionalElements" th:each="input : ${operation.inputList}" th:if="${input.optional}">
 
-                        <div class="elements form-group rawdata" th:if="${input.name.equalsIgnoreCase('RawData')
+                        <div class="input-element form-group rawdata" th:if="${input.name.equalsIgnoreCase('RawData')
                               and (input.optional)}">
                             <div class="row">
                                 <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
@@ -258,7 +216,7 @@
                         </div>
 
 
-                        <div class=" elements form-group geometrydata"
+                        <div class=" input-element form-group geometrydata"
                              th:if="${input.name.equalsIgnoreCase('GeometryData') and (input.optional)}">
                             <div class="row">
                                 <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
@@ -268,7 +226,7 @@
                             </div>
                         </div>
 
-                        <div class=" elements form-group password"
+                        <div class=" input-element form-group password"
                              th:if="${input.name.equalsIgnoreCase('Password') and (input.optional)}">
                             <div class="row">
                                 <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
@@ -278,7 +236,7 @@
                             </div>
                         </div>
 
-                        <div class=" elements form-group string"
+                        <div class=" input-element form-group string"
                              th:if="${input.name.equalsIgnoreCase('LiteralDataType') and input.type.equalsIgnoreCase('String')
                               and (input.optional)}">
                             <div class="row">
@@ -289,7 +247,7 @@
                             </div>
                         </div>
 
-                        <div class=" elements form-group number "
+                        <div class=" input-element form-group number "
                              th:if="${input.name.equalsIgnoreCase('LiteralDataType') and input.type.equalsIgnoreCase('Number')
                               and (input.optional)}">
                             <div class="row">
@@ -302,7 +260,7 @@
                             </div>
                         </div>
 
-                        <div class=" elements form-group jdbctable"
+                        <div class=" input-element form-group jdbctable"
                              th:if="${input.name.equalsIgnoreCase('JDBCTable') and (input.optional)}">
                             <div class="row">
                                 <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
@@ -312,7 +270,7 @@
                             </div>
                         </div>
 
-                        <div class=" elements form-group jdbccolumn"
+                        <div class=" input-element form-group jdbccolumn"
                              th:if="${input.name.equalsIgnoreCase('JDBCColumn') and (input.optional)}">
                             <div class="row">
                                 <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
@@ -322,7 +280,7 @@
                             </div>
                         </div>
 
-                        <div class=" elements form-group jdbcvalue"
+                        <div class=" input-element form-group jdbcvalue"
                              th:if="${input.name.equalsIgnoreCase('JDBCValue') and (input.optional)}">
                             <div class="row">
                                 <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
@@ -332,7 +290,7 @@
                             </div>
                         </div>
 
-                        <div class=" form-group elements enumeration"
+                        <div class=" form-group input-element enumeration"
                              th:if="${input.name.equalsIgnoreCase('Enumeration') and (input.optional)}">
                             <div class="row">
                                 <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
@@ -348,7 +306,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="elements">
+                <div class="input-element">
                     <div id="checkBoxs_optional"  class="row">
                         <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 form-check form-check-inline"
                              th:each="input : ${listInputOptional}"
