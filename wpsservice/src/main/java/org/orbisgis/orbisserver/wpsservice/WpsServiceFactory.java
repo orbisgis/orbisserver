@@ -61,7 +61,7 @@ public class WpsServiceFactory implements ServiceFactory {
 
     @Override
     public Service createService(Map<String, Object> properties) {
-        WpsService wpsService = new WpsService();
+        ServiceImpl wpsService = new ServiceImpl();
         wpsService.start(properties);
         //initiate the wpsService with a first request
         wpsService.getAllOperation();
@@ -70,7 +70,7 @@ public class WpsServiceFactory implements ServiceFactory {
 
     @Override
     public Class getServiceClass() {
-        return WpsService.class;
+        return ServiceImpl.class;
     }
 
     @Validate

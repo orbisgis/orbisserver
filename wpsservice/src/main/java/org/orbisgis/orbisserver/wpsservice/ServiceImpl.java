@@ -49,10 +49,10 @@ import org.orbisgis.orbisserver.api.model.Result;
 import org.orbisgis.orbisserver.api.model.StatusInfo;
 import org.orbisgis.orbisserver.api.service.Service;
 import org.orbisgis.orbisserver.api.service.ServiceFactory;
-import org.orbiswps.scripts.WpsScriptPlugin;
-import org.orbiswps.server.WpsServer;
-import org.orbiswps.server.WpsServerImpl;
-import org.orbiswps.server.model.*;
+import org.orbisgis.orbiswps.scripts.WpsScriptPlugin;
+import org.orbisgis.orbiswps.service.WpsServiceImpl;
+import org.orbisgis.orbiswps.service.model.*;
+import org.orbisgis.orbiswps.service.model.Enumeration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,12 +61,8 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
@@ -74,13 +70,13 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 /**
  * Service managing the wps part for the core-server module
  */
-public class WpsService implements Service {
+public class ServiceImpl implements Service {
 
     /** Logger of the class. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(WpsService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceImpl.class);
 
     /** Wps server instance */
-    private WpsServer wpsServer;
+    private WpsServiceImpl wpsServer;
     /** ExecutorService used for the WpsServer instance to execute the scripts. */
     private ExecutorService executorService;
     /** Workspace used by the WsServer.*/
@@ -450,14 +446,7 @@ public class WpsService implements Service {
                                     Enumeration enumeration = (Enumeration)dataDescriptionType;
                                     attributeMap.put("multiSelection", enumeration.isMultiSelection());
                                     attributeMap.put("valueList", enumeration.getValues());
-                                    List<String> nameList = new ArrayList<>();
-                                    for(TranslatableString translatableString : enumeration.getValuesNames()){
-                                        for(LanguageStringType languageStringType : translatableString.getStrings()){
-                                            if(languageStringType.getLang().equalsIgnoreCase("en")){
-                                                nameList.add(languageStringType.getValue());
-                                            }
-                                        }
-                                    }
+                                    List<String> nameList = new ArrayList<>(Arrays.asList(enumeration.getValuesNames()));
                                     attributeMap.put("nameList", nameList);
                                 }
                                 String identifier = idt.getIdentifier().getValue();
@@ -499,14 +488,13 @@ public class WpsService implements Service {
             LOGGER.error("Unable to copy the wps server properties file.\n"+e.getMessage());
             return;
         }
-        wpsServer = new WpsServerImpl(workspaceFolder.getAbsolutePath(), ds, f.getAbsolutePath());
+        wpsServer = new org.orbisgis.orbiswps.service.WpsServiceImpl(ds, executorService);
         wpsServer.setExecutorService(executorService);
-        wpsServer.setDatabase(WpsServer.Database.H2GIS);
         wpsServer.setDataSource(ds);
 
         WpsScriptPlugin scriptPlugin = new WpsScriptPlugin();
-        scriptPlugin.setWpsServer(wpsServer);
         scriptPlugin.activate();
+        wpsServer.addWpsScriptBundle(scriptPlugin);
     }
 
     @Override
